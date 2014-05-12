@@ -5,8 +5,8 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="11"
-        android:targetSdkVersion="19" />
+        android:minSdkVersion="8"
+        android:targetSdkVersion="14" />
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.GET_TASKS" />
@@ -16,6 +16,7 @@
     </uses-permission>
 
     <application
+        android:label="@string/app_name"
         android:name=".constant.Application"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
