@@ -45,7 +45,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="-5dp"
                     android:gravity="center"
-                    android:text="5月9"
+                    android:text="5月10"
                     android:textColor="@color/white"
                     android:textSize="20dp" />
 
