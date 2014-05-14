@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.qihoo.huangmabisheng"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.0.0" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -16,10 +16,9 @@
     </uses-permission>
 
     <application
-        android:label="@string/app_name"
         android:name=".constant.Application"
-        android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
         android:theme="@android:style/Theme.Light.NoTitleBar" >
         <activity
             android:name=".activity.SettingActivity"
@@ -45,8 +44,10 @@
             android:screenOrientation="portrait" >
         </activity>
 
-        <service android:name=".service.SmartLockService" />
-        <service android:name=".service.FloatWindowService" />
+        <service
+            android:name=".service.SmartLockService"/>
+        <service
+            android:name=".service.FloatWindowService"/>
     </application>
 
 </manifest>

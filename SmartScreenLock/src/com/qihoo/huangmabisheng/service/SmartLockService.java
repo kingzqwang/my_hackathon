@@ -10,11 +10,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Map.Entry;
 
+import com.qihoo.huangmabisheng.constant.Constant;
 import com.qihoo.huangmabisheng.constant.SharedPrefrencesAssist;
 import com.qihoo.huangmabisheng.utils.FileUtil;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
 import com.qihoo.huangmabisheng.utils.TopApp;
 import com.qihoo.huangmabisheng.utils.fb;
+import com.qihoo.huangmabisheng.view.FloatWindowBigView;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
@@ -38,42 +40,59 @@ public class SmartLockService extends Service {
 	
 	private static String TAG = "SmartLockService";
 	Map<String, Integer> app_fre = new HashMap<String, Integer>();
-	
-	ActivityManager manager;// = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+
+	ActivityManager manager;// = (ActivityManager)
+							// getSystemService(ACTIVITY_SERVICE);
+
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	List<RunningTaskInfo> runningTasks;// = manager.getRunningTasks(1);
 	RunningTaskInfo runningTaskInfo;// = runningTasks.get(0);
 	ComponentName topActivity;// = runningTaskInfo.topActivity;
-	String packageName,up_package;
+	String currentPackageName, lastPackageName;
 	FileUtil fs;// = new FileService(getApplicationContext());
 	private Timer timer;
-	Handler handler = new Handler(){
+	Handler handler = new Handler() {
 
 		@Override
 		public void handleMessage(Message msg) {
 			Date date = new Date();
-			if(null!=MyWindowManager.getView())MyWindowManager.getView().updateTime(date.getHours(), date.getMinutes());
+			if (null != MyWindowManager.getView())
+				MyWindowManager.getView().updateTime(date.getHours(),
+						date.getMinutes());
 			super.handleMessage(msg);
 		}
-		
+
 	};
+
 	public void onCreate() {
 		super.onCreate();
 		manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 		app_fre = (Map<String, Integer>) SharedPrefrencesAssist.instance(this)
 				.getSharedPreferences().getAll();
 		app_fre.remove("hand");
-		Log.d(TAG, app_fre.size()+"");
+		Log.d(TAG, app_fre.size() + "");
 		fs = new FileUtil(getApplicationContext());
-		runningTasks = manager.getRunningTasks(1);
-		runningTaskInfo = runningTasks.get(0);
-		topActivity = runningTaskInfo.topActivity;
-		packageName = topActivity.getPackageName();
-		up_package = packageName;
+		updateCurrentPackageInfo();
+		// TODO 记录当前
+		PackageInfo packageInfo = null;
+		try {
+			packageInfo = getPackageManager().getPackageInfo(
+					currentPackageName, 0);
+			if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0
+					&& !currentPackageName.equals("com.qihoo.huangmabisheng")) {
+				pushInAppFre(currentPackageName,Constant.UNSAVE);
+			}
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		lastPackageName = currentPackageName;// 记录上次的Top，当前赋值
 		this.registerReceiver(screenOffReceiver, new IntentFilter(
 				"android.intent.action.SCREEN_OFF"));
 		if (timer == null) {
@@ -81,62 +100,59 @@ public class SmartLockService extends Service {
 			timer.scheduleAtFixedRate(new RefreshTask(), 0, 2000);
 		}
 	}
+	private void pushInAppFre(String currentPackageName,boolean save) {
+		int count = 1;
+		if (app_fre.containsKey(currentPackageName)) {
+			count = app_fre.get(currentPackageName).intValue() + 1;
+		}
+		app_fre.put(currentPackageName, count);
+		if(save)fs.save(currentPackageName, count);//耗时操作
+	}
+	private void updateCurrentPackageInfo() {
+		runningTasks = manager.getRunningTasks(1);// Return a list of the tasks
+													// that are currently
+													// running, 1 max
+		runningTaskInfo = runningTasks.get(0);
+		topActivity = runningTaskInfo.topActivity;// The activity component at
+													// the top of the history
+													// stack of the task. This
+													// is what the user is
+													// currently doing.
+		currentPackageName = topActivity.getPackageName();// 每次循环都取top activity
+	}
+
+	/**
+	 * @return 返回若为true则表明该应用是可以统计的，反之则该应用是在统计范围外的。
+	 * @throws NameNotFoundException
+	 */
+	private boolean filterApplications(String packageName)
+			throws NameNotFoundException {
+		PackageInfo packageInfo = null;
+		packageInfo = getPackageManager().getPackageInfo(packageName, 0);
+		return (packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0
+				&& !packageName.equals("com.qihoo.huangmabisheng");
+	}
 
 	class RefreshTask extends TimerTask {
 		@Override
 		public void run() {
-			runningTasks = manager.getRunningTasks(1);
-			runningTaskInfo = runningTasks.get(0);
-			topActivity = runningTaskInfo.topActivity;
-			packageName = topActivity.getPackageName();
-			
+			updateCurrentPackageInfo();
+			// android.util.Log.d(TAG, "update time");
+			handler.obtainMessage().sendToTarget();// 更新时间
 
-//			android.util.Log.d(TAG, "update time");
-			handler.obtainMessage().sendToTarget();
-			
-			int count = 0;
-//			android.util.Log.d(TAG, packageName+","+up_package);
-			if (packageName.equals(up_package))
+			// TODO 先判断是不是可统计的app，即非系统appXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX======================>>>>>TODO
+			if (currentPackageName.equals(lastPackageName))
 				return;
-			else if (app_fre.containsKey(packageName)) {
-				PackageInfo packageInfo = null;
-				try {
-					packageInfo = getPackageManager().getPackageInfo(
-							packageName, 0);
-					if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0 && !packageName.equals("com.qihoo.huangmabisheng")) {
-						count = app_fre.get(packageName).intValue() + 1;
-						app_fre.put(packageName, count);
-						//TODO fs.save("uappstat", packageName + " " + count);
-						fs.save(packageName,count);
-						android.util.Log.d(packageName,
-								Integer.toString(app_fre.get(packageName)));
-					}
-				} catch (NameNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			try {
+				if (!filterApplications(currentPackageName)) {
+					return;
 				}
-
-			} else {
-				PackageInfo packageInfo = null;
-				try {
-					packageInfo = getPackageManager().getPackageInfo(
-							packageName, 0);
-					if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0 && !packageName.equals("com.qihoo.huangmabisheng")) {
-						count = 1;
-						app_fre.put(packageName, count);
-						//TODO fs.save("uappstat", packageName + " " + count);
-						fs.save(packageName,count);
-						Log.i(packageName,
-								Integer.toString(app_fre.get(packageName)));
-					}
-				} catch (NameNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				pushInAppFre(currentPackageName,Constant.SAVE);
+			} catch (NameNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
-			
-
-			up_package = packageName;
+			lastPackageName = currentPackageName;//更新last top
 		}
 	}
 
@@ -152,16 +168,27 @@ public class SmartLockService extends Service {
 		this.unregisterReceiver(screenOffReceiver);
 		startService(new Intent(SmartLockService.this, SmartLockService.class));
 	}
+
 	private void updatePcksIcon() {
-		
+
 		try {
-			List<Entry<String, Integer>> topApp = new TopApp(app_fre).toApp(filterMap);
-			MyWindowManager.getView().updatePackageIcon(topApp,packageName);
+			if (app_fre == null || filterMap == null) {
+				Log.d(TAG, app_fre + "," + filterMap);
+			}
+			List<Entry<String, Integer>> topApp = new TopApp(app_fre)
+					.toApp(filterMap);
+			FloatWindowBigView view = MyWindowManager.getView();
+			if (null != view)
+				view.updatePackageIcon(topApp, currentPackageName);
+			else {
+				Log.d(TAG, "view null");
+			}
 		} catch (NameNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+
 	private BroadcastReceiver screenOffReceiver = new BroadcastReceiver() {
 		@SuppressWarnings("deprecation")
 		@Override

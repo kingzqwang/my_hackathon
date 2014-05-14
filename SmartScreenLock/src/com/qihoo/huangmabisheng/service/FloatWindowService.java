@@ -183,7 +183,8 @@ public class FloatWindowService extends Service {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
-
+			Log.i(TAG,
+					""+action);
 			if (action.equals("android.intent.action.SCREEN_ON")) {
 				Log.i(TAG,
 						"-----------ON------ android.intent.action.SCREEN_ON------");
