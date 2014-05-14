@@ -21,40 +21,40 @@ import android.widget.TextView;
 public class MyWindowManager {
 	static String TAG = "MyWindowManager";
 	/**
-	 * Ğ¡Ğü¸¡´°ViewµÄÊµÀı
+	 * å°æ‚¬æµ®çª—Viewçš„å®ä¾‹
 	 */
 	private static FloatWindowSmallView smallWindow;
 	private final static int FLAG_APKTOOL_VALUE = 1280;
 	/**
-	 * ´óĞü¸¡´°ViewµÄÊµÀı
+	 * å¤§æ‚¬æµ®çª—Viewçš„å®ä¾‹
 	 */
 	private static FloatWindowBigView bigWindow;
 
 	/**
-	 * Ğ¡Ğü¸¡´°ViewµÄ²ÎÊı
+	 * å°æ‚¬æµ®çª—Viewçš„å‚æ•°
 	 */
 	private static LayoutParams smallWindowParams;
 
 	/**
-	 * ´óĞü¸¡´°ViewµÄ²ÎÊı
+	 * å¤§æ‚¬æµ®çª—Viewçš„å‚æ•°
 	 */
 	private static android.view.WindowManager.LayoutParams bigWindowParams;
 
 	/**
-	 * ÓÃÓÚ¿ØÖÆÔÚÆÁÄ»ÉÏÌí¼Ó»òÒÆ³ıĞü¸¡´°
+	 * ç”¨äºæ§åˆ¶åœ¨å±å¹•ä¸Šæ·»åŠ æˆ–ç§»é™¤æ‚¬æµ®çª—
 	 */
 	private static WindowManager mWindowManager;
 
 	/**
-	 * ÓÃÓÚ»ñÈ¡ÊÖ»ú¿ÉÓÃÄÚ´æ
+	 * ç”¨äºè·å–æ‰‹æœºå¯ç”¨å†…å­˜
 	 */
 	private static ActivityManager mActivityManager;
 
 	/**
-	 * ½«Ğ¡Ğü¸¡´°´ÓÆÁÄ»ÉÏÒÆ³ı¡£
+	 * å°†å°æ‚¬æµ®çª—ä»å±å¹•ä¸Šç§»é™¤ã€‚
 	 * 
 	 * @param context
-	 *            ±ØĞëÎªÓ¦ÓÃ³ÌĞòµÄContext.
+	 *            å¿…é¡»ä¸ºåº”ç”¨ç¨‹åºçš„Context.
 	 */
 	public static void removeSmallWindow(Context context) {
 		if (smallWindow != null) {
@@ -65,10 +65,10 @@ public class MyWindowManager {
 	}
 
 	/**
-	 * ´´½¨Ò»¸ö´óĞü¸¡´°¡£Î»ÖÃÎªÆÁÄ»ÕıÖĞ¼ä¡£
+	 * åˆ›å»ºä¸€ä¸ªå¤§æ‚¬æµ®çª—ã€‚ä½ç½®ä¸ºå±å¹•æ­£ä¸­é—´ã€‚
 	 * 
 	 * @param context
-	 *            ±ØĞëÎªÓ¦ÓÃ³ÌĞòµÄContext.
+	 *            å¿…é¡»ä¸ºåº”ç”¨ç¨‹åºçš„Context.
 	 */
 	public static void createBigWindow(Context context) {
 		WindowManager windowManager = getWindowManager(context);
@@ -101,10 +101,10 @@ public class MyWindowManager {
 	}
 
 	/**
-	 * ½«´óĞü¸¡´°´ÓÆÁÄ»ÉÏÒÆ³ı¡£
+	 * å°†å¤§æ‚¬æµ®çª—ä»å±å¹•ä¸Šç§»é™¤ã€‚
 	 * 
 	 * @param context
-	 *            ±ØĞëÎªÓ¦ÓÃ³ÌĞòµÄContext.
+	 *            å¿…é¡»ä¸ºåº”ç”¨ç¨‹åºçš„Context.
 	 */
 	public static void removeBigWindow(Context context) {
 		if (bigWindow != null) {
@@ -115,10 +115,10 @@ public class MyWindowManager {
 	}
 
 	/**
-	 * ¸üĞÂĞ¡Ğü¸¡´°µÄTextViewÉÏµÄÊı¾İ£¬ÏÔÊ¾ÄÚ´æÊ¹ÓÃµÄ°Ù·Ö±È¡£
+	 * æ›´æ–°å°æ‚¬æµ®çª—çš„TextViewä¸Šçš„æ•°æ®ï¼Œæ˜¾ç¤ºå†…å­˜ä½¿ç”¨çš„ç™¾åˆ†æ¯”ã€‚
 	 * 
 	 * @param context
-	 *            ¿É´«ÈëÓ¦ÓÃ³ÌĞòÉÏÏÂÎÄ¡£
+	 *            å¯ä¼ å…¥åº”ç”¨ç¨‹åºä¸Šä¸‹æ–‡ã€‚
 	 */
 	public static void updateUsedPercent(Context context) {
 		// if (smallWindow != null) {
@@ -129,9 +129,9 @@ public class MyWindowManager {
 	}
 
 	/**
-	 * ÊÇ·ñÓĞĞü¸¡´°(°üÀ¨Ğ¡Ğü¸¡´°ºÍ´óĞü¸¡´°)ÏÔÊ¾ÔÚÆÁÄ»ÉÏ¡£
+	 * æ˜¯å¦æœ‰æ‚¬æµ®çª—(åŒ…æ‹¬å°æ‚¬æµ®çª—å’Œå¤§æ‚¬æµ®çª—)æ˜¾ç¤ºåœ¨å±å¹•ä¸Šã€‚
 	 * 
-	 * @return ÓĞĞü¸¡´°ÏÔÊ¾ÔÚ×ÀÃæÉÏ·µ»Øtrue£¬Ã»ÓĞµÄ»°·µ»Øfalse¡£
+	 * @return æœ‰æ‚¬æµ®çª—æ˜¾ç¤ºåœ¨æ¡Œé¢ä¸Šè¿”å›trueï¼Œæ²¡æœ‰çš„è¯è¿”å›falseã€‚
 	 */
 	public static boolean isWindowShowing() {
 		return smallWindow != null || bigWindow != null;
@@ -150,11 +150,11 @@ public class MyWindowManager {
 	}
 
 	/**
-	 * Èç¹ûWindowManager»¹Î´´´½¨£¬Ôò´´½¨Ò»¸öĞÂµÄWindowManager·µ»Ø¡£·ñÔò·µ»Øµ±Ç°ÒÑ´´½¨µÄWindowManager¡£
+	 * å¦‚æœWindowManagerè¿˜æœªåˆ›å»ºï¼Œåˆ™åˆ›å»ºä¸€ä¸ªæ–°çš„WindowManagerè¿”å›ã€‚å¦åˆ™è¿”å›å½“å‰å·²åˆ›å»ºçš„WindowManagerã€‚
 	 * 
 	 * @param context
-	 *            ±ØĞëÎªÓ¦ÓÃ³ÌĞòµÄContext.
-	 * @return WindowManagerµÄÊµÀı£¬ÓÃÓÚ¿ØÖÆÔÚÆÁÄ»ÉÏÌí¼Ó»òÒÆ³ıĞü¸¡´°¡£
+	 *            å¿…é¡»ä¸ºåº”ç”¨ç¨‹åºçš„Context.
+	 * @return WindowManagerçš„å®ä¾‹ï¼Œç”¨äºæ§åˆ¶åœ¨å±å¹•ä¸Šæ·»åŠ æˆ–ç§»é™¤æ‚¬æµ®çª—ã€‚
 	 */
 	public static WindowManager getWindowManager(Context context) {
 		if (mWindowManager == null) {
@@ -165,11 +165,11 @@ public class MyWindowManager {
 	}
 
 	/**
-	 * Èç¹ûActivityManager»¹Î´´´½¨£¬Ôò´´½¨Ò»¸öĞÂµÄActivityManager·µ»Ø¡£·ñÔò·µ»Øµ±Ç°ÒÑ´´½¨µÄActivityManager¡£
+	 * å¦‚æœActivityManagerè¿˜æœªåˆ›å»ºï¼Œåˆ™åˆ›å»ºä¸€ä¸ªæ–°çš„ActivityManagerè¿”å›ã€‚å¦åˆ™è¿”å›å½“å‰å·²åˆ›å»ºçš„ActivityManagerã€‚
 	 * 
 	 * @param context
-	 *            ¿É´«ÈëÓ¦ÓÃ³ÌĞòÉÏÏÂÎÄ¡£
-	 * @return ActivityManagerµÄÊµÀı£¬ÓÃÓÚ»ñÈ¡ÊÖ»ú¿ÉÓÃÄÚ´æ¡£
+	 *            å¯ä¼ å…¥åº”ç”¨ç¨‹åºä¸Šä¸‹æ–‡ã€‚
+	 * @return ActivityManagerçš„å®ä¾‹ï¼Œç”¨äºè·å–æ‰‹æœºå¯ç”¨å†…å­˜ã€‚
 	 */
 	private static ActivityManager getActivityManager(Context context) {
 		if (mActivityManager == null) {
@@ -180,11 +180,11 @@ public class MyWindowManager {
 	}
 
 	/**
-	 * ¼ÆËãÒÑÊ¹ÓÃÄÚ´æµÄ°Ù·Ö±È£¬²¢·µ»Ø¡£
+	 * è®¡ç®—å·²ä½¿ç”¨å†…å­˜çš„ç™¾åˆ†æ¯”ï¼Œå¹¶è¿”å›ã€‚
 	 * 
 	 * @param context
-	 *            ¿É´«ÈëÓ¦ÓÃ³ÌĞòÉÏÏÂÎÄ¡£
-	 * @return ÒÑÊ¹ÓÃÄÚ´æµÄ°Ù·Ö±È£¬ÒÔ×Ö·û´®ĞÎÊ½·µ»Ø¡£
+	 *            å¯ä¼ å…¥åº”ç”¨ç¨‹åºä¸Šä¸‹æ–‡ã€‚
+	 * @return å·²ä½¿ç”¨å†…å­˜çš„ç™¾åˆ†æ¯”ï¼Œä»¥å­—ç¬¦ä¸²å½¢å¼è¿”å›ã€‚
 	 */
 	public static String getUsedPercentValue(Context context) {
 		String dir = "/proc/meminfo";
@@ -204,15 +204,15 @@ public class MyWindowManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return "Ğü¸¡´°";
+		return "æ‚¬æµ®çª—";
 	}
 
 	/**
-	 * »ñÈ¡µ±Ç°¿ÉÓÃÄÚ´æ£¬·µ»ØÊı¾İÒÔ×Ö½ÚÎªµ¥Î»¡£
+	 * è·å–å½“å‰å¯ç”¨å†…å­˜ï¼Œè¿”å›æ•°æ®ä»¥å­—èŠ‚ä¸ºå•ä½ã€‚
 	 * 
 	 * @param context
-	 *            ¿É´«ÈëÓ¦ÓÃ³ÌĞòÉÏÏÂÎÄ¡£
-	 * @return µ±Ç°¿ÉÓÃÄÚ´æ¡£
+	 *            å¯ä¼ å…¥åº”ç”¨ç¨‹åºä¸Šä¸‹æ–‡ã€‚
+	 * @return å½“å‰å¯ç”¨å†…å­˜ã€‚
 	 */
 	private static long getAvailableMemory(Context context) {
 		ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();

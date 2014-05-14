@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import com.qihoo.huangmabisheng.constant.SharedPrefrencesAssist;
+import com.qihoo.huangmabisheng.model.AppDataForList;
 
 import android.content.Context;
 
@@ -24,8 +25,8 @@ public class FileUtil {
 		
 	}
 	
-	public void save(String packageName,int count){
-		SharedPrefrencesAssist.instance(context).write(packageName, count);
+	public void save(String packageName,AppDataForList appData){
+//		SharedPrefrencesAssist.instance(context).write(packageName, count);
 	}
 	
 	/**

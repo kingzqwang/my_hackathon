@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.qihoo.huangmabisheng.R;
-import com.qihoo.huangmabisheng.model.AppInfo;
+import com.qihoo.huangmabisheng.model.AppInfoForFilter;
 import com.qihoo.huangmabisheng.service.FloatWindowService;
 import com.qihoo.huangmabisheng.service.SmartLockService;
 
@@ -38,7 +38,7 @@ public class FilterApplicationActivity extends BaseActivity {
 	ListView appListView;
 	ImageView imageView;
 	ListAdapter listAdapter;
-	List<AppInfo> appInfos = new ArrayList<AppInfo>();
+	List<AppInfoForFilter> appInfos = new ArrayList<AppInfoForFilter>();
 	LayoutInflater layoutInflater;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +82,7 @@ public class FilterApplicationActivity extends BaseActivity {
 				
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					AppInfo appInfo = (AppInfo)buttonView.getTag();
+					AppInfoForFilter appInfo = (AppInfoForFilter)buttonView.getTag();
 					if (isChecked) {
 						Log.d(TAG,"remove");
 						appInfo.isFiltered = false;
@@ -114,7 +114,7 @@ public class FilterApplicationActivity extends BaseActivity {
 			}
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
-				AppInfo appInfo = appInfos.get(position);
+				AppInfoForFilter appInfo = appInfos.get(position);
 				TextView info;
 				TextView desc;
 				CheckBox checkBox;
@@ -188,7 +188,7 @@ public class FilterApplicationActivity extends BaseActivity {
 			// else
 			// appNameList.add(packageInfo.applicationInfo.loadLabel(
 			// getPackageManager()).toString());
-			AppInfo tmpInfo = new AppInfo();
+			AppInfoForFilter tmpInfo = new AppInfoForFilter();
 			tmpInfo.appName = packageInfo.applicationInfo.loadLabel(
 					getPackageManager()).toString();
 			tmpInfo.packageName = packageInfo.packageName;

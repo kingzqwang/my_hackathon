@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import android.R.integer;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -14,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.text.Html.ImageGetter;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -34,6 +36,7 @@ import com.qihoo.huangmabisheng.activity.SettingActivity;
 import com.qihoo.huangmabisheng.constant.SharedPrefrencesAssist;
 import com.qihoo.huangmabisheng.interfaces.IUpdatePackageIcon;
 import com.qihoo.huangmabisheng.interfaces.IUpdateTime;
+import com.qihoo.huangmabisheng.model.AppDataForList;
 import com.qihoo.huangmabisheng.service.FloatWindowService;
 import com.qihoo.huangmabisheng.utils.Log;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
@@ -45,12 +48,12 @@ public class FloatWindowBigView extends LinearLayout implements
 	PackageManager packageManager;
 	FloatWindowService service;
 	/**
-	 * ¼ÇÂ¼´óÐü¸¡´°µÄ¿í¶È
+	 * è®°å½•å¤§æ‚¬æµ®çª—çš„å®½åº¦
 	 */
 	public static int viewWidth;
 	String TAG = "FloatWindowBigView";
 	/**
-	 * ¼ÇÂ¼´óÐü¸¡´°µÄ¸ß¶È
+	 * è®°å½•å¤§æ‚¬æµ®çª—çš„é«˜åº¦
 	 */
 	public static int viewHeight;
 	ViewGroup rootView;
@@ -140,12 +143,12 @@ public class FloatWindowBigView extends LinearLayout implements
 			case MotionEvent.ACTION_MOVE:
 				float stopX = event.getX();
 				float stopY = event.getY();
-				// ¸ù¾ÝÁ½µã×ø±ê£¬»æÖÆÁ¬Ïß
+				// æ ¹æ®ä¸¤ç‚¹åæ ‡ï¼Œç»˜åˆ¶è¿žçº¿
 				canvas.drawLine(startX, startY, stopX, stopY, paint);
-				// ¸üÐÂ¿ªÊ¼µãµÄÎ»ÖÃ
+				// æ›´æ–°å¼€å§‹ç‚¹çš„ä½ç½®
 				startX = event.getX();
 				startY = event.getY();
-				// °ÑÍ¼Æ¬Õ¹Ê¾µ½ImageViewÖÐ
+				// æŠŠå›¾ç‰‡å±•ç¤ºåˆ°ImageViewä¸­
 				imageViewCanvas.setImageBitmap(baseBitmap);
 				break;
 			case MotionEvent.ACTION_UP:
@@ -175,7 +178,7 @@ public class FloatWindowBigView extends LinearLayout implements
 		}
 	};
 	/**
-	 * »­Í¼°åtouch
+	 * ç”»å›¾æ¿touch
 	 **/
 	private OnTouchListener iconOnTouchListener = new OnTouchListener() {
 		int[] temp = new int[] { 0, 0 };
@@ -284,7 +287,7 @@ public class FloatWindowBigView extends LinearLayout implements
 						service.sendBroadcast(new Intent(
 								"com.qihoo.huangmabisheng.finish"));
 					} else {
-						// TODO ¶¯»­»Øµ¯
+						// TODO åŠ¨ç”»å›žå¼¹
 						Animation a = new TranslateAnimation(0.0f, 0.0f - gl,
 								0.0f, 0.0f);
 						a.setDuration(1000);
@@ -404,9 +407,12 @@ public class FloatWindowBigView extends LinearLayout implements
 			android.util.Log.d(TAG, "event.getRawY() >= openLayout.getTop()");
 			this.setVisibility(View.GONE);
 			fb.d(service);
-			Intent intent = packageManager.getLaunchIntentForPackage((String) v
-					.getTag());
-			if(intent!=null)service.startActivity(intent);
+//			Intent intent = packageManager.getLaunchIntentForPackage((String) v
+//					.getTag());
+			Intent intent = new Intent();
+			intent.setComponent((ComponentName)v.getTag());
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			service.startActivity(intent);
 			service.sendBroadcast(new Intent("com.qihoo.huangmabisheng.finish"));
 
 		} else {
@@ -447,8 +453,52 @@ public class FloatWindowBigView extends LinearLayout implements
 	}
 
 	@Override
-	public void updatePackageIcon(List<Entry<String, Integer>> list,
+	public void updatePackageIcon(AppDataForList[] list,
 			String lastPackage) throws NameNotFoundException {
+		int i=0;
+		for (;i<list.length;i++) {
+			if (list[i]==null) {
+				break;
+			}
+			String pck = list[i].packageName;
+			ComponentName cpm = list[i].currentCompoment;
+			PackageInfo packageInfo = packageManager.getPackageInfo(list[i].packageName, 0);
+			Drawable drawable = packageInfo.applicationInfo.loadIcon(packageManager);
+			switch (i) {
+			case 0:
+				image0View.setImageDrawable(drawable);
+				image0View.setTag(cpm);
+				break;
+			case 1:
+				image1View.setImageDrawable(drawable);
+				image1View.setTag(cpm);
+				break;
+			case 2:
+				image2View.setImageDrawable(drawable);
+				image2View.setTag(cpm);
+				break;
+			case 3:
+				image3View.setImageDrawable(drawable);
+				image3View.setTag(cpm);
+				break;
+			case 4:
+				image4View.setImageDrawable(drawable);
+				image4View.setTag(cpm);
+				break;
+			case 5:
+				image5View.setImageDrawable(drawable);
+				image5View.setTag(cpm);
+				break;
+			case 6:
+				image6View.setImageDrawable(drawable);
+				image6View.setTag(cpm);
+				break;
+			default:
+				break;
+			}
+		}
+		
+		/*
 		int size = 7;
 		if (list.size() < size) {
 			size = list.size();
@@ -550,6 +600,7 @@ public class FloatWindowBigView extends LinearLayout implements
 					.loadIcon(packageManager));
 			image3View.setTag(lastPackage);
 		}
+		*/
 	}
 
 	@Override

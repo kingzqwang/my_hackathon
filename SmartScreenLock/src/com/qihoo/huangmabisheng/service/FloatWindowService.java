@@ -34,7 +34,7 @@ public class FloatWindowService extends Service {
 	
 	
 	/**
-	 * ÓÃÓÚÔÚÏß³ÌÖĞ´´½¨»òÒÆ³ıĞü¸¡´°
+	 * ç”¨äºåœ¨çº¿ç¨‹ä¸­åˆ›å»ºæˆ–ç§»é™¤æ‚¬æµ®çª—
 	 */
 	private Handler handler = new Handler() {
 
@@ -47,7 +47,7 @@ public class FloatWindowService extends Service {
 	};
 	private Intent mainActivityIntent = null;
 	/**
-	 * ¶¨Ê±Æ÷£¬¶¨Ê±½øĞĞ¼ì²âµ±Ç°Ó¦¸Ã´´½¨»¹ÊÇÒÆ³ıĞü¸¡´°¡£
+	 * å®šæ—¶å™¨ï¼Œå®šæ—¶è¿›è¡Œæ£€æµ‹å½“å‰åº”è¯¥åˆ›å»ºè¿˜æ˜¯ç§»é™¤æ‚¬æµ®çª—ã€‚
 	 */
 	private Timer timer;
 
@@ -62,7 +62,7 @@ public class FloatWindowService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		// ¿ªÆô¶¨Ê±Æ÷£¬Ã¿¸ô0.5ÃëË¢ĞÂÒ»´Î
+		// å¼€å¯å®šæ—¶å™¨ï¼Œæ¯éš”0.5ç§’åˆ·æ–°ä¸€æ¬¡
 		Log.d(TAG, "onStartCommand");
 		// if (timer == null) {
 		// timer = new Timer();
@@ -81,7 +81,7 @@ public class FloatWindowService extends Service {
 	public void onDestroy() {
 		Log.d(TAG, "onDestroy");
 		super.onDestroy();
-		// Service±»ÖÕÖ¹µÄÍ¬Ê±Ò²Í£Ö¹¶¨Ê±Æ÷¼ÌĞøÔËĞĞ
+		// Serviceè¢«ç»ˆæ­¢çš„åŒæ—¶ä¹Ÿåœæ­¢å®šæ—¶å™¨ç»§ç»­è¿è¡Œ
 		if(timer!=null)
 		timer.cancel();
 		timer = null;
@@ -116,7 +116,7 @@ public class FloatWindowService extends Service {
 	//
 	// @Override
 	// public void run() {
-	// // µ±Ç°½çÃæÊÇ×ÀÃæ£¬ÇÒÃ»ÓĞĞü¸¡´°ÏÔÊ¾£¬Ôò´´½¨Ğü¸¡´°¡£
+	// // å½“å‰ç•Œé¢æ˜¯æ¡Œé¢ï¼Œä¸”æ²¡æœ‰æ‚¬æµ®çª—æ˜¾ç¤ºï¼Œåˆ™åˆ›å»ºæ‚¬æµ®çª—ã€‚
 	// Log.d(TAG, "RefreshTask run");
 	// if (/*isHome()&& */!MyWindowManager.isWindowShowing()) {
 	// handler.post(new Runnable() {
@@ -127,7 +127,7 @@ public class FloatWindowService extends Service {
 	// }
 	// });
 	// }
-	// // // µ±Ç°½çÃæ²»ÊÇ×ÀÃæ£¬ÇÒÓĞĞü¸¡´°ÏÔÊ¾£¬ÔòÒÆ³ıĞü¸¡´°¡£
+	// // // å½“å‰ç•Œé¢ä¸æ˜¯æ¡Œé¢ï¼Œä¸”æœ‰æ‚¬æµ®çª—æ˜¾ç¤ºï¼Œåˆ™ç§»é™¤æ‚¬æµ®çª—ã€‚
 	// // else if (!isHome() && MyWindowManager.isWindowShowing()) {
 	// // handler.post(new Runnable() {
 	// // @Override
@@ -137,7 +137,7 @@ public class FloatWindowService extends Service {
 	// // }
 	// // });
 	// // }
-	// // // µ±Ç°½çÃæÊÇ×ÀÃæ£¬ÇÒÓĞĞü¸¡´°ÏÔÊ¾£¬Ôò¸üĞÂÄÚ´æÊı¾İ¡£
+	// // // å½“å‰ç•Œé¢æ˜¯æ¡Œé¢ï¼Œä¸”æœ‰æ‚¬æµ®çª—æ˜¾ç¤ºï¼Œåˆ™æ›´æ–°å†…å­˜æ•°æ®ã€‚
 	// // else if (isHome() && MyWindowManager.isWindowShowing()) {
 	// // handler.post(new Runnable() {
 	// // @Override
@@ -151,7 +151,7 @@ public class FloatWindowService extends Service {
 	// }
 
 	// /**
-	// * ÅĞ¶Ïµ±Ç°½çÃæÊÇ·ñÊÇ×ÀÃæ
+	// * åˆ¤æ–­å½“å‰ç•Œé¢æ˜¯å¦æ˜¯æ¡Œé¢
 	// */
 	// private boolean isHome() {
 	// ActivityManager mActivityManager = (ActivityManager)
@@ -161,9 +161,9 @@ public class FloatWindowService extends Service {
 	// }
 	//
 	// /**
-	// * »ñµÃÊôÓÚ×ÀÃæµÄÓ¦ÓÃµÄÓ¦ÓÃ°üÃû³Æ
+	// * è·å¾—å±äºæ¡Œé¢çš„åº”ç”¨çš„åº”ç”¨åŒ…åç§°
 	// *
-	// * @return ·µ»Ø°üº¬ËùÓĞ°üÃûµÄ×Ö·û´®ÁĞ±í
+	// * @return è¿”å›åŒ…å«æ‰€æœ‰åŒ…åçš„å­—ç¬¦ä¸²åˆ—è¡¨
 	// */
 	// private List<String> getHomes() {
 	// List<String> names = new ArrayList<String>();
@@ -202,7 +202,7 @@ public class FloatWindowService extends Service {
 			if (action.equals("android.intent.action.SCREEN_OFF")) {
 				Log.i(TAG,
 						"-----------OFF------ android.intent.action.SCREEN_OFF------");
-				MyWindowManager.setWindowVisible();// ·ÅÔÚÇ°Ãæ±È½Ï¿ì
+				MyWindowManager.setWindowVisible();// æ”¾åœ¨å‰é¢æ¯”è¾ƒå¿«
 				startActivity(mainActivityIntent);
 			}
 		}
