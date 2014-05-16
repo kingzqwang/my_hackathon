@@ -74,6 +74,7 @@ public class SmartLockService extends Service {
 	};
 
 	public void onCreate() {
+		Log.d(TAG, "onCreate");
 		super.onCreate();
 		manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 		// app_fre.putAll((AppIntroMap) SharedPrefrencesAssist.instance(this)
@@ -133,6 +134,7 @@ public class SmartLockService extends Service {
 	 * 取当前top activity的包名
 	 **/
 	private void updateCurrentPackageInfo() {
+		
 		runningTasks = manager.getRunningTasks(1);// Return a list of the tasks
 													// that are currently
 													// running, 1 max
@@ -186,7 +188,7 @@ public class SmartLockService extends Service {
 		// ApplicationInfo.FLAG_SYSTEM) == 0
 		// && !packageName.equals("com.qihoo.huangmabisheng");
 		if (!isHome(packageName)
-				&& !packageName.equals("com.qihoo.huangmabisheng"))
+				&& !packageName.equals("com.qihoo.huangmabisheng")&& !packageName.equals("com.android.packageinstaller"))
 			return true;
 		else {
 			app_fre.remove(packageName);

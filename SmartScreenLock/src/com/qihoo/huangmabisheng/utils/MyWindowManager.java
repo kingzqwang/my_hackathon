@@ -71,6 +71,7 @@ public class MyWindowManager {
 	 *            必须为应用程序的Context.
 	 */
 	public static void createBigWindow(Context context) {
+		Log.d(TAG, "createBigWindow");
 		WindowManager windowManager = getWindowManager(context);
 		// int screenWidth = windowManager.getDefaultDisplay().getWidth();
 		// int screenHeight = windowManager.getDefaultDisplay().getHeight();
@@ -142,8 +143,11 @@ public class MyWindowManager {
 	}
 
 	public static void setWindowVisible() {
+		Log.d(TAG, "setWindowVisible");
+		bigWindow.rootView.setVisibility(View.VISIBLE);
 		bigWindow.setVisibility(View.VISIBLE);
 		bigWindow.dismissCanvas();
+		bigWindow.invalidate();
 	}
 	public static void setWindowGone() {
 		bigWindow.setVisibility(View.GONE);

@@ -45,7 +45,7 @@ public class FloatWindowService extends Service {
 		}
 
 	};
-	private Intent mainActivityIntent = null;
+	public Intent mainActivityIntent = null;
 	/**
 	 * 定时器，定时进行检测当前应该创建还是移除悬浮窗。
 	 */

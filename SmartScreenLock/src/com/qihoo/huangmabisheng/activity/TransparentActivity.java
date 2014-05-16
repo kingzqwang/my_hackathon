@@ -19,9 +19,10 @@ import android.view.Window;
 import android.view.WindowManager;
 
 public class TransparentActivity extends BaseActivity {
+	public static TransparentActivity context;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
+		context = this;
 //		WindowManager.LayoutParams lp = getWindow().getAttributes();
 //		  lp.flags |= FLAG_HOMEKEY_DISPATCHED;
 //		getWindow().setAttributes(lp);
@@ -31,13 +32,13 @@ public class TransparentActivity extends BaseActivity {
 		setContentView(R.layout.activity_main);
 		super.onCreate(savedInstanceState);
 //		startService(new Intent(MainActivity.this, FloatWindowService.class));
-		registerReceiver(finishReceiver, new IntentFilter("com.qihoo.huangmabisheng.finish"));
+//		registerReceiver(finishReceiver, new IntentFilter("com.qihoo.huangmabisheng.finish"));
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		unregisterReceiver(finishReceiver);
+//		unregisterReceiver(finishReceiver);
 	}
 
 	@Override
@@ -89,11 +90,12 @@ public class TransparentActivity extends BaseActivity {
 		// TODO Auto-generated method stub
 
 	}
-	private BroadcastReceiver finishReceiver = new BroadcastReceiver() {
-		public void onReceive(Context context, Intent intent) {
-			if (intent.getAction().equals("com.qihoo.huangmabisheng.finish")) {
-				TransparentActivity.this.finish();
-			}
-		}
-	};
+//	private BroadcastReceiver finishReceiver = new BroadcastReceiver() {
+//		public void onReceive(Context context, Intent intent) {
+//			if (intent.getAction().equals("com.qihoo.huangmabisheng.finish")) {
+//				TransparentActivity.this.finish();
+//				this.abortBroadcast();
+//			}
+//		}
+//	};
 }
