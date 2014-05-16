@@ -37,6 +37,7 @@ import android.widget.Toast;
 import com.qihoo.huangmabisheng.R;
 import com.qihoo.huangmabisheng.activity.SettingActivity;
 import com.qihoo.huangmabisheng.activity.TransparentActivity;
+import com.qihoo.huangmabisheng.constant.Constant;
 import com.qihoo.huangmabisheng.constant.SharedPrefrencesAssist;
 import com.qihoo.huangmabisheng.interfaces.IUpdatePackageIcon;
 import com.qihoo.huangmabisheng.interfaces.IUpdateTime;
@@ -215,7 +216,7 @@ public class FloatWindowBigView extends LinearLayout implements
 		Date now;
 
 		@Override
-		public boolean onTouch(View view, MotionEvent event) {
+		public boolean onTouch(final View view, MotionEvent event) {
 			if (animating) {
 				return true;
 			}
@@ -229,8 +230,8 @@ public class FloatWindowBigView extends LinearLayout implements
 			case MotionEvent.ACTION_DOWN:
 				if (view instanceof ImageView) {
 
-					Animation a = new ScaleAnimation(1f, 1.1f, 1f, 1.1f,Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
-					a.setDuration(200);
+					Animation a = new ScaleAnimation(1f, 1.2f, 1f, 1.2f,Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+					a.setDuration(300);
 					a.setFillAfter(true);
 					view.startAnimation(a);
 					a.startNow();
@@ -261,7 +262,7 @@ public class FloatWindowBigView extends LinearLayout implements
 						return true;
 					} else if ((startTouch[0] == x && startTouch[1] != y)
 							|| Math.abs(startTouch[1] - y)
-									/ Math.abs(startTouch[0] - x) >= 3) {
+									/ Math.abs(startTouch[0] - x) >= Constant.DECIDE_REFRESH) {
 						flag = 1;
 					} else {
 						flag = 2;
@@ -288,17 +289,18 @@ public class FloatWindowBigView extends LinearLayout implements
 				// rootView.invalidate();
 				return true;
 			case MotionEvent.ACTION_UP:
-				if (view instanceof ImageView) {
-					Animation a = new ScaleAnimation(1.1f, 1f, 1.1f, 1f,Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
-					a.setDuration(200);
-					a.setFillAfter(true);
-					view.startAnimation(a);
-					a.startNow();
-				}
+				
 				flag = 0;
 				final int gl = rootView.getLeft();
 				if (gl <= 0) {
 					service.startActivity(service.mainActivityIntent);
+					if (view instanceof ImageView) {
+						Animation a = new ScaleAnimation(1.2f, 1f, 1.2f, 1f,Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+						a.setDuration(300);
+						a.setFillAfter(true);
+						view.startAnimation(a);
+						a.startNow();
+					}
 					return true;
 				}
 				android.util.Log.d(TAG + " Action_Up", gl + "");
@@ -306,7 +308,7 @@ public class FloatWindowBigView extends LinearLayout implements
 					Animation a = new TranslateAnimation(0.0f, viewWidth - gl,
 							0.0f, 0.0f);
 					long len = new Date().getTime() - now.getTime();
-					long duration = len / gl * (viewWidth - gl);
+					long duration = 2*len / gl * (viewWidth - gl);
 					duration = duration > 500 ? 500 : duration;
 					a.setDuration(duration);
 					a.setFillEnabled(true);
@@ -321,6 +323,13 @@ public class FloatWindowBigView extends LinearLayout implements
 						public void onAnimationStart(Animation animation) {
 							// animating = true;
 							rootView.setVisibility(View.GONE);
+							if (view instanceof ImageView) {
+								Animation a = new ScaleAnimation(1.2f, 1f, 1.2f, 1f,Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+								a.setDuration(300);
+								a.setFillAfter(true);
+								view.startAnimation(a);
+								a.startNow();
+							}
 						}
 
 						@Override
@@ -383,7 +392,13 @@ public class FloatWindowBigView extends LinearLayout implements
 							rootView.clearAnimation();
 							rootView.layout(left, top, right, bottom);
 							animating = false;
-
+							if (view instanceof ImageView) {
+								Animation a = new ScaleAnimation(1.2f, 1f, 1.2f, 1f,Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+								a.setDuration(300);
+								a.setFillAfter(true);
+								view.startAnimation(a);
+								a.startNow();
+							}
 						}
 					});
 					a.startNow();
@@ -643,6 +658,7 @@ public class FloatWindowBigView extends LinearLayout implements
 		// android.util.Log.d(TAG, "update-" + hour + ":" + minute);
 		hourTextView.setText(hour / 10 + "" + hour % 10);
 		minuteTextView.setText(minute / 10 + "" + minute % 10);
+		
 	}
 
 	@Override

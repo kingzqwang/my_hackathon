@@ -4,6 +4,15 @@
     android:layout_height="fill_parent"
     android:background="@drawable/bg_outdoors_driving" >
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/icon_layout"
+        android:layout_centerHorizontal="true"
+        android:text="滑哪都能解锁..."
+        android:textColor="@color/gray"
+        android:textSize="20dp" />
+
     <RelativeLayout
         android:id="@+id/time_layout"
         android:layout_width="wrap_content"
@@ -104,23 +113,23 @@
             android:layout_alignBottom="@+id/time_layout_inner"
             android:layout_marginBottom="20dp"
             android:layout_toRightOf="@+id/time_layout_inner"
-            android:src="@drawable/hand" />
+            android:src="@drawable/hand"
+            android:visibility="gone" />
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/icon_layout"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:layout_marginTop="@dimen/half_time_size"
         android:layout_marginBottom="@dimen/quarter_time_size"
+        android:layout_marginTop="@dimen/half_time_size"
         android:gravity="center"
         android:orientation="vertical" >
 
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/icon_layout_width"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="@dimen/log_layout_padding"
-            android:paddingRight="@dimen/log_layout_padding" >
+            android:layout_weight="1" >
 
             <ImageView
                 android:id="@+id/imageview_0"
@@ -131,11 +140,9 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/icon_layout_width"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="@dimen/log_layout_padding"
-            android:paddingRight="@dimen/log_layout_padding" >
+            android:layout_weight="1" >
 
             <ImageView
                 android:id="@+id/imageview_1"
@@ -146,11 +153,9 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/icon_layout_width"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="@dimen/log_layout_padding"
-            android:paddingRight="@dimen/log_layout_padding" >
+            android:layout_weight="1" >
 
             <ImageView
                 android:id="@+id/imageview_2"
@@ -161,11 +166,9 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/icon_layout_width"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="@dimen/log_layout_padding"
-            android:paddingRight="@dimen/log_layout_padding" >
+            android:layout_weight="1" >
 
             <ImageView
                 android:id="@+id/imageview_3"
@@ -176,11 +179,9 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/icon_layout_width"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="@dimen/log_layout_padding"
-            android:paddingRight="@dimen/log_layout_padding" >
+            android:layout_weight="1" >
 
             <ImageView
                 android:id="@+id/imageview_4"
@@ -191,11 +192,9 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/icon_layout_width"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="@dimen/log_layout_padding"
-            android:paddingRight="@dimen/log_layout_padding" >
+            android:layout_weight="1" >
 
             <ImageView
                 android:id="@+id/imageview_5"

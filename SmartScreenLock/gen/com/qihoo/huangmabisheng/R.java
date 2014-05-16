@@ -28,7 +28,8 @@ public final class R {
     public static final class dimen {
         public static final int dialog_info=0x7f050005;
         public static final int half_time_size=0x7f05000d;
-        public static final int log_layout_padding=0x7f05000f;
+        public static final int icon_layout_width=0x7f05000f;
+        public static final int log_layout_padding=0x7f050010;
         public static final int log_width=0x7f050001;
         public static final int margin_iconside=0x7f050007;
         public static final int open_text_size=0x7f050004;
@@ -66,18 +67,19 @@ public final class R {
         public static final int app_name=0x7f080002;
         public static final int application_list=0x7f08001c;
         public static final int back_imageview=0x7f08001a;
-        public static final int backgroud_imageLeft=0x7f080025;
+        public static final int backgroud_imageLeft=0x7f080026;
         public static final int canvas_layout=0x7f080015;
-        public static final int clockscreen_checkbox=0x7f080023;
-        public static final int clockscreen_imageLeft=0x7f080022;
-        public static final int clockscreen_skinname=0x7f080024;
+        public static final int clockscreen_checkbox=0x7f080024;
+        public static final int clockscreen_imageLeft=0x7f080023;
+        public static final int clockscreen_skinname=0x7f080025;
         public static final int close_canvas=0x7f080017;
-        public static final int filter_application_select=0x7f080021;
+        public static final int filter_application_select=0x7f080022;
         public static final int filter_checkbox=0x7f080003;
         public static final int floating_layout=0x7f080000;
-        public static final int hand_checkbox=0x7f080029;
+        public static final int hand_checkbox=0x7f08002a;
         public static final int hour_textview=0x7f080007;
-        public static final int imageRight=0x7f08001f;
+        public static final int icon_layout=0x7f08001d;
+        public static final int imageRight=0x7f080020;
         public static final int image_hand=0x7f080009;
         public static final int imageview_0=0x7f08000a;
         public static final int imageview_1=0x7f08000b;
@@ -92,18 +94,18 @@ public final class R {
         public static final int layout_guess=0x7f080012;
         public static final int minute_textview=0x7f080008;
         public static final int open_layout=0x7f080014;
-        public static final int other_start_imageLeft=0x7f08002a;
-        public static final int passwd_start_imageLeft=0x7f080027;
-        public static final int root_start_imageLeft=0x7f080028;
+        public static final int other_start_imageLeft=0x7f08002b;
+        public static final int passwd_start_imageLeft=0x7f080028;
+        public static final int root_start_imageLeft=0x7f080029;
         public static final int skinname=0x7f080004;
-        public static final int start_checkbox=0x7f080020;
-        public static final int start_imageLeft=0x7f08001e;
+        public static final int start_checkbox=0x7f080021;
+        public static final int start_imageLeft=0x7f08001f;
         public static final int time_layout=0x7f080005;
         public static final int time_layout_inner=0x7f080006;
-        public static final int title_cloud_textview=0x7f08001d;
+        public static final int title_cloud_textview=0x7f08001e;
         public static final int title_filter_textview=0x7f08001b;
         public static final int title_linearlayout=0x7f080019;
-        public static final int tools_imageLeft=0x7f080026;
+        public static final int tools_imageLeft=0x7f080027;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;

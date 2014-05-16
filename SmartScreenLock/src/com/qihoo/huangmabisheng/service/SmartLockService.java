@@ -188,7 +188,7 @@ public class SmartLockService extends Service {
 		// ApplicationInfo.FLAG_SYSTEM) == 0
 		// && !packageName.equals("com.qihoo.huangmabisheng");
 		if (!isHome(packageName)
-				&& !packageName.equals("com.qihoo.huangmabisheng")&& !packageName.equals("com.android.packageinstaller"))
+				&& !packageName.equals("com.qihoo.huangmabisheng")&& !packageName.equals("com.android.packageinstaller")&& !packageName.equals("android"))
 			return true;
 		else {
 			app_fre.remove(packageName);
@@ -262,7 +262,6 @@ public class SmartLockService extends Service {
 	}
 
 	private BroadcastReceiver screenOffReceiver = new BroadcastReceiver() {
-		@SuppressWarnings("deprecation")
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();

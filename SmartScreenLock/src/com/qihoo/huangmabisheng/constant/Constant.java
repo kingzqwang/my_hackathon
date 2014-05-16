@@ -1,6 +1,7 @@
 package com.qihoo.huangmabisheng.constant;
 
 public class Constant {
+	public static final int DECIDE_REFRESH = 2;
 	public static String APP_NAME;
 	public static boolean SAVE = true;
 	public static boolean UNSAVE = false;

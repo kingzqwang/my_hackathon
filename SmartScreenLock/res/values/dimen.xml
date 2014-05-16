@@ -2,7 +2,7 @@
 <resources>
 
     <dimen name="photo_setting_bottom">15sp</dimen>
- <dimen name="log_width">53dp</dimen>
+ <dimen name="log_width">58dp</dimen>
  <dimen name="open_width">20dp</dimen>
   <dimen name="text_size_card">15dp</dimen>
   <dimen name="open_text_size">20dp</dimen>
@@ -16,6 +16,6 @@
     <dimen name="time_size">150dp</dimen>
     <dimen name="half_time_size">75dp</dimen>
     <dimen name="quarter_time_size">37dp</dimen>
-    
+    <dimen name="icon_layout_width">85dp</dimen>
     <dimen name="log_layout_padding">20dp</dimen>
 </resources>
