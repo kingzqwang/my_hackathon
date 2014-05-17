@@ -10,15 +10,22 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Map.Entry;
 
+import com.qihoo.huangmabisheng.R;
 import com.qihoo.huangmabisheng.constant.Constant;
+import com.qihoo.huangmabisheng.constant.Constant.Scene;
+import com.qihoo.huangmabisheng.constant.Constant.Screen;
+import com.qihoo.huangmabisheng.constant.Constant.SizeType;
+import com.qihoo.huangmabisheng.constant.Constant.TimeQuantum;
 import com.qihoo.huangmabisheng.constant.SharedPrefrencesAssist;
 import com.qihoo.huangmabisheng.model.AppDataForList;
 import com.qihoo.huangmabisheng.model.AppIntroMap;
 import com.qihoo.huangmabisheng.utils.FileUtil;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
+import com.qihoo.huangmabisheng.utils.TimeUtil;
 import com.qihoo.huangmabisheng.utils.TopApp;
 import com.qihoo.huangmabisheng.utils.fb;
 import com.qihoo.huangmabisheng.view.FloatWindowBigView;
+import com.qihoo.huangmabisheng.view.FloatWindowBigView.TouchType;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
@@ -38,10 +45,14 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 
 public class SmartLockService extends Service {
 	public static Map<String, Integer> filterMap = new HashMap<String, Integer>();// 二级过滤
-
+	private TimeQuantum timeQuantum = TimeQuantum.WORKING;
+	private Constant.Scene scene = Scene.DEFAULT;
+	private Constant.SizeType sizeType = SizeType.TOTAL;
+	public static Constant.Screen screen = Screen.ON;
 	private static String TAG = "SmartLockService";
 	AppIntroMap app_fre = new AppIntroMap();
 
@@ -65,13 +76,48 @@ public class SmartLockService extends Service {
 		@Override
 		public void handleMessage(Message msg) {
 			Date date = new Date();
+			changeState(date);
 			if (null != MyWindowManager.getView())
 				MyWindowManager.getView().updateTime(date.getHours(),
 						date.getMinutes());
 			super.handleMessage(msg);
 		}
-
 	};
+
+	/**
+	 * 先判断耳机，后判断时间段
+	 */
+	private void changeState(Date date) {
+		if (scene == Scene.EARPHONE) {
+			return;
+		}
+		TimeQuantum now = TimeUtil.decideTimeQuantumForNow(date);
+		switch (now) {
+		case SLEEPING:
+			if (timeQuantum != now) {
+				Log.d(TAG, "change to sleeping");
+				FloatWindowBigView view = MyWindowManager.getView();
+				if (view != null) {
+					view.switcher
+							.setImageResource(R.drawable.bg_jordi_home_night);
+				}
+			}
+			break;
+		case WORKING:
+			if (timeQuantum != now) {
+				Log.d(TAG, "change to working");
+				FloatWindowBigView view = MyWindowManager.getView();
+				if (view != null) {
+					view.switcher
+							.setImageResource(R.drawable.bg_outdoors_driving);
+				}
+			}
+			break;
+		default:
+			break;
+		}
+		timeQuantum = now;
+	}
 
 	public void onCreate() {
 		Log.d(TAG, "onCreate");
@@ -100,9 +146,11 @@ public class SmartLockService extends Service {
 		lastPackageName = currentPackageName;// 记录上次的Top，当前赋值
 		this.registerReceiver(screenOffReceiver, new IntentFilter(
 				"android.intent.action.SCREEN_OFF"));
+		this.registerReceiver(changeIconReceiver, new IntentFilter(
+				"com.qihoo.huangmabisheng.UPDATE_ICON"));
 		if (timer == null) {
 			timer = new Timer();
-			timer.scheduleAtFixedRate(new RefreshTask(), 0, 2000);
+			timer.scheduleAtFixedRate(new RefreshTask(), 0, 1000);
 		}
 	}
 
@@ -121,12 +169,13 @@ public class SmartLockService extends Service {
 		AppDataForList appData;
 		if (app_fre.containsKey(currentPackageName)) {
 			appData = app_fre.get(currentPackageName);
-			appData.push();
+			appData.push(timeQuantum);
 		} else {
-			appData = new AppDataForList(currentPackageName, topActivity);
+			appData = new AppDataForList(currentPackageName, topActivity,
+					timeQuantum);
 			app_fre.put(currentPackageName, appData);
 		}
-		app_fre.updateData(currentPackageName);
+		app_fre.updateData(currentPackageName, timeQuantum);
 		fs.save(currentPackageName, appData);// 耗时操作
 	}
 
@@ -134,7 +183,7 @@ public class SmartLockService extends Service {
 	 * 取当前top activity的包名
 	 **/
 	private void updateCurrentPackageInfo() {
-		
+
 		runningTasks = manager.getRunningTasks(1);// Return a list of the tasks
 													// that are currently
 													// running, 1 max
@@ -188,7 +237,9 @@ public class SmartLockService extends Service {
 		// ApplicationInfo.FLAG_SYSTEM) == 0
 		// && !packageName.equals("com.qihoo.huangmabisheng");
 		if (!isHome(packageName)
-				&& !packageName.equals("com.qihoo.huangmabisheng")&& !packageName.equals("com.android.packageinstaller")&& !packageName.equals("android"))
+				&& !packageName.equals("com.qihoo.huangmabisheng")
+				&& !packageName.equals("com.android.packageinstaller")
+				&& !packageName.equals("android"))
 			return true;
 		else {
 			app_fre.remove(packageName);
@@ -202,9 +253,23 @@ public class SmartLockService extends Service {
 	class RefreshTask extends TimerTask {
 		@Override
 		public void run() {
+			synchronized (SmartLockService.class) {
+				if (screen == Screen.OFF)
+					try {
+						Log.d(TAG, "wait off");
+						SmartLockService.class.wait();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return;
+					}
+			}
 			updateCurrentPackageInfo();
 			// android.util.Log.d(TAG, "update time");
-			handler.obtainMessage().sendToTarget();// 更新时间
+			if (MyWindowManager.isWindowShowing()
+					&& MyWindowManager.isWindowGone() != View.GONE
+					&& MyWindowManager.getView().flag == TouchType.NONE)
+				handler.obtainMessage().sendToTarget();// 更新时间
 
 			// TODO
 			// 先判断是不是可统计的app，即非系统app
@@ -236,6 +301,7 @@ public class SmartLockService extends Service {
 		Log.d(TAG, "Service destroy");
 		super.onDestroy();
 		this.unregisterReceiver(screenOffReceiver);
+		this.unregisterReceiver(changeIconReceiver);
 		startService(new Intent(SmartLockService.this, SmartLockService.class));
 	}
 
@@ -251,7 +317,19 @@ public class SmartLockService extends Service {
 			// .toApp(filterMap);
 			FloatWindowBigView view = MyWindowManager.getView();
 			if (null != view)
-				view.updatePackageIcon(app_fre.appDatas, lastPackageName);// 包括两部分，一部分是更新最常使用icon，一部分是更新最近使用????????????????????????????????????????????????????????????
+				switch (sizeType) {
+				case SCENE:
+					view.updatePackageIcon(app_fre.appDatasNowMap
+							.get(timeQuantum));
+					break;
+				case QUANTUM:
+					view.updatePackageIcon(app_fre.appDatasNowMap
+							.get(timeQuantum));
+					break;
+				default:
+					view.updatePackageIcon(app_fre.appDatas);
+					break;
+				}
 			else {
 				Log.d(TAG, "view null");
 			}
@@ -266,12 +344,32 @@ public class SmartLockService extends Service {
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
 
-			if (action.equals("android.intent.action.SCREEN_OFF")) {
-				Log.i(TAG,
-						"-----------OFF------ android.intent.action.SCREEN_OFF------");
-				updatePcksIcon();
-			}
+			// if (action.equals("android.intent.action.SCREEN_OFF")) {
+			Log.i(TAG,
+					"-----------OFF------ android.intent.action.SCREEN_OFF------");
+			updatePcksIcon();
+			// }
 			fb.d(context);
+		}
+
+	};
+	private BroadcastReceiver changeIconReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			Log.i(TAG, action);
+			switch (sizeType) {
+			case SCENE:
+				sizeType = SizeType.TOTAL;
+				break;
+			case QUANTUM:
+				sizeType = SizeType.SCENE;
+				break;
+			default:
+				sizeType = SizeType.QUANTUM;
+				break;
+			}
+			updatePcksIcon();
 		}
 
 	};

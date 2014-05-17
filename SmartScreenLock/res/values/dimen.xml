@@ -2,7 +2,7 @@
 <resources>
 
     <dimen name="photo_setting_bottom">15sp</dimen>
- <dimen name="log_width">58dp</dimen>
+ <dimen name="log_width">68dp</dimen>
  <dimen name="open_width">20dp</dimen>
   <dimen name="text_size_card">15dp</dimen>
   <dimen name="open_text_size">20dp</dimen>

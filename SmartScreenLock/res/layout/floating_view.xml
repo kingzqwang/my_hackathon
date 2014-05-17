@@ -2,8 +2,14 @@
     android:id="@+id/floating_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:splitMotionEvents="false"
-    android:background="@drawable/bg_outdoors_driving" >
+    android:splitMotionEvents="false" >
+
+    <ImageSwitcher 
+        android:id="@+id/switcher"
+        android:background="@color/black"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+    />
 
     <TextView
         android:layout_width="wrap_content"
@@ -11,9 +17,9 @@
         android:layout_alignBottom="@+id/icon_layout"
         android:layout_centerHorizontal="true"
         android:text="滑哪都能解锁..."
-        android:textStyle="italic"
         android:textColor="@color/gray"
-        android:textSize="20dp" />
+        android:textSize="20dp"
+        android:textStyle="italic" />
 
     <RelativeLayout
         android:id="@+id/time_layout"
@@ -123,88 +129,56 @@
         android:id="@+id/icon_layout"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
+        android:layout_marginLeft="@dimen/log_layout_padding"
         android:layout_marginBottom="@dimen/quarter_time_size"
         android:layout_marginTop="@dimen/half_time_size"
         android:gravity="center"
         android:orientation="vertical" >
 
-        <RelativeLayout
-            android:layout_width="@dimen/icon_layout_width"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" >
 
-            <ImageView
+            <ImageSwitcher
+                android:layout_weight="1"
                 android:id="@+id/imageview_0"
                 android:layout_width="@dimen/log_width"
                 android:layout_height="@dimen/log_width"
-                android:layout_centerInParent="true"
-                android:src="@null" />
-        </RelativeLayout>
+                android:background="@null" />
 
-        <RelativeLayout
-            android:layout_width="@dimen/icon_layout_width"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" >
-
-            <ImageView
+            <ImageSwitcher
+                android:layout_weight="1"
                 android:id="@+id/imageview_1"
                 android:layout_width="@dimen/log_width"
                 android:layout_height="@dimen/log_width"
-                android:layout_centerInParent="true"
-                android:src="@null" />
-        </RelativeLayout>
+                android:background="@null" />
 
-        <RelativeLayout
-            android:layout_width="@dimen/icon_layout_width"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" >
-
-            <ImageView
+            <ImageSwitcher
+                android:layout_weight="1"
                 android:id="@+id/imageview_2"
                 android:layout_width="@dimen/log_width"
                 android:layout_height="@dimen/log_width"
-                android:layout_centerInParent="true"
-                android:src="@null" />
-        </RelativeLayout>
+                android:background="@null" />
 
-        <RelativeLayout
-            android:layout_width="@dimen/icon_layout_width"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" >
-
-            <ImageView
+            <ImageSwitcher
+                android:layout_weight="1"
                 android:id="@+id/imageview_3"
                 android:layout_width="@dimen/log_width"
                 android:layout_height="@dimen/log_width"
-                android:layout_centerInParent="true"
-                android:src="@null" />
-        </RelativeLayout>
+                android:background="@null" />
 
-        <RelativeLayout
-            android:layout_width="@dimen/icon_layout_width"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" >
 
-            <ImageView
+            <ImageSwitcher
+                android:layout_weight="1"
                 android:id="@+id/imageview_4"
                 android:layout_width="@dimen/log_width"
                 android:layout_height="@dimen/log_width"
-                android:layout_centerInParent="true"
-                android:src="@null" />
-        </RelativeLayout>
+                android:background="@null" />
 
-        <RelativeLayout
-            android:layout_width="@dimen/icon_layout_width"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" >
-
-            <ImageView
+            <ImageSwitcher
+                android:visibility="gone"
+                android:layout_weight="1"
                 android:id="@+id/imageview_5"
                 android:layout_width="@dimen/log_width"
                 android:layout_height="@dimen/log_width"
-                android:layout_centerInParent="true"
-                android:src="@null" />
-        </RelativeLayout>
+                android:background="@null" />
     </LinearLayout>
 
     <RelativeLayout

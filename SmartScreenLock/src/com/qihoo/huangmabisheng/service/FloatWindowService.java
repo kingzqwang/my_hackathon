@@ -9,6 +9,7 @@ import java.util.TimerTask;
 import java.util.Map.Entry;
 
 import com.qihoo.huangmabisheng.activity.TransparentActivity;
+import com.qihoo.huangmabisheng.constant.Constant.Screen;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
 import com.qihoo.huangmabisheng.utils.fb;
 
@@ -31,8 +32,7 @@ import android.view.View;
 
 public class FloatWindowService extends Service {
 	String TAG = "FloatWindowService";
-	
-	
+
 	/**
 	 * 用于在线程中创建或移除悬浮窗
 	 */
@@ -68,27 +68,29 @@ public class FloatWindowService extends Service {
 		// timer = new Timer();
 		// // timer.scheduleAtFixedRate(new RefreshTask(), 0, 500);
 		// }
-		
+
 		if (!MyWindowManager.isWindowShowing()) {
 			MyWindowManager.createBigWindow(FloatWindowService.this);
-			MyWindowManager.setWindowGone(); 
+			MyWindowManager.setWindowGone();
 		} else if (View.GONE == MyWindowManager.isWindowGone()) {
 			MyWindowManager.setWindowVisible();
 		}
 		return super.onStartCommand(intent, flags, startId);
 	}
+
 	@Override
 	public void onDestroy() {
 		Log.d(TAG, "onDestroy");
 		super.onDestroy();
 		// Service被终止的同时也停止定时器继续运行
-		if(timer!=null)
-		timer.cancel();
+		if (timer != null)
+			timer.cancel();
 		timer = null;
 		this.unregisterReceiver(screenOffReceiver);
 		this.unregisterReceiver(screenOnReceiver);
 
-		startService(new Intent(FloatWindowService.this, FloatWindowService.class));
+		startService(new Intent(FloatWindowService.this,
+				FloatWindowService.class));
 	}
 
 	// public void cancelTask() {
@@ -109,7 +111,7 @@ public class FloatWindowService extends Service {
 				"android.intent.action.SCREEN_OFF"));
 		this.registerReceiver(screenOnReceiver, new IntentFilter(
 				"android.intent.action.SCREEN_ON"));
-		
+
 	}
 
 	// class RefreshTask extends TimerTask {
@@ -183,13 +185,15 @@ public class FloatWindowService extends Service {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
+			// if (action.equals("android.intent.action.SCREEN_ON")) {
 			Log.i(TAG,
-					""+action);
-			if (action.equals("android.intent.action.SCREEN_ON")) {
-				Log.i(TAG,
-						"-----------ON------ android.intent.action.SCREEN_ON------");
-				startActivity(mainActivityIntent);
+					"-----------ON------ android.intent.action.SCREEN_ON------");
+			synchronized(SmartLockService.class) {
+				SmartLockService.screen = Screen.ON;
+				SmartLockService.class.notify();
 			}
+			startActivity(mainActivityIntent);
+			// }
 		}
 
 	};
@@ -198,13 +202,15 @@ public class FloatWindowService extends Service {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
-
-			if (action.equals("android.intent.action.SCREEN_OFF")) {
-				Log.i(TAG,
-						"-----------OFF------ android.intent.action.SCREEN_OFF------");
-				MyWindowManager.setWindowVisible();// 放在前面比较快
-				startActivity(mainActivityIntent);
+			// if (action.equals("android.intent.action.SCREEN_OFF")) {
+			Log.i(TAG,
+					"-----------OFF------ android.intent.action.SCREEN_OFF------");
+			synchronized(SmartLockService.class) {
+				SmartLockService.screen = Screen.OFF;
 			}
+			MyWindowManager.setWindowVisible();// 放在前面比较快
+			startActivity(mainActivityIntent);
+			// }
 		}
 
 	};
