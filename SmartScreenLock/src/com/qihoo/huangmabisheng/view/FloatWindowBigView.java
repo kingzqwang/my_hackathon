@@ -229,7 +229,7 @@ public class FloatWindowBigView extends LinearLayout implements
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 				if (view instanceof ImageView) {
-
+					
 					Animation a = new ScaleAnimation(1f, 1.2f, 1f, 1.2f,Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
 					a.setDuration(300);
 					a.setFillAfter(true);
@@ -255,7 +255,7 @@ public class FloatWindowBigView extends LinearLayout implements
 				// temp[1] = y - rootView.getTop();
 				return true;
 			case MotionEvent.ACTION_MOVE:
-
+				
 				if (0 == flag) {
 					android.util.Log.i(TAG, "" + flag);
 					if (startTouch[0] == x && startTouch[1] == y) {
@@ -263,14 +263,16 @@ public class FloatWindowBigView extends LinearLayout implements
 					} else if ((startTouch[0] == x && startTouch[1] != y)
 							|| Math.abs(startTouch[1] - y)
 									/ Math.abs(startTouch[0] - x) >= Constant.DECIDE_REFRESH) {
-						flag = 1;
+						if (view instanceof ImageView)flag = 2;
+						else flag = 1;//上下刷新
 					} else {
-						flag = 2;
+						flag = 2;//左右开屏
 					}
+					
 					return true;
 				}
 
-				if (flag == 1) {
+				if (1 == flag) {
 					android.util.Log.i(TAG, "" + flag);
 					return true;
 				}

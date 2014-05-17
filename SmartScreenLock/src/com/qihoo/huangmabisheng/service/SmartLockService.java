@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 import com.qihoo.huangmabisheng.constant.Constant;
 import com.qihoo.huangmabisheng.constant.SharedPrefrencesAssist;
 import com.qihoo.huangmabisheng.model.AppDataForList;
-import com.qihoo.huangmabisheng.utils.AppIntroMap;
+import com.qihoo.huangmabisheng.model.AppIntroMap;
 import com.qihoo.huangmabisheng.utils.FileUtil;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
 import com.qihoo.huangmabisheng.utils.TopApp;
