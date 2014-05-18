@@ -1,11 +1,21 @@
 package com.qihoo.huangmabisheng.model;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.util.Log;
+
 import com.qihoo.huangmabisheng.constant.Constant;
+import com.qihoo.huangmabisheng.constant.Constant.Scene;
 import com.qihoo.huangmabisheng.constant.Constant.SizeType;
 import com.qihoo.huangmabisheng.constant.Constant.TimeQuantum;
 import com.qihoo.huangmabisheng.utils.TimeUtil;
@@ -15,15 +25,47 @@ import com.qihoo.huangmabisheng.utils.TimeUtil;
  * 本身就囊括了所有最近打开的app 
  */
 public class AppIntroMap extends HashMap<String, AppDataForList> {
+	Context context;
 	public AppDataForList[] appDatas = new AppDataForList[Constant.NUM_ON_SCREEN];//最常开启的6个应用
 	public Map<TimeQuantum, AppDataForList[]> appDatasNowMap = new HashMap<Constant.TimeQuantum, AppDataForList[]>();//本时间段最常开启6个开启的应用
-	public AppIntroMap() {
+	public AppDataForList[] appDatasScene = new AppDataForList[Constant.NUM_ON_SCREEN];//场景推荐
+	public AppIntroMap(Context context) {
+		this.context = context;
 		appDatasNowMap.put(TimeQuantum.BEFORE_SLEEP, new AppDataForList[Constant.NUM_ON_SCREEN]);
 		appDatasNowMap.put(TimeQuantum.REST, new AppDataForList[Constant.NUM_ON_SCREEN]);
 		appDatasNowMap.put(TimeQuantum.SLEEPING, new AppDataForList[Constant.NUM_ON_SCREEN]);
-		appDatasNowMap.put(TimeQuantum.WORKING, new AppDataForList[Constant.NUM_ON_SCREEN]);
+		appDatasNowMap.put(TimeQuantum.WORKING_MORNING, new AppDataForList[Constant.NUM_ON_SCREEN]);
+		appDatasNowMap.put(TimeQuantum.WORKING_AFTERNOON, new AppDataForList[Constant.NUM_ON_SCREEN]);
+		appDatasNowMap.put(TimeQuantum.WORKING_NIGHT, new AppDataForList[Constant.NUM_ON_SCREEN]);
 	}
+	
+	public void updateAppDatasScene(Scene scene) {
+		appDatasScene = new AppDataForList[Constant.NUM_ON_SCREEN];
+		switch (scene) {
+		case EARPHONE:
+			PackageManager packageManager = context.getPackageManager();
+			Intent intent = new Intent(Intent.ACTION_VIEW);
+			Uri u = Uri.parse("file:///test.mp3");
+            intent.setDataAndType(u, "audio/*");
+			List<ResolveInfo> resolveInfo = packageManager.queryIntentActivities(
+					intent, 0);
+			Log.d("updateAppDatasScene", resolveInfo.size()+"");
+			for (int i=0;i<resolveInfo.size();i++) {
+				if (i==Constant.NUM_ON_SCREEN) {
+					break;
+				}
+				appDatasScene[i] = new AppDataForList(resolveInfo.get(i).activityInfo.packageName, null);
+			}
+			break;
+
+		default:
+			
+			break;
+		}
+	}
+	
 	public void updateData(String packageName,TimeQuantum timeQuantum) {
+		Log.d("updateData","共统计app"+this.size());
 		try {
 			AppDataForList appData = this.get(packageName);
 			int i = 0;

@@ -175,7 +175,7 @@ public class MyWindowManager {
 	 *            可传入应用程序上下文。
 	 * @return ActivityManager的实例，用于获取手机可用内存。
 	 */
-	private static ActivityManager getActivityManager(Context context) {
+	public static ActivityManager getActivityManager(Context context) {
 		if (mActivityManager == null) {
 			mActivityManager = (ActivityManager) context
 					.getSystemService(Context.ACTIVITY_SERVICE);

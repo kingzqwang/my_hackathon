@@ -49,12 +49,12 @@ import android.view.View;
 
 public class SmartLockService extends Service {
 	public static Map<String, Integer> filterMap = new HashMap<String, Integer>();// 二级过滤
-	private TimeQuantum timeQuantum = TimeQuantum.WORKING;
+	private TimeQuantum timeQuantum = TimeQuantum.SLEEPING;
 	private Constant.Scene scene = Scene.DEFAULT;
 	private Constant.SizeType sizeType = SizeType.TOTAL;
 	public static Constant.Screen screen = Screen.ON;
 	private static String TAG = "SmartLockService";
-	AppIntroMap app_fre = new AppIntroMap();
+	AppIntroMap app_fre = new AppIntroMap(this);
 
 	ActivityManager manager;// = (ActivityManager)
 							// getSystemService(ACTIVITY_SERVICE);
@@ -87,29 +87,78 @@ public class SmartLockService extends Service {
 	/**
 	 * 先判断耳机，后判断时间段
 	 */
-	private void changeState(Date date) {
-		if (scene == Scene.EARPHONE) {
-			return;
+	private void changeState(Scene scene) {
+		FloatWindowBigView view = MyWindowManager.getView();
+		if (view != null) {
+			this.scene = scene;
+			app_fre.updateAppDatasScene(scene);
+			updatePcksIcon(SizeType.SCENE);
+			switch (scene) {
+			case EARPHONE:
+				view.switcher.setImageResource(R.drawable.bg_cr_abs_driving);
+				break;
+			default:
+				timeQuantum = TimeQuantum.SLEEPING;
+				break;
+			}
 		}
+	}
+
+	/**
+	 * 先判断耳机，后判断时间段
+	 */
+	private void changeState(Date date) {
+		FloatWindowBigView view = MyWindowManager.getView();
+		if(view == null)return;
 		TimeQuantum now = TimeUtil.decideTimeQuantumForNow(date);
 		switch (now) {
 		case SLEEPING:
 			if (timeQuantum != now) {
-				Log.d(TAG, "change to sleeping");
-				FloatWindowBigView view = MyWindowManager.getView();
+				Log.d(TAG, "change to SLEEPING");
 				if (view != null) {
 					view.switcher
-							.setImageResource(R.drawable.bg_jordi_home_night);
+							.setImageResource(R.drawable.bg_cr_lit_home_night);
 				}
 			}
 			break;
-		case WORKING:
+		case WORKING_AFTERNOON:
 			if (timeQuantum != now) {
-				Log.d(TAG, "change to working");
-				FloatWindowBigView view = MyWindowManager.getView();
+				Log.d(TAG, "change to WORKING");
+				if (view != null) {
+					view.switcher.setImageResource(R.drawable.bg_outdoors_work);
+				}
+			}
+			break;
+		case WORKING_MORNING:
+			if (timeQuantum != now) {
+				Log.d(TAG, "change to WORKING");
+				if (view != null) {
+					view.switcher.setImageResource(R.drawable.bg_jordi_work);
+				}
+			}
+			break;
+		case WORKING_NIGHT:
+			if (timeQuantum != now) {
+				Log.d(TAG, "change to WORKING");
+				if (view != null) {
+					view.switcher.setImageResource(R.drawable.bg_cr_lit_work);
+				}
+			}
+			break;
+		case REST:
+			if (timeQuantum != now) {
+				Log.d(TAG, "change to REST");
+				if (view != null) {
+					view.switcher.setImageResource(R.drawable.bg_outdoors_out);
+				}
+			}
+			break;
+		case BEFORE_SLEEP:
+			if (timeQuantum != now) {
+				Log.d(TAG, "change to BEFORE_SLEEP");
 				if (view != null) {
 					view.switcher
-							.setImageResource(R.drawable.bg_outdoors_driving);
+							.setImageResource(R.drawable.bg_outdoors_home_night);
 				}
 			}
 			break;
@@ -122,7 +171,7 @@ public class SmartLockService extends Service {
 	public void onCreate() {
 		Log.d(TAG, "onCreate");
 		super.onCreate();
-		manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+		manager = MyWindowManager.getActivityManager(this);
 		// app_fre.putAll((AppIntroMap) SharedPrefrencesAssist.instance(this)
 		// .getSharedPreferences().getAll());
 		// app_fre.remove("hand");
@@ -148,6 +197,8 @@ public class SmartLockService extends Service {
 				"android.intent.action.SCREEN_OFF"));
 		this.registerReceiver(changeIconReceiver, new IntentFilter(
 				"com.qihoo.huangmabisheng.UPDATE_ICON"));
+		this.registerReceiver(earListenerReceiver, new IntentFilter(
+				"android.intent.action.HEADSET_PLUG"));
 		if (timer == null) {
 			timer = new Timer();
 			timer.scheduleAtFixedRate(new RefreshTask(), 0, 1000);
@@ -319,8 +370,7 @@ public class SmartLockService extends Service {
 			if (null != view)
 				switch (sizeType) {
 				case SCENE:
-					view.updatePackageIcon(app_fre.appDatasNowMap
-							.get(timeQuantum));
+					view.updatePackageIcon(app_fre.appDatasScene);
 					break;
 				case QUANTUM:
 					view.updatePackageIcon(app_fre.appDatasNowMap
@@ -338,7 +388,38 @@ public class SmartLockService extends Service {
 			e.printStackTrace();
 		}
 	}
-
+	/**
+	 * 更新锁屏上的icon，更新前进行二级过滤 ，此操作在关屏时启动
+	 */
+	private void updatePcksIcon(SizeType sizeType) {
+		try {
+			if (app_fre == null || filterMap == null) {
+				Log.d(TAG, app_fre + "," + filterMap);
+			}
+			// List<Entry<String, Integer>> topApp = new TopApp(app_fre)
+			// .toApp(filterMap);
+			FloatWindowBigView view = MyWindowManager.getView();
+			if (null != view)
+				switch (sizeType) {
+				case SCENE:
+					view.updatePackageIcon(app_fre.appDatasScene);
+					break;
+				case QUANTUM:
+					view.updatePackageIcon(app_fre.appDatasNowMap
+							.get(timeQuantum));
+					break;
+				default:
+					view.updatePackageIcon(app_fre.appDatas);
+					break;
+				}
+			else {
+				Log.d(TAG, "view null");
+			}
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	private BroadcastReceiver screenOffReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -372,5 +453,29 @@ public class SmartLockService extends Service {
 			updatePcksIcon();
 		}
 
+	};
+	/**
+	 * 接收wifi连接的广播
+	 **/
+	private BroadcastReceiver wifiListenerReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+
+		}
+	};
+	/**
+	 * 接收耳机连接的广播
+	 **/
+	private BroadcastReceiver earListenerReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			Log.i(TAG, action);
+			if (intent.getIntExtra("state", 0) == 0) {
+				changeState(Scene.DEFAULT);
+			} else if (intent.getIntExtra("state", 0) == 1) {
+				changeState(Scene.EARPHONE);
+			}
+		}
 	};
 }

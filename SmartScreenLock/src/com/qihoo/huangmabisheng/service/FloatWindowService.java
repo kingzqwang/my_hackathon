@@ -107,6 +107,7 @@ public class FloatWindowService extends Service {
 				TransparentActivity.class);
 		mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+		mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		this.registerReceiver(screenOffReceiver, new IntentFilter(
 				"android.intent.action.SCREEN_OFF"));
 		this.registerReceiver(screenOnReceiver, new IntentFilter(

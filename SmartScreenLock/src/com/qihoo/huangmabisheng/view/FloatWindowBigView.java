@@ -1,11 +1,7 @@
 package com.qihoo.huangmabisheng.view;
 
-import java.security.acl.Group;
 import java.util.Date;
-import java.util.List;
-import java.util.Map.Entry;
-
-import android.R.integer;
+import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -17,29 +13,23 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
-import android.text.Html.ImageGetter;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
-import android.widget.Button;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.Gallery.LayoutParams;
 import android.widget.ViewSwitcher.ViewFactory;
-
+import com.qihoo.huangmabisheng.utils.ProcessUtil;
 import com.qihoo.huangmabisheng.R;
-import com.qihoo.huangmabisheng.activity.SettingActivity;
 import com.qihoo.huangmabisheng.activity.TransparentActivity;
 import com.qihoo.huangmabisheng.constant.Constant;
 import com.qihoo.huangmabisheng.constant.SharedPrefrencesAssist;
@@ -49,7 +39,6 @@ import com.qihoo.huangmabisheng.model.AppDataForList;
 import com.qihoo.huangmabisheng.service.FloatWindowService;
 import com.qihoo.huangmabisheng.utils.Log;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
-import com.qihoo.huangmabisheng.utils.fb;
 
 public class FloatWindowBigView extends LinearLayout implements
 		IUpdatePackageIcon, IUpdateTime {
@@ -266,6 +255,8 @@ public class FloatWindowBigView extends LinearLayout implements
 					// rootView.invalidate();
 					return true;
 				case MotionEvent.ACTION_UP:
+//					ProcessUtil.clearBackgroundProcess("com.qihoo.browser",service);
+					
 					if (TouchType.UP_DOWN == flag) {
 						long len = new Date().getTime() - now.getTime();
 						if (len < 200 && 100 < Math.abs(startTouch[1] - y)) {
@@ -311,8 +302,9 @@ public class FloatWindowBigView extends LinearLayout implements
 
 							@Override
 							public void onAnimationStart(Animation animation) {
-								// animating = true;
+								animating = true;
 								android.util.Log.d(TAG, "开屏GONE");
+								android.util.Log.d(TAG, "viewWidth="+viewWidth+",gl="+gl);
 								rootView.setVisibility(View.GONE);
 								if (view instanceof ImageView) {
 									Animation a = new ScaleAnimation(1.2f, 1f,
@@ -344,7 +336,6 @@ public class FloatWindowBigView extends LinearLayout implements
 								int right = rootView.getRight() - gl;
 								int bottom = rootView.getBottom();
 								rootView.clearAnimation();
-
 								rootView.layout(left, top, right, bottom);
 								animating = false;
 
@@ -370,6 +361,7 @@ public class FloatWindowBigView extends LinearLayout implements
 							@Override
 							public void onAnimationStart(Animation animation) {
 								android.util.Log.d(TAG, "回弹GONE");
+								android.util.Log.d(TAG, "viewWidth="+viewWidth+",gl="+gl);
 								animating = true;
 								rootView.setVisibility(View.GONE);
 							}
@@ -389,7 +381,10 @@ public class FloatWindowBigView extends LinearLayout implements
 								rootView.clearAnimation();
 								rootView.layout(left, top, right, bottom);
 								animating = false;
+								
 								if (view instanceof ImageView) {
+									
+									
 									Animation a = new ScaleAnimation(1.2f, 1f,
 											1.2f, 1f,
 											Animation.RELATIVE_TO_SELF, 0.5f,
@@ -459,7 +454,7 @@ public class FloatWindowBigView extends LinearLayout implements
 		switcher.setOutAnimation(AnimationUtils.loadAnimation(service,
 				android.R.anim.fade_out));
 		final int w = com.qihoo.huangmabisheng.utils.DensityUtil.dip2px(
-				service, 57f);
+				service, 56f);
 		ViewFactory viewFactory = new ViewFactory() {
 
 			@Override
@@ -610,23 +605,29 @@ public class FloatWindowBigView extends LinearLayout implements
 		for (int i = start; i < list.length; i++) {
 			switch (i) {
 			case 0:
-				image0View.setImageDrawable(null);
+				image0View.setImageResource(R.drawable.transp);
 				image0View.getCurrentView().setEnabled(false);
+				break;
 			case 1:
-				image1View.setImageDrawable(null);
+				image1View.setImageResource(R.drawable.transp);
 				image1View.getCurrentView().setEnabled(false);
+				break;
 			case 2:
-				image2View.setImageDrawable(null);
+				image2View.setImageResource(R.drawable.transp);
 				image2View.getCurrentView().setEnabled(false);
+				break;
 			case 3:
-				image3View.setImageDrawable(null);
+				image3View.setImageResource(R.drawable.transp);
 				image3View.getCurrentView().setEnabled(false);
+				break;
 			case 4:
-				image4View.setImageDrawable(null);
+				image4View.setImageResource(R.drawable.transp);
 				image4View.getCurrentView().setEnabled(false);
+				break;
 			case 5:
-				image5View.setImageDrawable(null);
+				image5View.setImageResource(R.drawable.transp);
 				image5View.getCurrentView().setEnabled(false);
+				break;
 			}
 		}
 	}
@@ -638,9 +639,16 @@ public class FloatWindowBigView extends LinearLayout implements
 		if (flag != TouchType.NONE)
 			return;
 		// android.util.Log.d(TAG, "update-" + hour + ":" + minute);
-		hourTextView.setText(hour / 10 + "" + hour % 10);
-		minuteTextView.setText(minute / 10 + "" + minute % 10);
-
+		String h = hour / 10 + "" + hour % 10;
+		if(!hourTextView.getText().equals(h)){
+		hourTextView.setText(h);
+		Log.d(TAG, "hourTextView");
+		}
+		String m = minute / 10 + "" + minute % 10;
+		if(!minuteTextView.getText().equals(m)){
+		minuteTextView.setText(m);
+		Log.d(TAG, "minuteTextView");
+		}
 	}
 
 	@Override

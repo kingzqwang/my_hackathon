@@ -29,7 +29,6 @@
         android:layout_marginRight="15dp"
         android:layout_weight="1"
         android:gravity="center" >
-
         <LinearLayout
             android:id="@+id/time_layout_inner"
             android:layout_width="wrap_content"
@@ -173,7 +172,6 @@
                 android:background="@null" />
 
             <ImageSwitcher
-                android:visibility="gone"
                 android:layout_weight="1"
                 android:id="@+id/imageview_5"
                 android:layout_width="@dimen/log_width"

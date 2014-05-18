@@ -9,7 +9,7 @@ public class Constant {
 	 * 时间段 
 	 */
 	public enum TimeQuantum {
-		BEFORE_SLEEP,WORKING,SLEEPING,REST
+		BEFORE_SLEEP,WORKING_MORNING,WORKING_AFTERNOON,WORKING_NIGHT,SLEEPING,REST,DEFAULT
 	}
 	/**
 	 * 场景，EARPHONE优先级最高

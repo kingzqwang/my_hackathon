@@ -12,7 +12,11 @@ import com.qihoo.huangmabisheng.constant.Constant.TimeQuantum;
 import com.qihoo.huangmabisheng.utils.TimeUtil;
 
 public class AppDataForList implements Serializable {
-
+	public AppDataForList(String packageName, ComponentName currentCompoment) {
+		super();
+		this.packageName = packageName;
+		this.currentCompoment = currentCompoment;
+	}
 	public AppDataForList(String packageName, ComponentName currentCompoment , TimeQuantum timeQuantum) {
 		super();
 		this.packageName = packageName;
