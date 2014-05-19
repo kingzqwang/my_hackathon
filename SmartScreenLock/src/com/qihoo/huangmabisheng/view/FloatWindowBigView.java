@@ -1,6 +1,7 @@
 package com.qihoo.huangmabisheng.view;
 
 import java.util.Date;
+
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -25,9 +26,11 @@ import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher.ViewFactory;
+
 import com.qihoo.huangmabisheng.utils.ProcessUtil;
 import com.qihoo.huangmabisheng.R;
 import com.qihoo.huangmabisheng.activity.TransparentActivity;
@@ -290,6 +293,8 @@ public class FloatWindowBigView extends LinearLayout implements
 						long len = new Date().getTime() - now.getTime();
 						long duration = 2 * len / gl * (viewWidth - gl);
 						duration = duration > 500 ? 500 : duration;
+						duration = duration < 50 ? 50 : duration;
+						android.util.Log.d(TAG, "开屏时间说设定："+len);
 						a.setDuration(duration);
 						a.setFillEnabled(true);
 						a.setInterpolator(AnimationUtils
@@ -350,6 +355,7 @@ public class FloatWindowBigView extends LinearLayout implements
 						Animation a = new TranslateAnimation(0.0f, 0.0f - gl,
 								0.0f, 0.0f);
 						long duration = 800 * gl / viewWidth;
+						duration = duration < 50 ? 50: duration;
 						a.setDuration(duration);
 						a.setFillEnabled(true);
 						a.setInterpolator(AnimationUtils
@@ -446,6 +452,8 @@ public class FloatWindowBigView extends LinearLayout implements
 				ImageView i = new ImageView(service);
 				i.setLayoutParams(new ImageSwitcher.LayoutParams(
 						LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+
+				i.setScaleType(ScaleType.CENTER_CROP);
 				return i;
 			}
 		});
@@ -544,6 +552,7 @@ public class FloatWindowBigView extends LinearLayout implements
 
 	public FloatWindowBigView(final Context context) {
 		super(context);
+		Log.d(TAG, "oncreate");
 		service = (FloatWindowService) context;
 		findAllViews(context);
 		setAllListeners();
@@ -649,6 +658,7 @@ public class FloatWindowBigView extends LinearLayout implements
 		minuteTextView.setText(m);
 		Log.d(TAG, "minuteTextView");
 		}
+		
 	}
 
 	@Override
