@@ -79,7 +79,7 @@ public class SmartLockService extends Service {
 			changeState(date);
 			if (null != MyWindowManager.getView())
 				MyWindowManager.getView().updateTime(date.getHours(),
-						date.getMinutes());
+						date.getMinutes(),date.getMonth(),date.getDate(),date.getDay());
 			super.handleMessage(msg);
 		}
 	};

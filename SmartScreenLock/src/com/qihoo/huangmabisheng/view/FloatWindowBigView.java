@@ -76,6 +76,8 @@ public class FloatWindowBigView extends LinearLayout implements
 	ViewGroup layoutGuess;
 	TextView hourTextView;
 	TextView minuteTextView;
+	TextView monthDateTextView;
+	TextView dayTextView;
 	ViewGroup canvasLayout;
 	int openL, openR, openT, openB;
 	public ImageSwitcher switcher;
@@ -102,6 +104,10 @@ public class FloatWindowBigView extends LinearLayout implements
 		image5View = (ImageSwitcher) rootView.findViewById(R.id.imageview_5);
 		hourTextView = (TextView) rootView.findViewById(R.id.hour_textview);
 		minuteTextView = (TextView) rootView.findViewById(R.id.minute_textview);
+		monthDateTextView = (TextView) rootView
+				.findViewById(R.id.month_date_textview);
+		dayTextView = (TextView) rootView.findViewById(R.id.day_textview);
+
 		layoutGuess = (ViewGroup) rootView.findViewById(R.id.layout_guess);
 		imageViewCanvas = (ImageView) rootView
 				.findViewById(R.id.imageview_canvas);
@@ -258,8 +264,8 @@ public class FloatWindowBigView extends LinearLayout implements
 					// rootView.invalidate();
 					return true;
 				case MotionEvent.ACTION_UP:
-//					ProcessUtil.clearBackgroundProcess("com.qihoo.browser",service);
-					
+					// ProcessUtil.clearBackgroundProcess("com.qihoo.browser",service);
+
 					if (TouchType.UP_DOWN == flag) {
 						long len = new Date().getTime() - now.getTime();
 						if (len < 200 && 100 < Math.abs(startTouch[1] - y)) {
@@ -294,7 +300,7 @@ public class FloatWindowBigView extends LinearLayout implements
 						long duration = 2 * len / gl * (viewWidth - gl);
 						duration = duration > 500 ? 500 : duration;
 						duration = duration < 50 ? 50 : duration;
-						android.util.Log.d(TAG, "开屏时间说设定："+len);
+						android.util.Log.d(TAG, "开屏时间说设定：" + len);
 						a.setDuration(duration);
 						a.setFillEnabled(true);
 						a.setInterpolator(AnimationUtils
@@ -309,7 +315,8 @@ public class FloatWindowBigView extends LinearLayout implements
 							public void onAnimationStart(Animation animation) {
 								animating = true;
 								android.util.Log.d(TAG, "开屏GONE");
-								android.util.Log.d(TAG, "viewWidth="+viewWidth+",gl="+gl);
+								android.util.Log.d(TAG, "viewWidth="
+										+ viewWidth + ",gl=" + gl);
 								rootView.setVisibility(View.GONE);
 								if (view instanceof ImageView) {
 									Animation a = new ScaleAnimation(1.2f, 1f,
@@ -355,7 +362,7 @@ public class FloatWindowBigView extends LinearLayout implements
 						Animation a = new TranslateAnimation(0.0f, 0.0f - gl,
 								0.0f, 0.0f);
 						long duration = 800 * gl / viewWidth;
-						duration = duration < 50 ? 50: duration;
+						duration = duration < 50 ? 50 : duration;
 						a.setDuration(duration);
 						a.setFillEnabled(true);
 						a.setInterpolator(AnimationUtils
@@ -367,7 +374,8 @@ public class FloatWindowBigView extends LinearLayout implements
 							@Override
 							public void onAnimationStart(Animation animation) {
 								android.util.Log.d(TAG, "回弹GONE");
-								android.util.Log.d(TAG, "viewWidth="+viewWidth+",gl="+gl);
+								android.util.Log.d(TAG, "viewWidth="
+										+ viewWidth + ",gl=" + gl);
 								animating = true;
 								rootView.setVisibility(View.GONE);
 							}
@@ -387,10 +395,9 @@ public class FloatWindowBigView extends LinearLayout implements
 								rootView.clearAnimation();
 								rootView.layout(left, top, right, bottom);
 								animating = false;
-								
+
 								if (view instanceof ImageView) {
-									
-									
+
 									Animation a = new ScaleAnimation(1.2f, 1f,
 											1.2f, 1f,
 											Animation.RELATIVE_TO_SELF, 0.5f,
@@ -642,23 +649,54 @@ public class FloatWindowBigView extends LinearLayout implements
 	}
 
 	@Override
-	synchronized public void updateTime(int hour, int minute) {
+	synchronized public void updateTime(int hour, int minute, int month,
+			int date, int day) {
 		android.util.Log.d(TAG,
 				rootView.getVisibility() + "," + rootView.getLeft());
 		if (flag != TouchType.NONE)
 			return;
 		// android.util.Log.d(TAG, "update-" + hour + ":" + minute);
 		String h = hour / 10 + "" + hour % 10;
-		if(!hourTextView.getText().equals(h)){
-		hourTextView.setText(h);
-		Log.d(TAG, "hourTextView");
+		if (!hourTextView.getText().equals(h)) {
+			hourTextView.setText(h);
+			Log.d(TAG, "hourTextView");
 		}
 		String m = minute / 10 + "" + minute % 10;
-		if(!minuteTextView.getText().equals(m)){
-		minuteTextView.setText(m);
-		Log.d(TAG, "minuteTextView");
+		if (!minuteTextView.getText().equals(m)) {
+			minuteTextView.setText(m);
+			Log.d(TAG, "minuteTextView");
 		}
-		
+		String md = (month+1) + "月" + date;
+		if (!monthDateTextView.getText().equals(md)) {
+			monthDateTextView.setText(md);
+		}
+		String d;
+		switch (day) {
+		case 0:
+			d = "天";
+			break;
+		case 1:
+			d = "一";
+			break;
+		case 2:
+			d = "二";
+			break;
+		case 3:
+			d = "三";
+			break;
+		case 4:
+			d = "四";
+			break;
+		case 5:
+			d = "五";
+			break;
+		default:
+			d = "六";
+			break;
+		}
+		if (!dayTextView.getText().equals(d)) {
+			dayTextView.setText(d);
+		}
 	}
 
 	@Override
