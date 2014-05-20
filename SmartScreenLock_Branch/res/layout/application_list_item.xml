@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/setting_layout_size"
+    android:gravity="center_vertical"
+    android:padding="4.0dip" >
+
+    <ImageView
+        android:id="@+id/app_icon"
+        android:layout_width="@dimen/setting_layout_size"
+        android:layout_height="@dimen/setting_layout_size" />
+
+    <TextView
+        android:layout_toRightOf="@+id/app_icon"
+        android:id="@+id/app_name"
+        android:layout_width="fill_parent"
+        android:layout_height="62dp"
+        android:clickable="false"
+        android:scaleType="fitXY"
+        android:text="启动智屏"
+        android:textSize="@dimen/setting_up" />
+
+    <CheckBox
+        android:id="@+id/filter_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:button="@drawable/rect_bth_checkbox_normal"
+        android:checked="true" />
+
+    <TextView
+        android:layout_toRightOf="@+id/app_icon"
+        android:id="@+id/skinname"
+        android:layout_width="fill_parent"
+        android:layout_height="17.0dp"
+        android:layout_alignBottom="@id/app_name"
+        android:layout_alignRight="@id/app_name"
+        android:text="设置锁屏出现的应用数量"
+        android:textColor="@color/setting_text_gray"
+        android:textSize="@dimen/setting_down" />
+
+</RelativeLayout>
