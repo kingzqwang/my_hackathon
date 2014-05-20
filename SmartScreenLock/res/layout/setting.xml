@@ -341,8 +341,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:checked="true"
-                android:button="@drawable/rect_bth_checkbox_normal" />
+                android:checked="false"
+                android:button="@drawable/rect_btn_checkbox_normal" />
 
             <TextView
                 android:id="@+id/skinname"
@@ -372,16 +372,17 @@
                 android:layout_toLeftOf="@+id/imageRight"
                 android:clickable="false"
                 android:scaleType="fitXY"
-                android:text="其他"
+                android:text="你绝对想不到"
                 android:textSize="@dimen/setting_up" />
 
-            <ImageView
-                android:id="@+id/start_checkbox"
-                android:layout_width="@dimen/setting_button"
-                android:layout_height="@dimen/setting_button"
+            <CheckBox
+                android:id="@+id/service_control_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:src="@drawable/select_more" />
+                android:checked="false"
+                android:button="@drawable/rect_btn_checkbox_normal" />
 
             <TextView
                 android:id="@+id/skinname"
@@ -389,7 +390,7 @@
                 android:layout_height="17.0dp"
                 android:layout_alignBottom="@id/other_start_imageLeft"
                 android:layout_alignRight="@id/other_start_imageLeft"
-                android:text="附加功能"
+                android:text="特殊服务"
                 android:textColor="@color/setting_text_gray"
                 android:textSize="@dimen/setting_down" />
         </RelativeLayout>

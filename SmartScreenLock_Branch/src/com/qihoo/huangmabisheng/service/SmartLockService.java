@@ -356,7 +356,8 @@ public class SmartLockService extends Service {
 		super.onDestroy();
 		this.unregisterReceiver(screenOffReceiver);
 		this.unregisterReceiver(changeIconReceiver);
-		startService(new Intent(SmartLockService.this, SmartLockService.class));
+		this.unregisterReceiver(earListenerReceiver);
+//		startService(new Intent(SmartLockService.this, SmartLockService.class));
 	}
 
 	/**
@@ -424,6 +425,7 @@ public class SmartLockService extends Service {
 		}
 	}
 	private BroadcastReceiver screenOffReceiver = new BroadcastReceiver() {
+		final String  TAG = "screenOffReceiver";
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
@@ -438,6 +440,7 @@ public class SmartLockService extends Service {
 
 	};
 	private BroadcastReceiver changeIconReceiver = new BroadcastReceiver() {
+		final String  TAG = "changeIconReceiver";
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
@@ -470,6 +473,7 @@ public class SmartLockService extends Service {
 	 * 接收耳机连接的广播
 	 **/
 	private BroadcastReceiver earListenerReceiver = new BroadcastReceiver() {
+		final String  TAG = "earListenerReceiver";
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();

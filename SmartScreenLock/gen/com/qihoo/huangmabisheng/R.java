@@ -124,6 +124,7 @@ public final class R {
         public static final int other_start_imageLeft=0x7f09002e;
         public static final int passwd_start_imageLeft=0x7f09002b;
         public static final int root_start_imageLeft=0x7f09002c;
+        public static final int service_control_checkbox=0x7f09002f;
         public static final int skinname=0x7f090004;
         public static final int start_checkbox=0x7f090024;
         public static final int start_imageLeft=0x7f090022;

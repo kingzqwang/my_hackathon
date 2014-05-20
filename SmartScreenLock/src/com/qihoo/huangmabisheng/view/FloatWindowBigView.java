@@ -161,8 +161,8 @@ public class FloatWindowBigView extends LinearLayout implements
 				Intent intent = packageManager
 						.getLaunchIntentForPackage("com.qihoo.appstore");
 				service.startActivity(intent);
-				service.sendBroadcast(new Intent(
-						"com.qihoo.huangmabisheng.finish"));
+//				service.sendBroadcast(new Intent(
+//						"com.qihoo.huangmabisheng.finish"));
 				FloatWindowBigView.this.setVisibility(View.GONE);
 				break;
 			default:
@@ -206,8 +206,7 @@ public class FloatWindowBigView extends LinearLayout implements
 						a.setFillAfter(true);
 						view.startAnimation(a);
 						a.startNow();
-						if (TransparentActivity.context != null)
-							TransparentActivity.context.finish();
+						finishTransparentActivity();
 						// Intent intent = new Intent();
 						// intent.setComponent((ComponentName)view.getTag());
 						// intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -307,8 +306,9 @@ public class FloatWindowBigView extends LinearLayout implements
 								.loadInterpolator(service,
 										android.R.anim.decelerate_interpolator));
 						rootView.startAnimation(a);
-						if (TransparentActivity.context != null)
-							TransparentActivity.context.finish();
+//						if (TransparentActivity.context != null)
+//							TransparentActivity.context.finish();
+						finishTransparentActivity();
 						a.setAnimationListener(new AnimationListener() {
 
 							@Override
@@ -702,5 +702,7 @@ public class FloatWindowBigView extends LinearLayout implements
 	@Override
 	public void updatePackageGuess(String pck) throws NameNotFoundException {
 	}
-
+	private void finishTransparentActivity() {
+		service.sendBroadcast(new Intent("com.qihoo.huangmabisheng.finish"));
+	}
 }
