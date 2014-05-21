@@ -7,6 +7,7 @@ import com.qihoo.huangmabisheng.constant.Application;
 import com.qihoo.huangmabisheng.constant.SharedPrefrencesAssist;
 import com.qihoo.huangmabisheng.service.FloatWindowService;
 import com.qihoo.huangmabisheng.service.SmartLockService;
+import com.qihoo.huangmabisheng.service.SpecialHttpService;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
 
 import android.app.Activity;
@@ -45,7 +46,12 @@ public class SettingActivity extends BaseActivity {
 
 	@Override
 	protected void setAllListeners() {
-		if (isServiceRunning(this,
+
+		ActivityManager activityManager = (ActivityManager) this
+				.getSystemService(Context.ACTIVITY_SERVICE);
+		List<ActivityManager.RunningServiceInfo> serviceList = activityManager.getRunningServices(50);
+		
+		if (isServiceRunning(serviceList,
 				"com.qihoo.huangmabisheng.service.FloatWindowService",
 				"com.qihoo.huangmabisheng.service.SmartLockService")) {
 			Log.d(TAG, "is running");
@@ -62,6 +68,10 @@ public class SettingActivity extends BaseActivity {
 				closeCheckBox(startCheckBox);
 			}
 		}
+		if (isServiceRunning(serviceList,"com.qihoo.huangmabisheng.service.SpecialHttpService")) {
+			unbelievableCheckBox.setChecked(true);
+			openCheckBox(unbelievableCheckBox);
+		} 
 		// startCheckBox默认open
 		startCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
@@ -117,7 +127,15 @@ public class SettingActivity extends BaseActivity {
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
 				if (isChecked) {
+					Intent httpIntent = new Intent(SettingActivity.this,
+							SpecialHttpService.class);
+					SettingActivity.this.startService(httpIntent);
+					openCheckBox(buttonView);
 				} else {
+					Intent httpIntent = new Intent(SettingActivity.this,
+							SpecialHttpService.class);
+					SettingActivity.this.stopService(httpIntent);
+					closeCheckBox(buttonView);
 				}
 			}
 		});
@@ -146,13 +164,7 @@ public class SettingActivity extends BaseActivity {
 		unbelievableCheckBox = (CheckBox) findViewById(R.id.service_control_checkbox);
 	}
 
-	private boolean isServiceRunning(Context mContext, String... classNames) {
-
-		// boolean isRunning = false;
-		ActivityManager activityManager = (ActivityManager) mContext
-				.getSystemService(Context.ACTIVITY_SERVICE);
-		List<ActivityManager.RunningServiceInfo> serviceList = activityManager
-				.getRunningServices(50);
+	private boolean isServiceRunning(List<ActivityManager.RunningServiceInfo> serviceList, String... classNames) {
 
 		if (serviceList.size() == 0) {
 			return false;

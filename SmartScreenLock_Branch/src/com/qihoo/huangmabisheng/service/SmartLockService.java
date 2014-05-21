@@ -11,6 +11,7 @@ import java.util.TimerTask;
 import java.util.Map.Entry;
 
 import com.qihoo.huangmabisheng.R;
+import com.qihoo.huangmabisheng.activity.SettingActivity;
 import com.qihoo.huangmabisheng.constant.Constant;
 import com.qihoo.huangmabisheng.constant.Constant.Scene;
 import com.qihoo.huangmabisheng.constant.Constant.Screen;
@@ -26,9 +27,12 @@ import com.qihoo.huangmabisheng.utils.TopApp;
 import com.qihoo.huangmabisheng.utils.fb;
 import com.qihoo.huangmabisheng.view.FloatWindowBigView;
 import com.qihoo.huangmabisheng.view.FloatWindowBigView.TouchType;
+import com.qihoo.huangmabisheng.wifi.WifiAdmin;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -77,9 +81,12 @@ public class SmartLockService extends Service {
 		public void handleMessage(Message msg) {
 			Date date = new Date();
 			changeState(date);
-			if (null != MyWindowManager.getView())
+			if (null != MyWindowManager.getView()) {
 				MyWindowManager.getView().updateTime(date.getHours(),
-						date.getMinutes(),date.getMonth(),date.getDate(),date.getDay());
+						date.getMinutes(), date.getMonth(), date.getDate(),
+						date.getDay());
+				MyWindowManager.getView().updateDescription(WifiAdmin.getInstance(SmartLockService.this).getIPAddressStr());
+			}
 			super.handleMessage(msg);
 		}
 	};
@@ -171,6 +178,7 @@ public class SmartLockService extends Service {
 	}
 
 	public void onCreate() {
+		setFrontService();
 		Log.d(TAG, "onCreate");
 		super.onCreate();
 		manager = MyWindowManager.getActivityManager(this);
@@ -289,11 +297,7 @@ public class SmartLockService extends Service {
 		// return (packageInfo.applicationInfo.flags &
 		// ApplicationInfo.FLAG_SYSTEM) == 0
 		// && !packageName.equals("com.qihoo.huangmabisheng");
-		if (!isHome(packageName)
-				&& !packageName.equals("com.qihoo.huangmabisheng")
-				&& !packageName.startsWith("com.android")
-				&& !packageName.startsWith("com.google.android")
-				&& !packageName.equals("android"))
+		if (!isHome(packageName) && !Constant.alertFilter.contains(packageName))
 			return true;
 		else {
 			app_fre.remove(packageName);
@@ -352,12 +356,14 @@ public class SmartLockService extends Service {
 	}
 
 	public void onDestroy() {
+		stopForeground(true);
 		Log.d(TAG, "Service destroy");
 		super.onDestroy();
 		this.unregisterReceiver(screenOffReceiver);
 		this.unregisterReceiver(changeIconReceiver);
 		this.unregisterReceiver(earListenerReceiver);
-//		startService(new Intent(SmartLockService.this, SmartLockService.class));
+		// startService(new Intent(SmartLockService.this,
+		// SmartLockService.class));
 	}
 
 	/**
@@ -392,6 +398,7 @@ public class SmartLockService extends Service {
 			e.printStackTrace();
 		}
 	}
+
 	/**
 	 * 更新锁屏上的icon，更新前进行二级过滤 ，此操作在关屏时启动
 	 */
@@ -424,8 +431,10 @@ public class SmartLockService extends Service {
 			e.printStackTrace();
 		}
 	}
+
 	private BroadcastReceiver screenOffReceiver = new BroadcastReceiver() {
-		final String  TAG = "screenOffReceiver";
+		final String TAG = "screenOffReceiver";
+
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
@@ -440,7 +449,8 @@ public class SmartLockService extends Service {
 
 	};
 	private BroadcastReceiver changeIconReceiver = new BroadcastReceiver() {
-		final String  TAG = "changeIconReceiver";
+		final String TAG = "changeIconReceiver";
+
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
@@ -473,7 +483,8 @@ public class SmartLockService extends Service {
 	 * 接收耳机连接的广播
 	 **/
 	private BroadcastReceiver earListenerReceiver = new BroadcastReceiver() {
-		final String  TAG = "earListenerReceiver";
+		final String TAG = "earListenerReceiver";
+
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
@@ -485,4 +496,16 @@ public class SmartLockService extends Service {
 			}
 		}
 	};
+
+	private void setFrontService() {
+		Notification notification = new Notification(R.drawable.ic_launcher,
+				"SmartScreenLock is protecting your phone.",
+				System.currentTimeMillis());
+		Intent intent = new Intent(this, SettingActivity.class);
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+				intent, 0);
+		notification.setLatestEventInfo(this, "Don't worry. Be happy.",
+				"Touch here to set your SmartScreenLock", pendingIntent);
+		startForeground(9527, notification);
+	}
 }

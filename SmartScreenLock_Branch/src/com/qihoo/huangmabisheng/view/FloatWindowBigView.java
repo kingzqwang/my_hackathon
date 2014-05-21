@@ -36,6 +36,7 @@ import com.qihoo.huangmabisheng.R;
 import com.qihoo.huangmabisheng.activity.TransparentActivity;
 import com.qihoo.huangmabisheng.constant.Constant;
 import com.qihoo.huangmabisheng.constant.SharedPrefrencesAssist;
+import com.qihoo.huangmabisheng.interfaces.IUpdateDescription;
 import com.qihoo.huangmabisheng.interfaces.IUpdatePackageIcon;
 import com.qihoo.huangmabisheng.interfaces.IUpdateTime;
 import com.qihoo.huangmabisheng.model.AppDataForList;
@@ -44,7 +45,7 @@ import com.qihoo.huangmabisheng.utils.Log;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
 
 public class FloatWindowBigView extends LinearLayout implements
-		IUpdatePackageIcon, IUpdateTime {
+		IUpdatePackageIcon, IUpdateTime, IUpdateDescription {
 	public enum TouchType {
 		UP_DOWN, OPEN_SCREEN, NONE
 	}
@@ -78,12 +79,14 @@ public class FloatWindowBigView extends LinearLayout implements
 	TextView minuteTextView;
 	TextView monthDateTextView;
 	TextView dayTextView;
+	TextView descriptionTextView;
 	ViewGroup canvasLayout;
 	int openL, openR, openT, openB;
 	public ImageSwitcher switcher;
 	Canvas canvas;
 	private Bitmap baseBitmap;
 	private Paint paint;
+
 	public TouchType flag = TouchType.NONE;// 1,2
 
 	private void findAllViews(Context context) {
@@ -121,7 +124,7 @@ public class FloatWindowBigView extends LinearLayout implements
 		imageViewHand = (ImageView) rootView.findViewById(R.id.image_hand);
 
 		switcher = (ImageSwitcher) findViewById(R.id.switcher);
-
+		descriptionTextView = (TextView) findViewById(R.id.description_textview);
 	}
 
 	private View.OnTouchListener touchListener = new OnTouchListener() {
@@ -161,8 +164,8 @@ public class FloatWindowBigView extends LinearLayout implements
 				Intent intent = packageManager
 						.getLaunchIntentForPackage("com.qihoo.appstore");
 				service.startActivity(intent);
-//				service.sendBroadcast(new Intent(
-//						"com.qihoo.huangmabisheng.finish"));
+				// service.sendBroadcast(new Intent(
+				// "com.qihoo.huangmabisheng.finish"));
 				FloatWindowBigView.this.setVisibility(View.GONE);
 				break;
 			default:
@@ -296,7 +299,8 @@ public class FloatWindowBigView extends LinearLayout implements
 						Animation a = new TranslateAnimation(0.0f, viewWidth
 								- gl, 0.0f, 0.0f);
 						long len = new Date().getTime() - now.getTime();
-						float duration = ((float)(len)) / ((float)gl) * (viewWidth - gl);
+						float duration = ((float) (len)) / ((float) gl)
+								* (viewWidth - gl);
 						duration = duration > 500 ? 500 : duration;
 						duration = duration < 50 ? 50 : duration;
 						android.util.Log.d(TAG, "开屏时间说设定：" + len);
@@ -306,8 +310,8 @@ public class FloatWindowBigView extends LinearLayout implements
 								.loadInterpolator(service,
 										android.R.anim.decelerate_interpolator));
 						rootView.startAnimation(a);
-//						if (TransparentActivity.context != null)
-//							TransparentActivity.context.finish();
+						// if (TransparentActivity.context != null)
+						// TransparentActivity.context.finish();
 						finishTransparentActivity();
 						a.setAnimationListener(new AnimationListener() {
 
@@ -666,7 +670,7 @@ public class FloatWindowBigView extends LinearLayout implements
 			minuteTextView.setText(m);
 			Log.d(TAG, "minuteTextView");
 		}
-		String md = (month+1) + "月" + date;
+		String md = (month + 1) + "月" + date;
 		if (!monthDateTextView.getText().equals(md)) {
 			monthDateTextView.setText(md);
 		}
@@ -702,7 +706,14 @@ public class FloatWindowBigView extends LinearLayout implements
 	@Override
 	public void updatePackageGuess(String pck) throws NameNotFoundException {
 	}
+
 	private void finishTransparentActivity() {
 		service.sendBroadcast(new Intent("com.qihoo.huangmabisheng.finish"));
 	}
+
+	@Override
+	public void updateDescription(String description) {
+		descriptionTextView.setText(description);
+	}
+
 }

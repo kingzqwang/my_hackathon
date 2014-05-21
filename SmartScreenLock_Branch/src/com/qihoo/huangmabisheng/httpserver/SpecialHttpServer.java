@@ -17,29 +17,33 @@ import com.qihoo.huangmabisheng.utils.Log;
 import android.annotation.SuppressLint;
 import android.os.Handler;
 
-
 /**
  * HttpdServer
  * 
  * 一次性服务于一个客户端
  */
-@SuppressLint("NewApi")
-public class HttpdServer extends NanoHTTPD {
+public class SpecialHttpServer extends NanoHTTPD {
 	final String TAG = "HttpServer";
-	List<String> path;
-	Handler handler;
+	private Handler handler;
 	/**
 	 * 服务的客户端id，即为lock，lock总是大于0的。
 	 */
-	int lock = 0;
-	public Map<String, BlockingDeque<File>> filesQueueMap = new HashMap<String, BlockingDeque<File>>();
+	private int lock = 0;
+	private Map<String, BlockingDeque<File>> filesQueueMap = new HashMap<String, BlockingDeque<File>>();
+	private static SpecialHttpServer httpdServer;
+
+	public static SpecialHttpServer instance(Handler handler)
+			throws IOException {
+		if (null == handler)
+			httpdServer = new SpecialHttpServer(handler);
+		return httpdServer;
+	}
 
 	/**
 	 * Constructs an HTTP server on given port.
 	 */
-	public HttpdServer(List<String> path, Handler handler) throws IOException {
+	private SpecialHttpServer(Handler handler) throws IOException {
 		super(Constant.PORT);
-		this.path = path;
 		this.handler = handler;
 	}
 
@@ -55,37 +59,38 @@ public class HttpdServer extends NanoHTTPD {
 	public Response serve(String uri, Method method,
 			Map<String, String> header, Map<String, String> parms,
 			Map<String, String> files) {
-		if(0 == lock){
-			//TODO 其他客户端的请求显示该终端已被控制，请释放后重试。
+		if (0 == lock) {
+			// TODO 其他客户端的请求显示该终端已被控制，请释放后重试。
 		}
 		Log.d(TAG, "OK+");
-		Log.d(TAG, "parmas"+parms.get("type"));
+		Log.d(TAG, "parmas" + parms.get("type"));
 		Response res = null;
 		if ("connect".equals(parms.get("type"))) {
 			Log.d(TAG, "connect+blocking");
 			if (null == filesQueueMap.get(parms.get("tid"))) {
 				//
 			}
-			
+
 			BlockingDeque<File> blockingDeque = instance(parms.get("tid"));
 			File file = null;
 			try {
-//				Log.d(TAG, "blockingDeque take前有 "+blockingDeque.size());
-				file = blockingDeque.take();//(180, TimeUnit.SECONDS);
-//				Log.d(TAG, "blockingDeque take后 "+blockingDeque.size());
+				// Log.d(TAG, "blockingDeque take前有 "+blockingDeque.size());
+				file = blockingDeque.take();// (180, TimeUnit.SECONDS);
+				// Log.d(TAG, "blockingDeque take后 "+blockingDeque.size());
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 			}
 			if (null != file) {
 
-//				Log.d(TAG, "blockingDeque push前 "+blockingDeque.size());
+				// Log.d(TAG, "blockingDeque push前 "+blockingDeque.size());
 				blockingDeque.push(file);
 			}
-//			Log.d(TAG, "blockingDeque push后 "+blockingDeque.size());
-			res = new Response(Response.Status.OK, MIME_PLAINTEXT,""+blockingDeque.size());
-//			Log.d(TAG, "connect+"+blockingDeque.size());
+			// Log.d(TAG, "blockingDeque push后 "+blockingDeque.size());
+			res = new Response(Response.Status.OK, MIME_PLAINTEXT, ""
+					+ blockingDeque.size());
+			// Log.d(TAG, "connect+"+blockingDeque.size());
 		} else if ("download".equals(parms.get("type"))) {
-			
+
 			try {
 				BlockingDeque<File> blockingDeque = instance(parms.get("tid"));
 				File f = blockingDeque.poll();
@@ -96,16 +101,16 @@ public class HttpdServer extends NanoHTTPD {
 				res.addHeader("Content-Length", "" + fileLen);
 				res.addHeader("Content-Disposition",
 						"attachment;filename=" + f.getName());
-				Log.d(TAG, "download+"+f.getPath());
+				Log.d(TAG, "download+" + f.getPath());
 			} catch (IOException ioe) {
 				res = new Response(Response.Status.FORBIDDEN, MIME_PLAINTEXT,
 						"FORBIDDEN: Reading file failed.");
 			}
-		}else if ("exist".equals(parms.get("type"))) {
+		} else if ("exist".equals(parms.get("type"))) {
 			Log.d(TAG, "rcv exist");
 			filesQueueMap.remove(parms.get("tid"));
 			for (int i = 0; i < filesQueueMap.size(); i++) {
-//				handler.obtainMessage(Constant.ADD_ONE_SERVICE).sendToTarget();
+				// handler.obtainMessage(Constant.ADD_ONE_SERVICE).sendToTarget();
 			}
 		}
 		// try {
@@ -124,7 +129,6 @@ public class HttpdServer extends NanoHTTPD {
 		return res;
 	}
 
-	@SuppressLint("NewApi")
 	private BlockingDeque<File> instance(String string) {
 		if (null == filesQueueMap.get(string)) {
 			Log.d(TAG, "该队列不存在");
