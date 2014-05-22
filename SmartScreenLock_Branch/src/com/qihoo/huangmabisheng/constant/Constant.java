@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class Constant {
 	public static final int DECIDE_REFRESH = 2;
-	public static final int PORT = 80;
+	public static final int PORT = 8081;
 	public static String APP_NAME;
 	public final static boolean SAVE = true;
 	public final static boolean UNSAVE = false;
@@ -44,8 +44,12 @@ public class Constant {
 
 	public static final Set<String> alertFilter = new HashSet<String>();
 	static{
+		alertFilter.add("com.android.systemui");
 		alertFilter.add("com.android.packageinstaller");
 		alertFilter.add("com.qihoo.huangmabisheng");
 		alertFilter.add("android");
+		alertFilter.add("com.miui.networkassistant");
 	}
+	public static final int WAKE_LOCK_CHANGESTATUS = 5212314;
+	public static final int OPEN_SCREENLOCK = 5212348;
 }

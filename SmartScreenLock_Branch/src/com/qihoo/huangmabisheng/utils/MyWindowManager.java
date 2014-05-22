@@ -141,7 +141,9 @@ public class MyWindowManager {
 	public static int isWindowGone() {
 		return bigWindow.getVisibility();
 	}
-
+	public static boolean isWindowLocked() {
+		return isWindowGone() != View.GONE;
+	}
 	public static void setWindowVisible() {
 		Log.d(TAG, "setWindowVisible");
 		bigWindow.rootView.setVisibility(View.VISIBLE);

@@ -117,129 +117,13 @@
         </RelativeLayout>
 
         <ImageView
+            android:visibility="gone"
             android:layout_width="fill_parent"
             android:layout_height="1sp"
             android:src="@color/title_gray" />
 
         <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="@dimen/setting_layout_size"
-            android:gravity="center_vertical"
-            android:padding="4.0dip" >
-
-            <TextView
-                android:id="@+id/start_imageLeft"
-                android:layout_width="fill_parent"
-                android:layout_height="62dp"
-                android:layout_toLeftOf="@+id/imageRight"
-                android:clickable="false"
-                android:scaleType="fitXY"
-                android:text="锁屏应用样式"
-                android:textSize="@dimen/setting_up" />
-
-            <ImageView
-                android:layout_width="@dimen/setting_button"
-                android:layout_height="@dimen/setting_button"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/select_more" />
-
-            <TextView
-                android:id="@+id/skinname"
-                android:layout_width="fill_parent"
-                android:layout_height="17.0dp"
-                android:layout_alignBottom="@id/start_imageLeft"
-                android:layout_alignRight="@id/start_imageLeft"
-                android:text="设置锁屏出现的应用数量"
-                android:textColor="@color/setting_text_gray"
-                android:textSize="@dimen/setting_down" />
-        </RelativeLayout>
-
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="1sp"
-            android:src="@color/title_gray" />
-
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="@dimen/setting_layout_size"
-            android:gravity="center_vertical"
-            android:padding="4.0dip" >
-
-            <TextView
-                android:id="@+id/backgroud_imageLeft"
-                android:layout_width="fill_parent"
-                android:layout_height="62dp"
-                android:layout_toLeftOf="@+id/imageRight"
-                android:clickable="false"
-                android:scaleType="fitXY"
-                android:text="壁纸设置"
-                android:textSize="@dimen/setting_up" />
-
-            <ImageView
-                android:layout_width="@dimen/setting_button"
-                android:layout_height="@dimen/setting_button"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/select_more" />
-
-            <TextView
-                android:id="@+id/skinname"
-                android:layout_width="fill_parent"
-                android:layout_height="17.0dp"
-                android:layout_alignBottom="@id/backgroud_imageLeft"
-                android:layout_alignRight="@id/backgroud_imageLeft"
-                android:text="更换锁屏界面壁纸"
-                android:textColor="@color/setting_text_gray"
-                android:textSize="@dimen/setting_down" />
-        </RelativeLayout>
-
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="1sp"
-            android:src="@color/title_gray" />
-
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="@dimen/setting_layout_size"
-            android:gravity="center_vertical"
-            android:padding="4.0dip" >
-
-            <TextView
-                android:id="@+id/tools_imageLeft"
-                android:layout_width="fill_parent"
-                android:layout_height="62dp"
-                android:layout_toLeftOf="@+id/imageRight"
-                android:clickable="false"
-                android:scaleType="fitXY"
-                android:text="锁屏小工具"
-                android:textSize="@dimen/setting_up" />
-
-            <ImageView
-                android:id="@+id/start_checkbox"
-                android:layout_width="@dimen/setting_button"
-                android:layout_height="@dimen/setting_button"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/select_more" />
-
-            <TextView
-                android:id="@+id/skinname"
-                android:layout_width="fill_parent"
-                android:layout_height="17.0dp"
-                android:layout_alignBottom="@id/tools_imageLeft"
-                android:layout_alignRight="@id/tools_imageLeft"
-                android:text="设置天气相机等功能"
-                android:textColor="@color/setting_text_gray"
-                android:textSize="@dimen/setting_down" />
-        </RelativeLayout>
-
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="1sp"
-            android:src="@color/title_gray" />
-
-        <RelativeLayout
+            android:visibility="gone"
             android:layout_width="fill_parent"
             android:layout_height="@dimen/setting_layout_size"
             android:gravity="center_vertical"
@@ -279,40 +163,6 @@
             android:layout_height="1sp"
             android:src="@color/title_gray" />
 
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="@dimen/setting_layout_size"
-            android:gravity="center_vertical"
-            android:padding="4.0dip" >
-
-            <TextView
-                android:id="@+id/root_start_imageLeft"
-                android:layout_width="fill_parent"
-                android:layout_height="62dp"
-                android:layout_toLeftOf="@+id/imageRight"
-                android:clickable="false"
-                android:scaleType="fitXY"
-                android:text="高级功能"
-                android:textSize="@dimen/setting_up" />
-
-            <ImageView
-                android:id="@+id/start_checkbox"
-                android:layout_width="@dimen/setting_button"
-                android:layout_height="@dimen/setting_button"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/select_more" />
-
-            <TextView
-                android:id="@+id/skinname"
-                android:layout_width="fill_parent"
-                android:layout_height="17.0dp"
-                android:layout_alignBottom="@id/root_start_imageLeft"
-                android:layout_alignRight="@id/root_start_imageLeft"
-                android:text="智屏内测功  欢迎使用"
-                android:textColor="@color/setting_text_gray"
-                android:textSize="@dimen/setting_down" />
-        </RelativeLayout>
 
         <ImageView
             android:layout_width="fill_parent"

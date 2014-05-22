@@ -296,124 +296,17 @@ public class FloatWindowBigView extends LinearLayout implements
 					}
 					Log.d(TAG + " Action_Up", gl + "");
 					if (rootView.getLeft() > viewWidth * 1 / 3) {// 开屏
-						Animation a = new TranslateAnimation(0.0f, viewWidth
-								- gl, 0.0f, 0.0f);
 						long len = new Date().getTime() - now.getTime();
 						float duration = ((float) (len)) / ((float) gl)
 								* (viewWidth - gl);
 						duration = duration > 500 ? 500 : duration;
 						duration = duration < 50 ? 50 : duration;
 						android.util.Log.d(TAG, "开屏时间说设定：" + len);
-						a.setDuration((long) duration);
-						a.setFillEnabled(true);
-						a.setInterpolator(AnimationUtils
-								.loadInterpolator(service,
-										android.R.anim.decelerate_interpolator));
-						rootView.startAnimation(a);
-						// if (TransparentActivity.context != null)
-						// TransparentActivity.context.finish();
-						finishTransparentActivity();
-						a.setAnimationListener(new AnimationListener() {
-
-							@Override
-							public void onAnimationStart(Animation animation) {
-								animating = true;
-								android.util.Log.d(TAG, "开屏GONE");
-								android.util.Log.d(TAG, "viewWidth="
-										+ viewWidth + ",gl=" + gl);
-								rootView.setVisibility(View.GONE);
-								if (view instanceof ImageView) {
-									Animation a = new ScaleAnimation(1.2f, 1f,
-											1.2f, 1f,
-											Animation.RELATIVE_TO_SELF, 0.5f,
-											Animation.RELATIVE_TO_SELF, 0.5f);
-									a.setDuration(300);
-									a.setFillAfter(true);
-									view.startAnimation(a);
-									a.startNow();
-								}
-							}
-
-							@Override
-							public void onAnimationRepeat(Animation animation) {
-							}
-
-							@Override
-							public void onAnimationEnd(Animation animation) {
-								android.util.Log.d(TAG, "开屏GO");
-								FloatWindowBigView.this
-										.setVisibility(View.GONE);
-								// service.sendBroadcast(new Intent(
-								// "com.qihoo.huangmabisheng.finish"));
-
-								rootView.setVisibility(View.VISIBLE);
-								int left = rootView.getLeft() - gl;
-								int top = rootView.getTop();
-								int right = rootView.getRight() - gl;
-								int bottom = rootView.getBottom();
-								rootView.clearAnimation();
-								rootView.layout(left, top, right, bottom);
-								animating = false;
-
-							}
-						});
-						a.startNow();
-
-					} else {
-						// TODO 动画回弹
-						service.startActivity(service.mainActivityIntent);
-
-						Animation a = new TranslateAnimation(0.0f, 0.0f - gl,
-								0.0f, 0.0f);
+						openScreenLockAnim(gl,(long)duration,view);
+					} else {//关屏
 						long duration = 800 * gl / viewWidth;
 						duration = duration < 50 ? 50 : duration;
-						a.setDuration(duration);
-						a.setFillEnabled(true);
-						a.setInterpolator(AnimationUtils
-								.loadInterpolator(service,
-										android.R.anim.decelerate_interpolator));
-						rootView.startAnimation(a);
-						a.setAnimationListener(new AnimationListener() {
-
-							@Override
-							public void onAnimationStart(Animation animation) {
-								android.util.Log.d(TAG, "回弹GONE");
-								android.util.Log.d(TAG, "viewWidth="
-										+ viewWidth + ",gl=" + gl);
-								animating = true;
-								rootView.setVisibility(View.GONE);
-							}
-
-							@Override
-							public void onAnimationRepeat(Animation animation) {
-							}
-
-							@Override
-							public void onAnimationEnd(Animation animation) {
-								android.util.Log.d(TAG, "回弹COME");
-								rootView.setVisibility(View.VISIBLE);
-								int left = rootView.getLeft() - gl;
-								int top = rootView.getTop();
-								int right = rootView.getRight() - gl;
-								int bottom = rootView.getBottom();
-								rootView.clearAnimation();
-								rootView.layout(left, top, right, bottom);
-								animating = false;
-
-								if (view instanceof ImageView) {
-
-									Animation a = new ScaleAnimation(1.2f, 1f,
-											1.2f, 1f,
-											Animation.RELATIVE_TO_SELF, 0.5f,
-											Animation.RELATIVE_TO_SELF, 0.5f);
-									a.setDuration(300);
-									a.setFillAfter(true);
-									view.startAnimation(a);
-									a.startNow();
-								}
-							}
-						});
-						a.startNow();
+						closeScreenLockAnim(gl, duration, view);
 					}
 					return true;
 				}
@@ -421,7 +314,127 @@ public class FloatWindowBigView extends LinearLayout implements
 			}
 		}
 	};
+	public void openScreenLockAnim(final int gl,long duration,final View v){
+		Animation a = new TranslateAnimation(0.0f, viewWidth
+				- gl, 0.0f, 0.0f);
+		a.setDuration( duration);
+		a.setFillEnabled(true);
+		a.setInterpolator(AnimationUtils
+				.loadInterpolator(service,
+						android.R.anim.decelerate_interpolator));
+		rootView.startAnimation(a);
+		// if (TransparentActivity.context != null)
+		// TransparentActivity.context.finish();
+		finishTransparentActivity();
+		a.setAnimationListener(new AnimationListener() {
 
+			@Override
+			public void onAnimationStart(Animation animation) {
+				animating = true;
+				android.util.Log.d(TAG, "开屏GONE");
+				android.util.Log.d(TAG, "viewWidth="
+						+ viewWidth + ",gl=" + gl);
+				rootView.setVisibility(View.GONE);
+				View view;
+				view = v==null?rootView:v;
+				if (view instanceof ImageView) {
+					Animation a = new ScaleAnimation(1.2f, 1f,
+							1.2f, 1f,
+							Animation.RELATIVE_TO_SELF, 0.5f,
+							Animation.RELATIVE_TO_SELF, 0.5f);
+					a.setDuration(300);
+					a.setFillAfter(true);
+					view.startAnimation(a);
+					a.startNow();
+				}
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				android.util.Log.d(TAG, "开屏GO");
+				FloatWindowBigView.this
+						.setVisibility(View.GONE);
+				// service.sendBroadcast(new Intent(
+				// "com.qihoo.huangmabisheng.finish"));
+
+				rootView.setVisibility(View.VISIBLE);
+				int left = rootView.getLeft() - gl;
+				int top = rootView.getTop();
+				int right = rootView.getRight() - gl;
+				int bottom = rootView.getBottom();
+				rootView.clearAnimation();
+				rootView.layout(left, top, right, bottom);
+				animating = false;
+
+			}
+		});
+		a.startNow();
+	}
+	
+	public void closeScreenLockAnim(final int lg,long duration,final View v) {
+
+		// TODO 动画回弹
+		Animation a;
+		service.startActivity(service.mainActivityIntent);
+		final int gl = Math.abs(lg);
+		if(lg>=0)
+			a = new TranslateAnimation(0.0f, 0.0f - gl,
+				0.0f, 0.0f);
+		else
+			a = new TranslateAnimation(0.0f+gl, 0.0f,
+					0.0f, 0.0f);
+		a.setDuration(duration);
+		a.setFillEnabled(true);
+		a.setInterpolator(AnimationUtils
+				.loadInterpolator(service,
+						android.R.anim.decelerate_interpolator));
+		rootView.startAnimation(a);
+		a.setAnimationListener(new AnimationListener() {
+
+			@Override
+			public void onAnimationStart(Animation animation) {
+				android.util.Log.d(TAG, "回弹GONE");
+				android.util.Log.d(TAG, "viewWidth="
+						+ viewWidth + ",gl=" + gl);
+				animating = true;
+				rootView.setVisibility(View.GONE);
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				android.util.Log.d(TAG, "回弹COME");
+				rootView.setVisibility(View.VISIBLE);
+				int left = rootView.getLeft() - gl;
+				int top = rootView.getTop();
+				int right = rootView.getRight() - gl;
+				int bottom = rootView.getBottom();
+				rootView.clearAnimation();
+				rootView.layout(left, top, right, bottom);
+				animating = false;
+				View view = v==null?rootView:v;
+				if (view instanceof ImageView) {
+
+					Animation a = new ScaleAnimation(1.2f, 1f,
+							1.2f, 1f,
+							Animation.RELATIVE_TO_SELF, 0.5f,
+							Animation.RELATIVE_TO_SELF, 0.5f);
+					a.setDuration(300);
+					a.setFillAfter(true);
+					view.startAnimation(a);
+					a.startNow();
+				}
+			}
+		});
+		a.startNow();
+	}
 	private void setAllListeners() {
 		openL = rootView.getLeft();
 		openB = rootView.getBottom();
