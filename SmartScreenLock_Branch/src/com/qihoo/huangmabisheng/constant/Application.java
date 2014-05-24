@@ -3,6 +3,7 @@ package com.qihoo.huangmabisheng.constant;
 
 public class Application extends android.app.Application{
 	public boolean isServiceRunning = true;
+	public boolean isSpecialServiceRunning = false;
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
@@ -15,5 +16,11 @@ public class Application extends android.app.Application{
 	}
 	public void setServiceOnStatus() {
 		isServiceRunning = true;
+	}
+	public void setSpecialServiceOffStatus() {
+		isSpecialServiceRunning = false;
+	}
+	public void setSpecialServiceOnStatus() {
+		isSpecialServiceRunning = true;
 	}
 }

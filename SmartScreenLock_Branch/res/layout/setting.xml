@@ -12,17 +12,26 @@
         android:id="@+id/title_linearlayout"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:background="@color/title_gray"
-        android:gravity="center" >
+        android:background="@color/title_gray">
 
         <TextView
             android:id="@+id/title_cloud_textview"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:gravity="center"
+            android:layout_centerInParent="true"
             android:text="@string/app_name"
             android:textColor="@color/white"
             android:textSize="@dimen/title" />
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/setting_ip_imageview"
+            android:layout_width="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_height="wrap_content"
+            android:src="@drawable/setting_icon"
+            android:layout_margin="13dp"
+            />
     </RelativeLayout>
 
     <LinearLayout
@@ -48,7 +57,6 @@
                 android:id="@+id/start_imageLeft"
                 android:layout_width="fill_parent"
                 android:layout_height="62dp"
-                android:layout_toLeftOf="@+id/imageRight"
                 android:clickable="false"
                 android:scaleType="fitXY"
                 android:text="启动智屏"
@@ -75,11 +83,13 @@
         </RelativeLayout>
 
         <ImageView
+            android:visibility="gone"
             android:layout_width="fill_parent"
             android:layout_height="1sp"
             android:src="@color/title_gray" />
 
         <RelativeLayout
+            android:visibility="gone"
             android:id="@+id/filter_application_select"
             android:background="@drawable/setting_button"
             android:layout_width="fill_parent"
@@ -91,7 +101,6 @@
                 android:id="@+id/clockscreen_imageLeft"
                 android:layout_width="fill_parent"
                 android:layout_height="62dp"
-                android:layout_toLeftOf="@+id/imageRight"
                 android:clickable="false"
                 android:scaleType="fitXY"
                 android:text="过滤应用"
@@ -117,54 +126,6 @@
         </RelativeLayout>
 
         <ImageView
-            android:visibility="gone"
-            android:layout_width="fill_parent"
-            android:layout_height="1sp"
-            android:src="@color/title_gray" />
-
-        <RelativeLayout
-            android:visibility="gone"
-            android:layout_width="fill_parent"
-            android:layout_height="@dimen/setting_layout_size"
-            android:gravity="center_vertical"
-            android:padding="4.0dip" >
-
-            <TextView
-                android:id="@+id/passwd_start_imageLeft"
-                android:layout_width="fill_parent"
-                android:layout_height="62dp"
-                android:layout_toLeftOf="@+id/imageRight"
-                android:clickable="false"
-                android:scaleType="fitXY"
-                android:text="锁屏密码"
-                android:textSize="@dimen/setting_up" />
-
-            <CheckBox
-                android:id="@+id/start_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:button="@drawable/rect_checkbox" />
-
-            <TextView
-                android:id="@+id/skinname"
-                android:layout_width="fill_parent"
-                android:layout_height="17.0dp"
-                android:layout_alignBottom="@id/passwd_start_imageLeft"
-                android:layout_alignRight="@id/passwd_start_imageLeft"
-                android:text="设置解锁屏幕的密码"
-                android:textColor="@color/setting_text_gray"
-                android:textSize="@dimen/setting_down" />
-        </RelativeLayout>
-
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="1sp"
-            android:src="@color/title_gray" />
-
-
-        <ImageView
             android:layout_width="fill_parent"
             android:layout_height="1sp"
             android:src="@color/title_gray" />
@@ -176,10 +137,9 @@
             android:padding="4.0dip" >
 
             <TextView
-                android:id="@+id/start_imageLeft"
+                android:id="@+id/hand_imageLeft"
                 android:layout_width="fill_parent"
                 android:layout_height="62dp"
-                android:layout_toLeftOf="@+id/imageRight"
                 android:clickable="false"
                 android:scaleType="fitXY"
                 android:text="开启锁屏手势"
@@ -195,11 +155,11 @@
                 android:button="@drawable/rect_btn_checkbox_normal" />
 
             <TextView
-                android:id="@+id/skinname"
+                android:id="@+id/hand_description"
                 android:layout_width="fill_parent"
                 android:layout_height="17.0dp"
-                android:layout_alignBottom="@id/start_imageLeft"
-                android:layout_alignRight="@id/start_imageLeft"
+                android:layout_alignBottom="@id/hand_imageLeft"
+                android:layout_alignRight="@id/hand_imageLeft"
                 android:text="在锁屏用手势快速打开应用"
                 android:textColor="@color/setting_text_gray"
                 android:textSize="@dimen/setting_down" />
@@ -219,7 +179,6 @@
                 android:id="@+id/other_start_imageLeft"
                 android:layout_width="fill_parent"
                 android:layout_height="62dp"
-                android:layout_toLeftOf="@+id/imageRight"
                 android:clickable="false"
                 android:scaleType="fitXY"
                 android:text="你绝对想不到"
@@ -235,12 +194,50 @@
                 android:button="@drawable/rect_btn_checkbox_normal" />
 
             <TextView
-                android:id="@+id/skinname"
                 android:layout_width="fill_parent"
                 android:layout_height="17.0dp"
                 android:layout_alignBottom="@id/other_start_imageLeft"
                 android:layout_alignRight="@id/other_start_imageLeft"
                 android:text="特殊服务"
+                android:textColor="@color/setting_text_gray"
+                android:textSize="@dimen/setting_down" />
+        </RelativeLayout>
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="1sp"
+            android:src="@color/title_gray" />
+        <RelativeLayout
+            android:visibility="gone"
+            android:id="@+id/photo_layout"
+            android:background="@drawable/setting_button"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/setting_layout_size"
+            android:gravity="center_vertical"
+            android:padding="4.0dip" >
+
+            <TextView
+                android:id="@+id/photo_imageLeft"
+                android:layout_width="fill_parent"
+                android:layout_height="62dp"
+                android:clickable="false"
+                android:scaleType="fitXY"
+                android:text="二娃"
+                android:textSize="@dimen/setting_up" />
+
+            <ImageView
+                android:id="@+id/photo_checkbox"
+                android:layout_width="@dimen/setting_button"
+                android:layout_height="@dimen/setting_button"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/select_more" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="17.0dp"
+                android:layout_alignBottom="@id/photo_imageLeft"
+                android:layout_alignRight="@id/photo_imageLeft"
+                android:text="千里眼"
                 android:textColor="@color/setting_text_gray"
                 android:textSize="@dimen/setting_down" />
         </RelativeLayout>

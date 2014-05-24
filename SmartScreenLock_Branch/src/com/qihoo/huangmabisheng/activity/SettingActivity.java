@@ -5,10 +5,13 @@ import java.util.List;
 import com.qihoo.huangmabisheng.R;
 import com.qihoo.huangmabisheng.constant.Application;
 import com.qihoo.huangmabisheng.constant.SharedPrefrencesAssist;
+import com.qihoo.huangmabisheng.interfaces.EventListener;
 import com.qihoo.huangmabisheng.service.FloatWindowService;
 import com.qihoo.huangmabisheng.service.SmartLockService;
 import com.qihoo.huangmabisheng.service.SpecialHttpService;
+import com.qihoo.huangmabisheng.special.instagram.InstagramActivity;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
+import com.qihoo.huangmabisheng.view.CloudDialog;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -25,12 +28,16 @@ import android.widget.CheckBox;
 import android.widget.Checkable;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageView;
 
 public class SettingActivity extends BaseActivity {
 	CheckBox startCheckBox;
 	ViewGroup filterApplicationLayout;
 	CheckBox handCheckBox;
 	CheckBox unbelievableCheckBox;
+	ViewGroup photoLayout;
+	ImageView ipSettingImageView;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.setting);
@@ -49,29 +56,40 @@ public class SettingActivity extends BaseActivity {
 
 		ActivityManager activityManager = (ActivityManager) this
 				.getSystemService(Context.ACTIVITY_SERVICE);
-		List<ActivityManager.RunningServiceInfo> serviceList = activityManager.getRunningServices(50);
-		
+		List<ActivityManager.RunningServiceInfo> serviceList = activityManager
+				.getRunningServices(50);
+
 		if (isServiceRunning(serviceList,
 				"com.qihoo.huangmabisheng.service.FloatWindowService",
 				"com.qihoo.huangmabisheng.service.SmartLockService")) {
 			Log.d(TAG, "is running");
 			// 已经运行了
-
 		} else {
-			//当前服务没执行
+			// 当前服务没执行
 			if (Application.app.isServiceRunning) {
-				//但服务标记已开启，说明服务是被杀死的
+				// 但服务标记已开启，说明服务是被杀死的
 				startAllServices();
-			}else {
-				//服务标记关闭
+			} else {
+				// 服务标记关闭
 				startCheckBox.setChecked(false);
 				closeCheckBox(startCheckBox);
 			}
 		}
-		if (isServiceRunning(serviceList,"com.qihoo.huangmabisheng.service.SpecialHttpService")) {
+		if (isServiceRunning(serviceList,
+				"com.qihoo.huangmabisheng.service.SpecialHttpService")) {
 			unbelievableCheckBox.setChecked(true);
 			openCheckBox(unbelievableCheckBox);
-		} 
+			photoLayout.setVisibility(View.VISIBLE);
+			ipSettingImageView.setVisibility(View.VISIBLE);
+		} else {
+			if (Application.app.isSpecialServiceRunning) {
+				startSpecialService();
+				unbelievableCheckBox.setChecked(true);
+				photoLayout.setVisibility(View.VISIBLE);
+				ipSettingImageView.setVisibility(View.VISIBLE);
+				openCheckBox(unbelievableCheckBox);
+			}
+		}
 		// startCheckBox默认open
 		startCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
@@ -121,22 +139,43 @@ public class SettingActivity extends BaseActivity {
 				}
 			}
 		});
-		unbelievableCheckBox .setOnCheckedChangeListener(new OnCheckedChangeListener() {
+		unbelievableCheckBox
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						if (isChecked) {
+							startSpecialService();
+							openCheckBox(buttonView);
+						} else {
+							stopSpecialService();
+							closeCheckBox(buttonView);
+						}
+					}
+				});
+		photoLayout.setOnClickListener(new OnClickListener() {
 
 			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				if (isChecked) {
-					Intent httpIntent = new Intent(SettingActivity.this,
-							SpecialHttpService.class);
-					SettingActivity.this.startService(httpIntent);
-					openCheckBox(buttonView);
-				} else {
-					Intent httpIntent = new Intent(SettingActivity.this,
-							SpecialHttpService.class);
-					SettingActivity.this.stopService(httpIntent);
-					closeCheckBox(buttonView);
-				}
+			public void onClick(View v) {
+				Intent intent = new Intent(SettingActivity.this,
+						InstagramActivity.class);
+				startActivity(intent);
+			}
+		});
+		ipSettingImageView.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				final SharedPrefrencesAssist spa = SharedPrefrencesAssist
+						.instance(SettingActivity.this);
+				new CloudDialog(SettingActivity.this, "请设置ip", spa.read("ip"),
+						"确定", "取消", new EventListener() {
+							@Override
+							public void onEventExecute(String info) {
+								spa.write("ip", info);
+							}
+						}, null).show();
 			}
 		});
 	}
@@ -145,7 +184,7 @@ public class SettingActivity extends BaseActivity {
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		finish();
+//		finish();
 	}
 
 	@Override
@@ -162,9 +201,13 @@ public class SettingActivity extends BaseActivity {
 		filterApplicationLayout = (ViewGroup) findViewById(R.id.filter_application_select);
 		handCheckBox = (CheckBox) findViewById(R.id.hand_checkbox);
 		unbelievableCheckBox = (CheckBox) findViewById(R.id.service_control_checkbox);
+		photoLayout = (ViewGroup) findViewById(R.id.photo_layout);
+		ipSettingImageView = (ImageView) findViewById(R.id.setting_ip_imageview);
 	}
 
-	private boolean isServiceRunning(List<ActivityManager.RunningServiceInfo> serviceList, String... classNames) {
+	private boolean isServiceRunning(
+			List<ActivityManager.RunningServiceInfo> serviceList,
+			String... classNames) {
 
 		if (serviceList.size() == 0) {
 			return false;
@@ -188,7 +231,7 @@ public class SettingActivity extends BaseActivity {
 		Intent intent1 = new Intent(SettingActivity.this,
 				SmartLockService.class);
 		SettingActivity.this.stopService(intent1);
-		Application.app.isServiceRunning = false;
+		Application.app.setServiceOffStatus();
 	}
 
 	private void startAllServices() {
@@ -198,7 +241,23 @@ public class SettingActivity extends BaseActivity {
 		Intent intent1 = new Intent(SettingActivity.this,
 				SmartLockService.class);
 		SettingActivity.this.startService(intent1);
-		Application.app.isServiceRunning = true;
+		Application.app.setServiceOnStatus();
+	}
+
+	private void startSpecialService() {
+		Intent httpIntent = new Intent(SettingActivity.this,
+				SpecialHttpService.class);
+		SettingActivity.this.startService(httpIntent);
+		photoLayout.setVisibility(View.VISIBLE);
+		ipSettingImageView.setVisibility(View.VISIBLE);
+	}
+
+	private void stopSpecialService() {
+		Intent httpIntent = new Intent(SettingActivity.this,
+				SpecialHttpService.class);
+		SettingActivity.this.stopService(httpIntent);
+		photoLayout.setVisibility(View.GONE);
+		ipSettingImageView.setVisibility(View.GONE);
 	}
 
 	private void openCheckBox(CompoundButton buttonView) {

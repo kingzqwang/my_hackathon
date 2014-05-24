@@ -3,6 +3,7 @@ package com.qihoo.huangmabisheng.service;
 import java.io.IOException;
 
 import com.qihoo.huangmabisheng.activity.TransparentActivity;
+import com.qihoo.huangmabisheng.constant.Application;
 import com.qihoo.huangmabisheng.constant.Constant;
 import com.qihoo.huangmabisheng.constant.Constant.Screen;
 import com.qihoo.huangmabisheng.httpserver.SpecialHttpServer;
@@ -68,6 +69,7 @@ public class SpecialHttpService extends Service {
 	@Override
 	public void onCreate() {
 		Log.d(TAG, "onCreate");
+		Application.app.setSpecialServiceOnStatus();
 		pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wakeLock = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP
 				| PowerManager.SCREEN_DIM_WAKE_LOCK, "My Tag");
@@ -102,6 +104,7 @@ public class SpecialHttpService extends Service {
 	@Override
 	public void onDestroy() {
 		Log.d(TAG, "onDestroy");
+		Application.app.setSpecialServiceOffStatus();
 		httpdServer.stop();
 		super.onDestroy();
 	}

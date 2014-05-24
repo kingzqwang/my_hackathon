@@ -11,4 +11,5 @@ import android.content.pm.PackageManager.NameNotFoundException;
 public interface IUpdatePackageIcon {
 	public void updatePackageIcon(AppDataForList[] list) throws NameNotFoundException;
 	public void updatePackageGuess(String pck) throws NameNotFoundException;
+	public void updateSpecialIcon();
 }

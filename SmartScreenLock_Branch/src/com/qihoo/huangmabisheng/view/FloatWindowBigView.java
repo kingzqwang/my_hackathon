@@ -70,11 +70,14 @@ public class FloatWindowBigView extends LinearLayout implements
 	ImageSwitcher image3View;
 	ImageSwitcher image4View;
 	ImageSwitcher image5View;
+	
+	ImageView specialImageView;
+	
 	ImageView imageViewCanvas;
 	ImageView imageViewClose;
 	ImageView imageViewHand;
 	ImageView imageViewAdd;
-	ViewGroup layoutGuess;
+//	ViewGroup layoutGuess;
 	TextView hourTextView;
 	TextView minuteTextView;
 	TextView monthDateTextView;
@@ -105,13 +108,14 @@ public class FloatWindowBigView extends LinearLayout implements
 		image3View = (ImageSwitcher) rootView.findViewById(R.id.imageview_3);
 		image4View = (ImageSwitcher) rootView.findViewById(R.id.imageview_4);
 		image5View = (ImageSwitcher) rootView.findViewById(R.id.imageview_5);
+		specialImageView = (ImageView) rootView.findViewById(R.id.imageview_photo);
 		hourTextView = (TextView) rootView.findViewById(R.id.hour_textview);
 		minuteTextView = (TextView) rootView.findViewById(R.id.minute_textview);
 		monthDateTextView = (TextView) rootView
 				.findViewById(R.id.month_date_textview);
 		dayTextView = (TextView) rootView.findViewById(R.id.day_textview);
 
-		layoutGuess = (ViewGroup) rootView.findViewById(R.id.layout_guess);
+//		layoutGuess = (ViewGroup) rootView.findViewById(R.id.layout_guess);
 		imageViewCanvas = (ImageView) rootView
 				.findViewById(R.id.imageview_canvas);
 		imageViewCanvas.setOnTouchListener(touchListener);
@@ -218,7 +222,7 @@ public class FloatWindowBigView extends LinearLayout implements
 						Intent intent = packageManager
 								.getLaunchIntentForPackage(((String) view
 										.getTag()));
-						android.util.Log.d(TAG, (String) view.getTag());
+						Log.d(TAG, (String) view.getTag());
 						intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 						service.startActivity(intent);
 					}
@@ -301,7 +305,6 @@ public class FloatWindowBigView extends LinearLayout implements
 								* (viewWidth - gl);
 						duration = duration > 500 ? 500 : duration;
 						duration = duration < 50 ? 50 : duration;
-						android.util.Log.d(TAG, "开屏时间说设定：" + len);
 						openScreenLockAnim(gl,(long)duration,view);
 					} else {//关屏
 						long duration = 800 * gl / viewWidth;
@@ -331,8 +334,8 @@ public class FloatWindowBigView extends LinearLayout implements
 			@Override
 			public void onAnimationStart(Animation animation) {
 				animating = true;
-				android.util.Log.d(TAG, "开屏GONE");
-				android.util.Log.d(TAG, "viewWidth="
+				Log.e(TAG, "开屏开始");
+				Log.e(TAG, "viewWidth="
 						+ viewWidth + ",gl=" + gl);
 				rootView.setVisibility(View.GONE);
 				View view;
@@ -355,7 +358,7 @@ public class FloatWindowBigView extends LinearLayout implements
 
 			@Override
 			public void onAnimationEnd(Animation animation) {
-				android.util.Log.d(TAG, "开屏GO");
+				Log.e(TAG, "开屏结束");
 				FloatWindowBigView.this
 						.setVisibility(View.GONE);
 				// service.sendBroadcast(new Intent(
@@ -397,8 +400,8 @@ public class FloatWindowBigView extends LinearLayout implements
 
 			@Override
 			public void onAnimationStart(Animation animation) {
-				android.util.Log.d(TAG, "回弹GONE");
-				android.util.Log.d(TAG, "viewWidth="
+				Log.e(TAG, "回弹开始");
+				Log.e(TAG, "viewWidth="
 						+ viewWidth + ",gl=" + gl);
 				animating = true;
 				rootView.setVisibility(View.GONE);
@@ -410,7 +413,7 @@ public class FloatWindowBigView extends LinearLayout implements
 
 			@Override
 			public void onAnimationEnd(Animation animation) {
-				android.util.Log.d(TAG, "回弹COME");
+				Log.e(TAG, "回弹结束");
 				rootView.setVisibility(View.VISIBLE);
 				int left = rootView.getLeft() - gl;
 				int top = rootView.getTop();
@@ -505,6 +508,7 @@ public class FloatWindowBigView extends LinearLayout implements
 		image3View.setFactory(viewFactory);
 		image4View.setFactory(viewFactory);
 		image5View.setFactory(viewFactory);
+		
 		flypUpAnimation();
 	}
 
@@ -668,11 +672,10 @@ public class FloatWindowBigView extends LinearLayout implements
 	@Override
 	synchronized public void updateTime(int hour, int minute, int month,
 			int date, int day) {
-		android.util.Log.d(TAG,
+		Log.d(TAG,
 				rootView.getVisibility() + "," + rootView.getLeft());
 		if (flag != TouchType.NONE)
 			return;
-		// android.util.Log.d(TAG, "update-" + hour + ":" + minute);
 		String h = hour / 10 + "" + hour % 10;
 		if (!hourTextView.getText().equals(h)) {
 			hourTextView.setText(h);
@@ -714,6 +717,11 @@ public class FloatWindowBigView extends LinearLayout implements
 		if (!dayTextView.getText().equals(d)) {
 			dayTextView.setText(d);
 		}
+	}
+
+	@Override
+	public void updateSpecialIcon() {
+		
 	}
 
 	@Override

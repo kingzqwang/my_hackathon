@@ -4,19 +4,19 @@
     android:layout_height="fill_parent"
     android:splitMotionEvents="false" >
 
-    <ImageSwitcher 
+    <ImageSwitcher
         android:id="@+id/switcher"
-        android:background="@color/black"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-    />
+        android:background="@color/black" />
 
     <TextView
         android:id="@+id/description_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/icon_layout"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/log_layout_padding"
         android:text="@string/slide_anywhere"
         android:textColor="@color/gray"
         android:textSize="20dp"
@@ -28,8 +28,8 @@
         android:layout_height="@dimen/time_size"
         android:layout_alignParentRight="true"
         android:layout_marginRight="15dp"
-        android:layout_weight="1"
         android:gravity="center" >
+
         <LinearLayout
             android:id="@+id/time_layout_inner"
             android:layout_width="wrap_content"
@@ -131,56 +131,63 @@
         android:id="@+id/icon_layout"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:layout_marginLeft="@dimen/log_layout_padding"
         android:layout_marginBottom="@dimen/quarter_time_size"
+        android:layout_marginLeft="@dimen/log_layout_padding"
         android:layout_marginTop="@dimen/half_time_size"
         android:gravity="center"
         android:orientation="vertical" >
 
+        <ImageSwitcher
+            android:id="@+id/imageview_0"
+            android:layout_width="@dimen/switcher_width"
+            android:layout_height="@dimen/switcher_width"
+            android:layout_weight="1"
+            android:background="@null" />
 
-            <ImageSwitcher
-                android:layout_weight="1"
-                android:id="@+id/imageview_0"
-                android:layout_width="@dimen/log_width"
-                android:layout_height="@dimen/log_width"
-                android:background="@null" />
+        <ImageSwitcher
+            android:id="@+id/imageview_1"
+            android:layout_width="@dimen/switcher_width"
+            android:layout_height="@dimen/switcher_width"
+            android:layout_weight="1"
+            android:background="@null" />
 
-            <ImageSwitcher
-                android:layout_weight="1"
-                android:id="@+id/imageview_1"
-                android:layout_width="@dimen/log_width"
-                android:layout_height="@dimen/log_width"
-                android:background="@null" />
+        <ImageSwitcher
+            android:id="@+id/imageview_2"
+            android:layout_width="@dimen/switcher_width"
+            android:layout_height="@dimen/switcher_width"
+            android:layout_weight="1"
+            android:background="@null" />
 
-            <ImageSwitcher
-                android:layout_weight="1"
-                android:id="@+id/imageview_2"
-                android:layout_width="@dimen/log_width"
-                android:layout_height="@dimen/log_width"
-                android:background="@null" />
+        <ImageSwitcher
+            android:id="@+id/imageview_3"
+            android:layout_width="@dimen/switcher_width"
+            android:layout_height="@dimen/switcher_width"
+            android:layout_weight="1"
+            android:background="@null" />
 
-            <ImageSwitcher
-                android:layout_weight="1"
-                android:id="@+id/imageview_3"
-                android:layout_width="@dimen/log_width"
-                android:layout_height="@dimen/log_width"
-                android:background="@null" />
+        <ImageSwitcher
+            android:id="@+id/imageview_4"
+            android:layout_width="@dimen/switcher_width"
+            android:layout_height="@dimen/switcher_width"
+            android:layout_weight="1"
+            android:background="@null" />
 
-
-            <ImageSwitcher
-                android:layout_weight="1"
-                android:id="@+id/imageview_4"
-                android:layout_width="@dimen/log_width"
-                android:layout_height="@dimen/log_width"
-                android:background="@null" />
-
-            <ImageSwitcher
-                android:layout_weight="1"
-                android:id="@+id/imageview_5"
-                android:layout_width="@dimen/log_width"
-                android:layout_height="@dimen/log_width"
-                android:background="@null" />
+        <ImageSwitcher
+            android:id="@+id/imageview_5"
+            android:layout_width="@dimen/switcher_width"
+            android:layout_height="@dimen/switcher_width"
+            android:layout_weight="1"
+            android:background="@null" />
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageview_photo"
+        android:layout_width="@dimen/log_width"
+        android:layout_height="@dimen/log_width"
+        android:layout_alignBottom="@+id/icon_layout"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/instagram"
+        android:visibility="gone" />
 
     <RelativeLayout
         android:id="@+id/canvas_layout"

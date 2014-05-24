@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 
 import com.qihoo.huangmabisheng.R;
 import com.qihoo.huangmabisheng.activity.SettingActivity;
+import com.qihoo.huangmabisheng.constant.Application;
 import com.qihoo.huangmabisheng.constant.Constant;
 import com.qihoo.huangmabisheng.constant.Constant.Scene;
 import com.qihoo.huangmabisheng.constant.Constant.Screen;
@@ -21,6 +22,7 @@ import com.qihoo.huangmabisheng.constant.SharedPrefrencesAssist;
 import com.qihoo.huangmabisheng.model.AppDataForList;
 import com.qihoo.huangmabisheng.model.AppIntroMap;
 import com.qihoo.huangmabisheng.utils.FileUtil;
+import com.qihoo.huangmabisheng.utils.Log;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
 import com.qihoo.huangmabisheng.utils.TimeUtil;
 import com.qihoo.huangmabisheng.utils.TopApp;
@@ -48,12 +50,14 @@ import android.content.pm.ResolveInfo;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 
 public class SmartLockService extends Service {
 	public static Map<String, Integer> filterMap = new HashMap<String, Integer>();// 二级过滤
-	private TimeQuantum timeQuantum = TimeQuantum.SLEEPING;
+	/**
+	 * 不能公有，且不能有getter和setter
+	 */
+	private TimeQuantum timeQuantum = TimeQuantum.DEFAULT;
 	private Constant.Scene scene = Scene.DEFAULT;
 	private Constant.SizeType sizeType = SizeType.TOTAL;
 	public static Constant.Screen screen = Screen.ON;
@@ -79,14 +83,25 @@ public class SmartLockService extends Service {
 
 		@Override
 		public void handleMessage(Message msg) {
-			Date date = new Date();
-			changeState(date);
-			if (null != MyWindowManager.getView()) {
-				MyWindowManager.getView().updateTime(date.getHours(),
-						date.getMinutes(), date.getMonth(), date.getDate(),
-						date.getDay());
-				MyWindowManager.getView().updateDescription(WifiAdmin.getInstance(SmartLockService.this).getIPAddressStr());
+			switch (msg.what) {
+			case Constant.UPDATE_IPADDRESS:
+				if (null != MyWindowManager.getView()) {
+					MyWindowManager.getView().updateDescription(msg.obj+"");
+				}
+				break;
+			case Constant.UPDATE_TIME:
+				Date date = new Date();
+				changeState(date);
+				if (null != MyWindowManager.getView()) {
+					MyWindowManager.getView().updateTime(date.getHours(),
+							date.getMinutes(), date.getMonth(), date.getDate(),
+							date.getDay());
+				}
+				break;
+			default:
+				break;
 			}
+
 			super.handleMessage(msg);
 		}
 	};
@@ -105,10 +120,16 @@ public class SmartLockService extends Service {
 				view.switcher.setImageResource(R.drawable.bg_cr_abs_driving);
 				break;
 			default:
-				timeQuantum = TimeQuantum.SLEEPING;
+				timeQuantum = TimeQuantum.DEFAULT;// 以备changeState(Date
+													// date)时判断是否时序变化
 				break;
 			}
 		}
+	}
+
+	private TimeQuantum changeTimeQuantumToNow() {
+		return timeQuantum == TimeQuantum.DEFAULT ? TimeUtil
+				.decideTimeQuantumForNow(new Date()) : timeQuantum;
 	}
 
 	/**
@@ -125,22 +146,22 @@ public class SmartLockService extends Service {
 			if (timeQuantum != now) {
 				Log.d(TAG, "change to SLEEPING");
 				if (view != null) {
-					view.switcher
-							.setImageResource(R.drawable.bg_cr_lit_home_night);
+					view.switcher.setImageResource(R.drawable.black_bg);
 				}
 			}
 			break;
 		case WORKING_AFTERNOON:
 			if (timeQuantum != now) {
-				Log.d(TAG, "change to WORKING");
+				Log.d(TAG, "change to WORKING_AFTERNOON");
 				if (view != null) {
-					view.switcher.setImageResource(R.drawable.bg_outdoors_work);
+					view.switcher
+							.setImageResource(R.drawable.bg_outdoors_driving);
 				}
 			}
 			break;
 		case WORKING_MORNING:
 			if (timeQuantum != now) {
-				Log.d(TAG, "change to WORKING");
+				Log.d(TAG, "change to WORKING_MORNING");
 				if (view != null) {
 					view.switcher.setImageResource(R.drawable.bg_jordi_work);
 				}
@@ -148,9 +169,10 @@ public class SmartLockService extends Service {
 			break;
 		case WORKING_NIGHT:
 			if (timeQuantum != now) {
-				Log.d(TAG, "change to WORKING");
+				Log.d(TAG, "change to WORKING_NIGHT");
 				if (view != null) {
-					view.switcher.setImageResource(R.drawable.bg_cr_lit_work);
+					view.switcher
+							.setImageResource(R.drawable.bg_cr_lit_home_night);
 				}
 			}
 			break;
@@ -158,7 +180,7 @@ public class SmartLockService extends Service {
 			if (timeQuantum != now) {
 				Log.d(TAG, "change to REST");
 				if (view != null) {
-					view.switcher.setImageResource(R.drawable.bg_outdoors_out);
+					view.switcher.setImageResource(R.drawable.bg_cr_abs_out);
 				}
 			}
 			break;
@@ -167,11 +189,18 @@ public class SmartLockService extends Service {
 				Log.d(TAG, "change to BEFORE_SLEEP");
 				if (view != null) {
 					view.switcher
-							.setImageResource(R.drawable.bg_outdoors_home_night);
+							.setImageResource(R.drawable.bg_jordi_home_night);
 				}
 			}
 			break;
 		default:
+			// if (timeQuantum != now) {
+			// Log.d(TAG, "change to DEFAULT");
+			// if (view != null) {
+			// view.switcher
+			// .setImageResource(R.drawable.black_bg);
+			// }
+			// }
 			break;
 		}
 		timeQuantum = now;
@@ -227,6 +256,7 @@ public class SmartLockService extends Service {
 	 */
 	private void pushInAppFre(ComponentName topActivity,
 			String currentPackageName, boolean save) {
+		TimeQuantum timeQuantum = changeTimeQuantumToNow();
 		AppDataForList appData;
 		if (app_fre.containsKey(currentPackageName)) {
 			appData = app_fre.get(currentPackageName);
@@ -326,9 +356,15 @@ public class SmartLockService extends Service {
 			// android.util.Log.d(TAG, "update time");
 			if (MyWindowManager.isWindowShowing()
 					&& MyWindowManager.isWindowGone() != View.GONE
-					&& MyWindowManager.getView().flag == TouchType.NONE)
-				handler.obtainMessage().sendToTarget();// 更新时间
-
+					&& MyWindowManager.getView().flag == TouchType.NONE) {
+				handler.obtainMessage(Constant.UPDATE_TIME).sendToTarget();// 更新时间
+				String ipaddress = "slide anywhere to unlock";
+				if(Application.app.isSpecialServiceRunning)
+				ipaddress = WifiAdmin.getInstance(SmartLockService.this)
+						.getIPAddressStr();
+				handler.obtainMessage(
+						Constant.UPDATE_IPADDRESS,ipaddress).sendToTarget();// 更新IP
+			}
 			// TODO
 			// 先判断是不是可统计的app，即非系统app
 			if (currentPackageName.equals(lastPackageName))
@@ -338,7 +374,7 @@ public class SmartLockService extends Service {
 					return;
 				}
 				pushInAppFre(topActivity, currentPackageName, Constant.SAVE);
-				Log.d(TAG, topActivity + "," + currentPackageName);
+				Log.e(TAG, topActivity + "," + currentPackageName);
 
 			} catch (NameNotFoundException e1) {
 				// TODO Auto-generated catch block
@@ -370,6 +406,7 @@ public class SmartLockService extends Service {
 	 * 更新锁屏上的icon，更新前进行二级过滤 ，此操作在关屏时启动
 	 */
 	private void updatePcksIcon() {
+		TimeQuantum timeQuantum = changeTimeQuantumToNow();
 		try {
 			if (app_fre == null || filterMap == null) {
 				Log.d(TAG, app_fre + "," + filterMap);
@@ -403,6 +440,7 @@ public class SmartLockService extends Service {
 	 * 更新锁屏上的icon，更新前进行二级过滤 ，此操作在关屏时启动
 	 */
 	private void updatePcksIcon(SizeType sizeType) {
+		TimeQuantum timeQuantum = changeTimeQuantumToNow();
 		try {
 			if (app_fre == null || filterMap == null) {
 				Log.d(TAG, app_fre + "," + filterMap);

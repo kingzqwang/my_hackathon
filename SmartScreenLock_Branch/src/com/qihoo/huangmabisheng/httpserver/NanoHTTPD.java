@@ -594,6 +594,7 @@ public abstract class NanoHTTPD {
 	 * HTTP response. Return one of these from serve().
 	 */
 	public static class Response {
+		private boolean keep = false;
 		/**
 		 * HTTP status code after processing, e.g. "200 OK", HTTP_OK
 		 */
@@ -626,7 +627,17 @@ public abstract class NanoHTTPD {
 		public Response(String msg) {
 			this(Status.OK, MIME_HTML, msg);
 		}
+		public void setKeepOn(){
 
+			keep = true;
+		}
+		public void setKeepOff(){
+			keep = false;
+		}
+		
+		public boolean isKeep() {
+			return keep;
+		}
 		/**
 		 * Basic constructor.
 		 */
@@ -660,7 +671,55 @@ public abstract class NanoHTTPD {
 		public String getHeader(String name) {
 			return header.get(name);
 		}
+		/**
+		 * Sends given response to the socket.
+		 */
+		protected void sendAndKeep(OutputStream outputStream) {
+			String mime = mimeType;
+			SimpleDateFormat gmtFrmt = new SimpleDateFormat(
+					"E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+			gmtFrmt.setTimeZone(TimeZone.getTimeZone("GMT"));
 
+			try {
+				if (status == null) {
+					throw new Error("sendResponse(): Status can't be null.");
+				}
+				PrintWriter pw = new PrintWriter(outputStream);
+				pw.print("HTTP/1.1 " + status.getDescription() + " \r\n");
+
+				if (mime != null) {
+					pw.print("Content-Type: " + mime + "\r\n");
+				}
+
+				if (header == null || header.get("Date") == null) {
+					pw.print("Date: " + gmtFrmt.format(new Date()) + "\r\n");
+				}
+
+				if (header != null) {
+					for (String key : header.keySet()) {
+						String value = header.get(key);
+						pw.print(key + ": " + value + "\r\n");
+					}
+				}
+
+				sendConnectionHeaderIfNotAlreadyPresent(pw, header);
+
+				if (requestMethod != Method.HEAD && chunkedTransfer) {
+					sendAsChunked(outputStream, pw);
+				} else {
+					int pending = data != null ? data.available() : 0;
+					sendContentLengthHeaderIfNotAlreadyPresent(pw, header,
+							pending);
+					pw.print("\r\n");
+					pw.flush();
+					sendAsFixedLength(outputStream, pending);
+				}
+				outputStream.flush();
+				safeClose(data);
+			} catch (IOException ioe) {
+				// Couldn't write? No can do.
+			}
+		}
 		/**
 		 * Sends given response to the socket.
 		 */
