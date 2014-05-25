@@ -191,7 +191,7 @@ public class FloatWindowBigView extends LinearLayout implements
 		int[] temp = new int[] { 0, 0 };
 		int[] startTouch = new int[] { 0, 0 };
 		long now;
-
+//		View lastTouch = null;
 		@Override
 		public boolean onTouch(final View view, MotionEvent event) {
 
@@ -205,36 +205,54 @@ public class FloatWindowBigView extends LinearLayout implements
 			Log.i(TAG, "OnTouchListener" + " X is " + x + " Y is " + y);
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
-				if (view instanceof ImageView) {
-
-					Animation a = new ScaleAnimation(1f, 1.2f, 1f, 1.2f,
-							Animation.RELATIVE_TO_SELF, 0.5f,
-							Animation.RELATIVE_TO_SELF, 0.5f);
-					a.setDuration(300);
-					a.setFillAfter(true);
-					view.startAnimation(a);
-					a.startNow();
-					finishTransparentActivity();
-					// Intent intent = new Intent();
-					// intent.setComponent((ComponentName)view.getTag());
-					// intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					// service.startActivity(intent);
-					// intent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-					Intent intent = packageManager
-							.getLaunchIntentForPackage(((String) view.getTag()));
-					Log.e(TAG, (String) view.getTag());
-					intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-					service.startActivity(intent);
-				}
 				now = SystemClock.elapsedRealtime();
+				 if (view instanceof ImageView) {
+				
+				 Animation a = new ScaleAnimation(1f, 1.2f, 1f, 1.2f,
+				 Animation.RELATIVE_TO_SELF, 0.5f,
+				 Animation.RELATIVE_TO_SELF, 0.5f);
+				 a.setDuration(300);
+				 a.setFillAfter(true);
+				 view.startAnimation(a);
+				 a.startNow();
+				 finishTransparentActivity();
+				 // Intent intent = new Intent();
+				 // intent.setComponent((ComponentName)view.getTag());
+				 // intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				 // service.startActivity(intent);
+				 //
+				 //	intent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+				 Intent intent = packageManager
+						 .getLaunchIntentForPackage(((String) view.getTag()));
+				 Log.e(TAG, (String) view.getTag());
+				 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+				 service.startActivity(intent);
+				 }
+
 				startTouch[0] = x;
 				startTouch[1] = y;
 				temp[0] = (int) event.getRawX();
 				// temp[1] = y - rootView.getTop();
 				return true;
 			case MotionEvent.ACTION_MOVE:
+//				if (lastTouch == null && view instanceof ImageView && startTouch[0] == x && startTouch[1] == y && SystemClock.elapsedRealtime()-now>200) {
+//					Animation a = new ScaleAnimation(1f, 1.2f, 1f, 1.2f,
+//							Animation.RELATIVE_TO_SELF, 0.5f,
+//							Animation.RELATIVE_TO_SELF, 0.5f);
+//					a.setDuration(300);
+//					a.setFillAfter(true);
+//					view.startAnimation(a);
+//					a.startNow();
+//					finishTransparentActivity();
+//					Intent intent = packageManager
+//							.getLaunchIntentForPackage(((String) view.getTag()));
+//					Log.e(TAG, (String) view.getTag());
+//					intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//					service.startActivity(intent);
+//					lastTouch = view;
+//				}
 				if (TouchType.NONE == flag) {
-					Log.i(TAG, "" + flag);
+					Log.d(TAG, "" + flag);
 					if (startTouch[0] == x && startTouch[1] == y) {
 						return true;
 					} else if ((startTouch[0] == x && startTouch[1] != y)
@@ -271,7 +289,7 @@ public class FloatWindowBigView extends LinearLayout implements
 				return true;
 			case MotionEvent.ACTION_UP:
 				// ProcessUtil.clearBackgroundProcess("com.qihoo.browser",service);
-
+//				lastTouch = null;
 				if (TouchType.UP_DOWN == flag) {
 					long len = SystemClock.elapsedRealtime() - now;
 					if (len < 200 && 100 < Math.abs(startTouch[1] - y)) {
@@ -283,7 +301,7 @@ public class FloatWindowBigView extends LinearLayout implements
 								"com.qihoo.huangmabisheng.UPDATE_ICON"));
 					}
 				}
-				flag = TouchType.NONE;
+//				flag = TouchType.NONE;
 				final int gl = rootView.getLeft();
 				if (gl <= 0) {
 					service.startActivity(service.mainActivityIntent);
@@ -296,6 +314,7 @@ public class FloatWindowBigView extends LinearLayout implements
 						view.startAnimation(a);
 						a.startNow();
 					}
+					flag = TouchType.NONE;
 					return true;
 				}
 				Log.d(TAG + " Action_Up", gl + "");
@@ -367,7 +386,7 @@ public class FloatWindowBigView extends LinearLayout implements
 				rootView.clearAnimation();
 				rootView.layout(left, top, right, bottom);
 				animating = false;
-
+				flag = TouchType.NONE;
 			}
 		});
 		a.startNow();
@@ -424,6 +443,7 @@ public class FloatWindowBigView extends LinearLayout implements
 					view.startAnimation(a);
 					a.startNow();
 				}
+				flag = TouchType.NONE;
 			}
 		});
 		a.startNow();
@@ -663,8 +683,8 @@ public class FloatWindowBigView extends LinearLayout implements
 	@Override
 	public void updateTime(int hour, int minute, int month, int date, int day) {
 		Log.d(TAG, rootView.getVisibility() + "," + rootView.getLeft());
-		if (flag != TouchType.NONE)
-			return;
+//		if (flag != TouchType.NONE)
+//			return;
 		String h = hour / 10 + "" + hour % 10;
 		if (!hourTextView.getText().equals(h)) {
 			hourTextView.setText(h);
