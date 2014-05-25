@@ -344,7 +344,7 @@ public class SmartLockService extends Service {
 			synchronized (SmartLockService.class) {
 				if (screen == Screen.OFF)
 					try {
-						Log.d(TAG, "wait off");
+						Log.e(TAG, "wait off");
 						SmartLockService.class.wait();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
@@ -355,7 +355,7 @@ public class SmartLockService extends Service {
 			updateCurrentPackageInfo();
 			// android.util.Log.d(TAG, "update time");
 			if (MyWindowManager.isWindowShowing()
-					&& MyWindowManager.isWindowGone() != View.GONE
+					&& MyWindowManager.isWindowLocked()
 					&& MyWindowManager.getView().flag == TouchType.NONE) {
 				handler.obtainMessage(Constant.UPDATE_TIME).sendToTarget();// 更新时间
 				String ipaddress = "slide anywhere to unlock";

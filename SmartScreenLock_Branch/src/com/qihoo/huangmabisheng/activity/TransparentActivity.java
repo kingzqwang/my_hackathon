@@ -1,19 +1,16 @@
 package com.qihoo.huangmabisheng.activity;
 
 import com.qihoo.huangmabisheng.R;
-import com.qihoo.huangmabisheng.service.FloatWindowService;
-import com.qihoo.huangmabisheng.service.SmartLockService;
+import com.qihoo.huangmabisheng.utils.Log;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
 import com.qihoo.huangmabisheng.utils.fb;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -60,7 +57,7 @@ public class TransparentActivity extends BaseActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		if (View.GONE == MyWindowManager.isWindowGone()) {
+		if (View.GONE == MyWindowManager.getWindowVisibility()) {
 			finish();
 			return;
 		}

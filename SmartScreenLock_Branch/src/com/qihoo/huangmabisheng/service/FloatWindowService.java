@@ -67,7 +67,7 @@ public class FloatWindowService extends Service {
 		if (!MyWindowManager.isWindowShowing()) {
 			MyWindowManager.createBigWindow(FloatWindowService.this);
 			MyWindowManager.setWindowGone();
-		} else if (View.GONE == MyWindowManager.isWindowGone()) {
+		} else if (View.GONE == MyWindowManager.getWindowVisibility()) {
 //			MyWindowManager.setWindowVisible();
 		}
 		return super.onStartCommand(intent, flags, startId);
@@ -125,9 +125,7 @@ public class FloatWindowService extends Service {
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
 			// if (action.equals("android.intent.action.SCREEN_OFF")) {
-			synchronized(SmartLockService.class) {
-				SmartLockService.screen = Screen.OFF;
-			}
+			SmartLockService.screen = Screen.OFF;
 			MyWindowManager.setWindowVisible();// 放在前面比较快
 			startActivity(mainActivityIntent);
 			// }

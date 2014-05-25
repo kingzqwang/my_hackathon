@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+import com.qihoo.huangmabisheng.constant.Constant.Screen;
+import com.qihoo.huangmabisheng.service.FloatWindowService;
+import com.qihoo.huangmabisheng.service.SmartLockService;
 import com.qihoo.huangmabisheng.view.FloatWindowBigView;
 import com.qihoo.huangmabisheng.view.FloatWindowSmallView;
 
@@ -94,6 +97,7 @@ public class MyWindowManager {
 				Log.d(TAG, bigWindowParams.x + "," + bigWindowParams.y);
 			}
 			windowManager.addView(bigWindow, bigWindowParams);
+
 		}
 	}
 
@@ -135,15 +139,17 @@ public class MyWindowManager {
 	 * @return 有悬浮窗显示在桌面上返回true，没有的话返回false。
 	 */
 	public static boolean isWindowShowing() {
-		return smallWindow != null || bigWindow != null;
+		return bigWindow != null;
 	}
 
-	public static int isWindowGone() {
+	public static int getWindowVisibility() {
 		return bigWindow.getVisibility();
 	}
+
 	public static boolean isWindowLocked() {
-		return isWindowGone() != View.GONE;
+		return getWindowVisibility() != View.GONE;
 	}
+
 	public static void setWindowVisible() {
 		Log.d(TAG, "setWindowVisible");
 		bigWindow.rootView.setVisibility(View.VISIBLE);
@@ -151,6 +157,7 @@ public class MyWindowManager {
 		bigWindow.dismissCanvas();
 		bigWindow.invalidate();
 	}
+
 	public static void setWindowGone() {
 		bigWindow.setVisibility(View.GONE);
 	}
