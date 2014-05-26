@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.qihoo.huangmabisheng.R;
 import com.qihoo.huangmabisheng.constant.Application;
+import com.qihoo.huangmabisheng.constant.Constant;
 import com.qihoo.huangmabisheng.constant.SharedPrefrencesAssist;
 import com.qihoo.huangmabisheng.interfaces.EventListener;
 import com.qihoo.huangmabisheng.service.FloatWindowService;
@@ -12,11 +13,15 @@ import com.qihoo.huangmabisheng.service.SpecialHttpService;
 import com.qihoo.huangmabisheng.special.instagram.InstagramActivity;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
 import com.qihoo.huangmabisheng.view.CloudDialog;
+import com.qihoo.huangmabisheng.wifi.WifiAdmin;
+import com.qihoo.huangmabisheng.wifi.WifiBroadcastReciever;
 
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
@@ -27,6 +32,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Checkable;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 
@@ -37,18 +43,36 @@ public class SettingActivity extends BaseActivity {
 	CheckBox unbelievableCheckBox;
 	ViewGroup photoLayout;
 	ImageView ipSettingImageView;
+	WifiBroadcastReciever wifiBroadcastReciever;
+	TextView specialServiceTitleTextView;
+	TextView specialServiceDescriptionTextView;
+	IntentFilter filter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.setting);
 		super.onCreate(savedInstanceState);
-
 	}
 
 	@Override
 	protected void handleMsg(Message msg) {
-		// TODO Auto-generated method stub
+		switch (msg.what) {
+		case Constant.WIFI_CONNECTED:
+			WifiAdmin wifiAdmin = WifiAdmin.getInstance(SettingActivity.this);
+			String ip = wifiAdmin.getIPAddressStr();
+			if (!ip.equals("0.0.0.0"))
+				specialServiceTitleTextView.setText("已连接："
+						+ WifiAdmin.getInstance(SettingActivity.this)
+								.getWifiInfo().getSSID());
+			else {
+				specialServiceTitleTextView.setText("您尚未连接任何wifi");
+			}
+			specialServiceDescriptionTextView.setText(ip);
+			break;
 
+		default:
+			break;
+		}
 	}
 
 	@Override
@@ -148,9 +172,13 @@ public class SettingActivity extends BaseActivity {
 						if (isChecked) {
 							startSpecialService();
 							openCheckBox(buttonView);
+							registerWifiBroadcastReciever();
 						} else {
 							stopSpecialService();
 							closeCheckBox(buttonView);
+							specialServiceTitleTextView.setText("你绝对想不到");
+							specialServiceDescriptionTextView.setText("特殊服务");
+							unregisterWifiBroadcastReciever();
 						}
 					}
 				});
@@ -178,18 +206,39 @@ public class SettingActivity extends BaseActivity {
 						}, null).show();
 			}
 		});
+
+		filter = new IntentFilter();
+		filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+		filter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+		filter.addAction(WifiManager.NETWORK_IDS_CHANGED_ACTION);
+		filter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
+		filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+		filter.addAction(WifiManager.RSSI_CHANGED_ACTION);
 	}
 
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-//		finish();
+		// finish();
+	}
+
+	private void registerWifiBroadcastReciever() {
+		wifiBroadcastReciever = new WifiBroadcastReciever(handler);
+		registerReceiver(wifiBroadcastReciever, filter);
+	}
+
+	private void unregisterWifiBroadcastReciever() {
+		if (null != wifiBroadcastReciever) {
+			unregisterReceiver(wifiBroadcastReciever);
+			wifiBroadcastReciever = null;
+		}
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		unregisterWifiBroadcastReciever();
 		// Intent intent = new Intent(SettingActivity.this,
 		// FloatWindowService.class);
 		// SettingActivity.this.startService(intent);
@@ -203,6 +252,8 @@ public class SettingActivity extends BaseActivity {
 		unbelievableCheckBox = (CheckBox) findViewById(R.id.service_control_checkbox);
 		photoLayout = (ViewGroup) findViewById(R.id.photo_layout);
 		ipSettingImageView = (ImageView) findViewById(R.id.setting_ip_imageview);
+		specialServiceTitleTextView = (TextView) findViewById(R.id.specialservice_title_textview);
+		specialServiceDescriptionTextView = (TextView) findViewById(R.id.specialservice_description_textview);
 	}
 
 	private boolean isServiceRunning(

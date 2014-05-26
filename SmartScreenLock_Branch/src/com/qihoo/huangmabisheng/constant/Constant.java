@@ -44,6 +44,7 @@ public class Constant {
 
 	public static final Set<String> alertFilter = new HashSet<String>();
 	static{
+		alertFilter.add("com.lbe.security.miui");
 		alertFilter.add("com.google.android.gsf.login");
 		alertFilter.add("com.android.phone");
 		alertFilter.add("com.android.systemui");
@@ -63,4 +64,7 @@ public class Constant {
 	public static final int SERVER_CAMERA_FOCUS = 5241907;
 	public static final String PARAM_TAKEPHOTO = "4";
 	public static final int SERVER_TAKE_PHOTO = 5242109;
+	public static final int WIFI_CONNECTED = 5261235;
+	public static final long REFRESH_TIME = 2000;
+	public static final long SCHEDULE_TIME = 1000;
 }

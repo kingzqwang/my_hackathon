@@ -12,6 +12,7 @@ import com.qihoo.huangmabisheng.activity.TransparentActivity;
 import com.qihoo.huangmabisheng.constant.Constant.Screen;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
 import com.qihoo.huangmabisheng.utils.fb;
+import com.qihoo.huangmabisheng.view.FloatWindowBigView;
 
 import android.R.integer;
 import android.app.ActivityManager;
@@ -108,9 +109,9 @@ public class FloatWindowService extends Service {
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
 			// if (action.equals("android.intent.action.SCREEN_ON")) {
-			synchronized(SmartLockService.class) {
+			synchronized (FloatWindowService.class) {
 				SmartLockService.screen = Screen.ON;
-				SmartLockService.class.notify();
+				FloatWindowService.class.notify();
 			}
 			//startActivity(mainActivityIntent);
 			Log.e(TAG,

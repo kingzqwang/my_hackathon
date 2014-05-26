@@ -126,11 +126,13 @@
         </RelativeLayout>
 
         <ImageView
+            android:visibility="gone"
             android:layout_width="fill_parent"
             android:layout_height="1sp"
             android:src="@color/title_gray" />
 
         <RelativeLayout
+            android:visibility="gone"
             android:layout_width="fill_parent"
             android:layout_height="@dimen/setting_layout_size"
             android:gravity="center_vertical"
@@ -176,7 +178,7 @@
             android:padding="4.0dip" >
 
             <TextView
-                android:id="@+id/other_start_imageLeft"
+                android:id="@+id/specialservice_title_textview"
                 android:layout_width="fill_parent"
                 android:layout_height="62dp"
                 android:clickable="false"
@@ -194,10 +196,11 @@
                 android:button="@drawable/rect_btn_checkbox_normal" />
 
             <TextView
+                android:id="@+id/specialservice_description_textview"
                 android:layout_width="fill_parent"
                 android:layout_height="17.0dp"
-                android:layout_alignBottom="@id/other_start_imageLeft"
-                android:layout_alignRight="@id/other_start_imageLeft"
+                android:layout_alignBottom="@id/specialservice_title_textview"
+                android:layout_alignRight="@id/specialservice_title_textview"
                 android:text="特殊服务"
                 android:textColor="@color/setting_text_gray"
                 android:textSize="@dimen/setting_down" />

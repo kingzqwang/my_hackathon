@@ -8,6 +8,7 @@ import com.qihoo.huangmabisheng.constant.Constant;
 import com.qihoo.huangmabisheng.constant.Constant.Screen;
 import com.qihoo.huangmabisheng.httpserver.SpecialHttpServer;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
+import com.qihoo.huangmabisheng.utils.Toast;
 import com.qihoo.huangmabisheng.view.FloatWindowBigView;
 import com.qihoo.huangmabisheng.wifi.WifiAdmin;
 
@@ -39,10 +40,6 @@ public class SpecialHttpService extends Service {
 				if (MyWindowManager.isWindowLocked()) {
 					if (!wakeLock.isHeld())
 						wakeLock.acquire();
-					synchronized (SmartLockService.class) {
-						SmartLockService.screen = Screen.ON;
-						SmartLockService.class.notify();
-					}
 					MyWindowManager.getView().openScreenLockAnim(0, 500, null);
 				} else {
 					MyWindowManager.setWindowVisible();// 放在前面比较快
@@ -69,6 +66,7 @@ public class SpecialHttpService extends Service {
 	@Override
 	public void onCreate() {
 		Log.d(TAG, "onCreate");
+		Toast.show(this, "特殊服务已开启");
 		Application.app.setSpecialServiceOnStatus();
 		pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wakeLock = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP
@@ -104,6 +102,7 @@ public class SpecialHttpService extends Service {
 	@Override
 	public void onDestroy() {
 		Log.d(TAG, "onDestroy");
+		Toast.show(this, "特殊服务已关闭");
 		Application.app.setSpecialServiceOffStatus();
 		httpdServer.stop();
 		super.onDestroy();

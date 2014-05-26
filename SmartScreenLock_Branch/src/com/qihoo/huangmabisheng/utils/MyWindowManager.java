@@ -147,6 +147,10 @@ public class MyWindowManager {
 	}
 
 	public static boolean isWindowLocked() {
+//		if (!isWindowShowing()) {
+//			Log.e(TAG, "bigWindow == null but isWindowLocked");
+//			return true;
+//		}
 		return getWindowVisibility() != View.GONE;
 	}
 

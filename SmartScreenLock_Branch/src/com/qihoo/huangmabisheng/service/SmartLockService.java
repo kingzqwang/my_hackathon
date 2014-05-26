@@ -78,6 +78,7 @@ public class SmartLockService extends Service {
 	ComponentName topActivity;// = runningTaskInfo.topActivity;
 	String currentPackageName, lastPackageName;
 	FileUtil fs;// = new FileService(getApplicationContext());
+	private Timer scheduleTimer;
 	private Timer timer;
 	Handler handler = new Handler() {
 
@@ -240,7 +241,11 @@ public class SmartLockService extends Service {
 				"android.intent.action.HEADSET_PLUG"));
 		if (timer == null) {
 			timer = new Timer();
-			timer.scheduleAtFixedRate(new RefreshTask(), 0, 1000);
+			timer.schedule(new RefreshTimeTask(), 0, Constant.REFRESH_TIME);
+		}
+		if (scheduleTimer == null) {
+			scheduleTimer = new Timer();
+			scheduleTimer.schedule(new ScheduleTask(), 0, Constant.SCHEDULE_TIME);
 		}
 	}
 
@@ -334,18 +339,66 @@ public class SmartLockService extends Service {
 			return false;
 		}
 	}
-
+	class RefreshTimeTask extends TimerTask {
+		@Override
+		public void run() {
+			if (MyWindowManager.isWindowShowing() && MyWindowManager.getView().flag == TouchType.NONE) {
+				handler.obtainMessage(Constant.UPDATE_TIME).sendToTarget();// 更新时间
+			}
+			if(MyWindowManager.isWindowShowing() && !MyWindowManager.isWindowLocked())
+			synchronized (FloatWindowBigView.class) {
+				if(MyWindowManager.isWindowShowing() && !MyWindowManager.isWindowLocked())
+					try {
+						Log.e(TAG, "FloatWindowBigView wait");
+						FloatWindowBigView.class.wait();
+						Log.e(TAG, "FloatWindowBigView notify");
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
+			if(SmartLockService.screen == Screen.OFF)
+			synchronized (FloatWindowService.class) {
+				if(SmartLockService.screen == Screen.OFF)
+					try {
+						Log.e(TAG, "FloatWindowService wait");
+						FloatWindowService.class.wait();
+						Log.e(TAG, "FloatWindowService notify");
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
+		}
+	}
+	int tim = 0;
 	/**
 	 * 该类是该服务的循环主体，用于不断读取top activity更新app_fre，同时也更新时间
 	 */
-	class RefreshTask extends TimerTask {
+	class ScheduleTask extends TimerTask {
 		@Override
 		public void run() {
+			Log.e(TAG, "运行次数"+(++tim));
+//			synchronized (SmartLockService.class) {
+//				if (screen == Screen.OFF)
+//					try {
+//						Log.e(TAG, "wait off");
+//						SmartLockService.class.wait();
+//					} catch (InterruptedException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//						return;
+//					}
+//			}
+			if (MyWindowManager.isWindowLocked())
 			synchronized (SmartLockService.class) {
-				if (screen == Screen.OFF)
+				if (MyWindowManager.isWindowLocked())
 					try {
-						Log.e(TAG, "wait off");
+						Log.e(TAG, "wait " + MyWindowManager.getWindowVisibility());
+						Log.e(TAG, "wait 运行次数"+tim);
+						
 						SmartLockService.class.wait();
+						Log.e(TAG, "notify");
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -353,19 +406,6 @@ public class SmartLockService extends Service {
 					}
 			}
 			updateCurrentPackageInfo();
-			// android.util.Log.d(TAG, "update time");
-			if (MyWindowManager.isWindowShowing()
-					&& MyWindowManager.isWindowLocked()
-					&& MyWindowManager.getView().flag == TouchType.NONE) {
-				handler.obtainMessage(Constant.UPDATE_TIME).sendToTarget();// 更新时间
-				String ipaddress = "slide anywhere to unlock";
-				if(Application.app.isSpecialServiceRunning)
-				ipaddress = WifiAdmin.getInstance(SmartLockService.this)
-						.getIPAddressStr();
-				handler.obtainMessage(
-						Constant.UPDATE_IPADDRESS,ipaddress).sendToTarget();// 更新IP
-			}
-			// TODO
 			// 先判断是不是可统计的app，即非系统app
 			if (currentPackageName.equals(lastPackageName))
 				return;
@@ -374,7 +414,7 @@ public class SmartLockService extends Service {
 					return;
 				}
 				pushInAppFre(topActivity, currentPackageName, Constant.SAVE);
-				Log.e(TAG, topActivity + "," + currentPackageName);
+				Log.e(TAG,  "pushInAppFre:" + currentPackageName);
 
 			} catch (NameNotFoundException e1) {
 				// TODO Auto-generated catch block
@@ -382,6 +422,7 @@ public class SmartLockService extends Service {
 			} finally {
 				lastPackageName = currentPackageName;// 更新last top
 			}
+			
 		}
 	}
 
@@ -403,7 +444,7 @@ public class SmartLockService extends Service {
 	}
 
 	/**
-	 * 更新锁屏上的icon，更新前进行二级过滤 ，此操作在关屏时启动
+	 * 此操作在关屏时启动
 	 */
 	private void updatePcksIcon() {
 		TimeQuantum timeQuantum = changeTimeQuantumToNow();
@@ -436,9 +477,6 @@ public class SmartLockService extends Service {
 		}
 	}
 
-	/**
-	 * 更新锁屏上的icon，更新前进行二级过滤 ，此操作在关屏时启动
-	 */
 	private void updatePcksIcon(SizeType sizeType) {
 		TimeQuantum timeQuantum = changeTimeQuantumToNow();
 		try {

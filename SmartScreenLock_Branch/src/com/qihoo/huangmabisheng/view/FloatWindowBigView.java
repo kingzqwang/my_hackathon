@@ -42,6 +42,7 @@ import com.qihoo.huangmabisheng.interfaces.IUpdatePackageIcon;
 import com.qihoo.huangmabisheng.interfaces.IUpdateTime;
 import com.qihoo.huangmabisheng.model.AppDataForList;
 import com.qihoo.huangmabisheng.service.FloatWindowService;
+import com.qihoo.huangmabisheng.service.SmartLockService;
 import com.qihoo.huangmabisheng.utils.Log;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
 
@@ -224,7 +225,7 @@ public class FloatWindowBigView extends LinearLayout implements
 				 //	intent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 				 Intent intent = packageManager
 						 .getLaunchIntentForPackage(((String) view.getTag()));
-				 Log.e(TAG, (String) view.getTag());
+//				 Log.e(TAG, (String) view.getTag());
 				 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 				 service.startActivity(intent);
 				 }
@@ -351,8 +352,8 @@ public class FloatWindowBigView extends LinearLayout implements
 			@Override
 			public void onAnimationStart(Animation animation) {
 				animating = true;
-				Log.e(TAG, "开屏开始");
-				Log.e(TAG, "viewWidth=" + viewWidth + ",gl=" + gl);
+//				Log.e(TAG, "开屏开始");
+//				Log.e(TAG, "viewWidth=" + viewWidth + ",gl=" + gl);
 				rootView.setVisibility(View.GONE);
 				View view;
 				view = v == null ? rootView : v;
@@ -373,7 +374,7 @@ public class FloatWindowBigView extends LinearLayout implements
 
 			@Override
 			public void onAnimationEnd(Animation animation) {
-				Log.e(TAG, "开屏结束");
+//				Log.e(TAG, "开屏结束");
 				FloatWindowBigView.this.setVisibility(View.GONE);
 				// service.sendBroadcast(new Intent(
 				// "com.qihoo.huangmabisheng.finish"));
@@ -411,7 +412,7 @@ public class FloatWindowBigView extends LinearLayout implements
 
 			@Override
 			public void onAnimationStart(Animation animation) {
-				Log.e(TAG, "回弹开始");
+//				Log.e(TAG, "回弹开始");
 				Log.e(TAG, "viewWidth=" + viewWidth + ",gl=" + gl);
 				animating = true;
 				rootView.setVisibility(View.GONE);
@@ -423,7 +424,7 @@ public class FloatWindowBigView extends LinearLayout implements
 
 			@Override
 			public void onAnimationEnd(Animation animation) {
-				Log.e(TAG, "回弹结束");
+//				Log.e(TAG, "回弹结束");
 				rootView.setVisibility(View.VISIBLE);
 				int left = rootView.getLeft() - gl;
 				int top = rootView.getTop();
@@ -609,6 +610,7 @@ public class FloatWindowBigView extends LinearLayout implements
 				break;
 			}
 		}
+//		Log.e(TAG,start+"");
 		for (int i = start - 1; i >= 0; i--) {
 			String pck = list[i].packageName;
 			ComponentName cpm = list[i].currentCompoment;
@@ -744,6 +746,23 @@ public class FloatWindowBigView extends LinearLayout implements
 	@Override
 	public void updateDescription(String description) {
 		descriptionTextView.setText(description);
+	}
+
+	@Override
+	public void setVisibility(int visibility) {
+		super.setVisibility(visibility);
+		Log.e(TAG,visibility+"");
+		if (visibility == View.GONE) {
+			synchronized (SmartLockService.class) {
+				if (visibility == View.GONE)
+					SmartLockService.class.notify();
+			}
+		}else {
+			synchronized (FloatWindowBigView.class) {
+				if (visibility != View.GONE)
+					FloatWindowBigView.class.notify();
+			}
+		}
 	}
 
 }
