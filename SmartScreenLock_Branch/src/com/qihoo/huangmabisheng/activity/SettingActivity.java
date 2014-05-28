@@ -39,7 +39,7 @@ import android.widget.ImageView;
 public class SettingActivity extends BaseActivity {
 	CheckBox startCheckBox;
 	ViewGroup filterApplicationLayout;
-	CheckBox handCheckBox;
+//	CheckBox handCheckBox;
 	CheckBox unbelievableCheckBox;
 	ViewGroup photoLayout;
 	ImageView ipSettingImageView;
@@ -143,26 +143,26 @@ public class SettingActivity extends BaseActivity {
 		});
 		SharedPrefrencesAssist.instance(SettingActivity.this).write("hand",
 				"true");
-		handCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				if (isChecked) {
-					if (null != MyWindowManager.getView())
-						MyWindowManager.getView().dismissHand(true);
-					SharedPrefrencesAssist.instance(SettingActivity.this)
-							.write("hand", "true");
-					openCheckBox(buttonView);
-				} else {
-					if (null != MyWindowManager.getView())
-						MyWindowManager.getView().dismissHand(false);
-					SharedPrefrencesAssist.instance(SettingActivity.this)
-							.write("hand", "false");
-					closeCheckBox(buttonView);
-				}
-			}
-		});
+//		handCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+//
+//			@Override
+//			public void onCheckedChanged(CompoundButton buttonView,
+//					boolean isChecked) {
+//				if (isChecked) {
+//					if (null != MyWindowManager.getView())
+//						MyWindowManager.getView().dismissHand(true);
+//					SharedPrefrencesAssist.instance(SettingActivity.this)
+//							.write("hand", "true");
+//					openCheckBox(buttonView);
+//				} else {
+//					if (null != MyWindowManager.getView())
+//						MyWindowManager.getView().dismissHand(false);
+//					SharedPrefrencesAssist.instance(SettingActivity.this)
+//							.write("hand", "false");
+//					closeCheckBox(buttonView);
+//				}
+//			}
+//		});
 		unbelievableCheckBox
 				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
@@ -248,7 +248,7 @@ public class SettingActivity extends BaseActivity {
 	protected void findAllViews() {
 		startCheckBox = (CheckBox) findViewById(R.id.start_checkbox);
 		filterApplicationLayout = (ViewGroup) findViewById(R.id.filter_application_select);
-		handCheckBox = (CheckBox) findViewById(R.id.hand_checkbox);
+//		handCheckBox = (CheckBox) findViewById(R.id.hand_checkbox);
 		unbelievableCheckBox = (CheckBox) findViewById(R.id.service_control_checkbox);
 		photoLayout = (ViewGroup) findViewById(R.id.photo_layout);
 		ipSettingImageView = (ImageView) findViewById(R.id.setting_ip_imageview);

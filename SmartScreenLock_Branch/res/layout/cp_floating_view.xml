@@ -1,9 +1,9 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/floating_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:splitMotionEvents="false" >
-
+<!--
     <ImageSwitcher
         android:id="@+id/switcher"
         android:layout_width="fill_parent"
@@ -11,10 +11,11 @@
         android:background="@color/black" />
 
     <TextView
-        android:layout_gravity="bottom|center_horizontal"
         android:id="@+id/description_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/log_layout_padding"
         android:text="@string/slide_anywhere"
         android:textColor="@color/gray"
@@ -22,10 +23,10 @@
         android:textStyle="italic" />
 
     <RelativeLayout
-        android:layout_gravity="right"
         android:id="@+id/time_layout"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/time_size"
+        android:layout_alignParentRight="true"
         android:layout_marginRight="15dp"
         android:gravity="center" >
 
@@ -126,5 +127,109 @@
             android:visibility="gone" />
     </RelativeLayout>
 
+    <LinearLayout
+        android:id="@+id/icon_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_marginBottom="@dimen/quarter_time_size"
+        android:layout_marginLeft="@dimen/log_layout_padding"
+        android:layout_marginTop="@dimen/half_time_size"
+        android:gravity="center"
+        android:orientation="vertical" >
 
-</FrameLayout>
+        <ImageSwitcher
+            android:id="@+id/imageview_0"
+            android:layout_width="@dimen/switcher_width"
+            android:layout_height="@dimen/switcher_width"
+            android:layout_weight="1"
+            android:background="@null" />
+
+        <ImageSwitcher
+            android:id="@+id/imageview_1"
+            android:layout_width="@dimen/switcher_width"
+            android:layout_height="@dimen/switcher_width"
+            android:layout_weight="1"
+            android:background="@null" />
+
+        <ImageSwitcher
+            android:id="@+id/imageview_2"
+            android:layout_width="@dimen/switcher_width"
+            android:layout_height="@dimen/switcher_width"
+            android:layout_weight="1"
+            android:background="@null" />
+
+        <ImageSwitcher
+            android:id="@+id/imageview_3"
+            android:layout_width="@dimen/switcher_width"
+            android:layout_height="@dimen/switcher_width"
+            android:layout_weight="1"
+            android:background="@null" />
+
+        <ImageSwitcher
+            android:id="@+id/imageview_4"
+            android:layout_width="@dimen/switcher_width"
+            android:layout_height="@dimen/switcher_width"
+            android:layout_weight="1"
+            android:background="@null" />
+
+        <ImageSwitcher
+            android:id="@+id/imageview_5"
+            android:layout_width="@dimen/switcher_width"
+            android:layout_height="@dimen/switcher_width"
+            android:layout_weight="1"
+            android:background="@null" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageview_photo"
+        android:layout_width="@dimen/log_width"
+        android:layout_height="@dimen/log_width"
+        android:layout_alignBottom="@+id/icon_layout"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/instagram"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/canvas_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/open_layout"
+        android:layout_below="@+id/time_layout"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="#bfffffff"
+        android:visibility="gone" >
+
+        <ImageView
+            android:id="@+id/imageview_canvas"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:clickable="true" />
+
+        <ImageView
+            android:id="@+id/close_canvas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/canvas_close" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:text="画点什么吧"
+            android:textColor="@color/strong_transparent"
+            android:textSize="@dimen/title" />
+
+        <ImageView
+            android:id="@+id/add_canvas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/canvas_add" />
+    </RelativeLayout>
+-->
+</RelativeLayout>

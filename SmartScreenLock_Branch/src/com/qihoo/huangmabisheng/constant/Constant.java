@@ -65,6 +65,7 @@ public class Constant {
 	public static final String PARAM_TAKEPHOTO = "4";
 	public static final int SERVER_TAKE_PHOTO = 5242109;
 	public static final int WIFI_CONNECTED = 5261235;
-	public static final long REFRESH_TIME = 2000;
+	public static final long REFRESH_TIME = 20000;
 	public static final long SCHEDULE_TIME = 1000;
+	public static final long ANIMATION_TIME = 200;
 }

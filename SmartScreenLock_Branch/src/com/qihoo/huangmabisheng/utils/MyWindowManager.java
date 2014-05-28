@@ -88,7 +88,7 @@ public class MyWindowManager {
 				bigWindowParams.y = LayoutParams.MATCH_PARENT;
 				// screenHeight / 2
 				// - FloatWindowBigView.viewHeight / 2;
-				bigWindowParams.type = LayoutParams.TYPE_SYSTEM_ALERT;
+				bigWindowParams.type = LayoutParams.TYPE_SYSTEM_ERROR;
 				bigWindowParams.format = PixelFormat.RGBA_8888;
 				bigWindowParams.gravity = Gravity.LEFT | Gravity.TOP;
 				bigWindowParams.width = FloatWindowBigView.viewWidth;
@@ -158,7 +158,7 @@ public class MyWindowManager {
 		Log.d(TAG, "setWindowVisible");
 		bigWindow.rootView.setVisibility(View.VISIBLE);
 		bigWindow.setVisibility(View.VISIBLE);
-		bigWindow.dismissCanvas();
+//		bigWindow.dismissCanvas();
 		bigWindow.invalidate();
 	}
 

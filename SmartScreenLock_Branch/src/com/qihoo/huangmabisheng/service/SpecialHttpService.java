@@ -37,23 +37,23 @@ public class SpecialHttpService extends Service {
 					wakeLock.release();
 				break;
 			case Constant.OPEN_SCREENLOCK:
-				if (MyWindowManager.isWindowLocked()) {
-					if (!wakeLock.isHeld())
-						wakeLock.acquire();
-					MyWindowManager.getView().openScreenLockAnim(0, 500, null);
-				} else {
-					MyWindowManager.setWindowVisible();// 放在前面比较快
-					Intent mainActivityIntent = new Intent(
-							SpecialHttpService.this, TransparentActivity.class);
-					mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					mainActivityIntent
-							.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-					startActivity(mainActivityIntent);
-					MyWindowManager.getView().closeScreenLockAnim(
-							-FloatWindowBigView.viewWidth, 500, null);
-					if (wakeLock.isHeld())
-						wakeLock.release();
-				}
+//				if (MyWindowManager.isWindowLocked()) {
+//					if (!wakeLock.isHeld())
+//						wakeLock.acquire();
+//					MyWindowManager.getView().openScreenLockAnim(0, 500, null);
+//				} else {
+//					MyWindowManager.setWindowVisible();// 放在前面比较快
+//					Intent mainActivityIntent = new Intent(
+//							SpecialHttpService.this, TransparentActivity.class);
+//					mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//					mainActivityIntent
+//							.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//					startActivity(mainActivityIntent);
+//					MyWindowManager.getView().closeScreenLockAnim(
+//							-FloatWindowBigView.viewWidth, 500, null);
+//					if (wakeLock.isHeld())
+//						wakeLock.release();
+//				}
 
 				break;
 			default:

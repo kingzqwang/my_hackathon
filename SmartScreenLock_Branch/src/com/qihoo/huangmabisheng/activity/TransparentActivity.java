@@ -26,8 +26,10 @@ public class TransparentActivity extends BaseActivity {
 		// lp.flags |= FLAG_HOMEKEY_DISPATCHED;
 		// getWindow().setAttributes(lp);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND,  
+//				 WindowManager.LayoutParams.FLAG_BLUR_BEHIND);  
+//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
 		super.onCreate(savedInstanceState);
 		// startService(new Intent(MainActivity.this,
