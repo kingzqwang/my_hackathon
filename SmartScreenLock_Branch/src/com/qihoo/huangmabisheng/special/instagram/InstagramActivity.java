@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -73,7 +74,6 @@ public class InstagramActivity extends Activity implements AutoFocusCallback,
 	boolean isControl = true;
 	Bitmap bitmap;
 	String TAG = "AppMain";
-	public SurfaceView cameraSurface;
 	public FrameLayout prepareLayout, takingPictureLayout;
 	public Parameters parameters;
 	public ImageButton startCameraButton, takePictureButton,
@@ -85,7 +85,7 @@ public class InstagramActivity extends Activity implements AutoFocusCallback,
 
 	public SurfaceView surfaceView;
 	public SurfaceHolder holder;
-	public Camera camera;
+	private Camera camera;
 	public SingleThread singleThread, singleThread_1;
 	public Handler handler = new Handler() {
 

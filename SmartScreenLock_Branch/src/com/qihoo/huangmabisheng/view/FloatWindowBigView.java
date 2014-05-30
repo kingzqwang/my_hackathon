@@ -98,7 +98,7 @@ public class FloatWindowBigView extends LinearLayout implements
 
 	Orientation orientation = Orientation.DOWN;
 	// ImageView specialImageView;
-
+	ImageView screenPhotoImageView;
 	// ImageView imageViewCanvas;
 	// ImageView imageViewClose;
 	// ImageView imageViewHand;
@@ -200,6 +200,8 @@ public class FloatWindowBigView extends LinearLayout implements
 
 		switcher = (ImageSwitcher) findViewById(R.id.switcher);
 		descriptionTextView = (TextView) findViewById(R.id.description_textview);
+		screenPhotoImageView = (ImageView)findViewById(R.id.screen_photo_imageview);
+		
 	}
 
 	// private View.OnTouchListener touchListener = new OnTouchListener() {
@@ -290,6 +292,9 @@ public class FloatWindowBigView extends LinearLayout implements
 			Log.i(TAG, "OnTouchListener" + " X is " + x + " Y is " + y);
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
+				if(screenPhotoImageView == v)
+					service.sendBroadcast(new Intent(
+							"com.qihoo.huangmabisheng.opencamera"));
 				now = SystemClock.elapsedRealtime();
 				// if (view instanceof ImageView) {
 				//
@@ -410,7 +415,7 @@ public class FloatWindowBigView extends LinearLayout implements
 							// duration = duration > 400 ? 400 : duration;
 							// duration = duration < 200 ? 200 : duration;
 							openScreenLockAnim(gl, Constant.OPENSCREEN_TIME,
-									rootView);
+									v);
 						} else {
 							Log.e(TAG, "closeScreenLockAnim");
 							// long duration = (long) (gl * 1000 / -velocityX);
@@ -418,7 +423,7 @@ public class FloatWindowBigView extends LinearLayout implements
 							// duration = duration < 150 ? 150 : duration;
 							closeScreenLockAnim(gl, 2 * gl
 									* Constant.CLOSESCREEN_TIME / viewWidth,
-									rootView);
+									v);
 						}
 						flag = TouchType.NONE;
 						mVelocityTracker.recycle();
@@ -437,14 +442,14 @@ public class FloatWindowBigView extends LinearLayout implements
 				// long duration = len * (viewWidth - gl) / gl;
 				// duration = duration > 400 ? 400 : duration;
 				// duration = duration < 200 ? 200 : duration;
-					openScreenLockAnim(gl, Constant.OPENSCREEN_TIME, rootView);
+					openScreenLockAnim(gl, Constant.OPENSCREEN_TIME, v);
 				} else {// 关屏
 					Log.e(TAG, "closeScreenLockAnim");
 					// long duration = 800 * gl / viewWidth;
 					// duration = duration > 400 ? 400 : duration;
 					// duration = duration < 150 ? 150 : duration;
 					closeScreenLockAnim(gl, 2 * gl * Constant.CLOSESCREEN_TIME
-							/ viewWidth, rootView);
+							/ viewWidth, v);
 				}
 				break;
 			}
@@ -538,6 +543,9 @@ public class FloatWindowBigView extends LinearLayout implements
 				animating = false;
 				flag = TouchType.NONE;
 				rootView.clearAnimation();
+				if(screenPhotoImageView == v)
+				service.sendBroadcast(new Intent(
+						"com.qihoo.huangmabisheng.closecamera"));
 				super.onAnimationEnd(animation);
 			}
 		});
@@ -547,9 +555,19 @@ public class FloatWindowBigView extends LinearLayout implements
 		a.start();
 
 	}
-
+	public void closeScreenPhoto() {
+		screenPhotoImageView.setVisibility(View.GONE);
+	}
+	public void openScreenPhoto() {
+		screenPhotoImageView.setVisibility(View.VISIBLE);
+	}
 	private void setAllListeners() {
 		this.setOnTouchListener(iconOnTouchListener);
+		if(SharedPrefrencesAssist.instance(service).readBoolean(Constant.SCREEN_PHOTO_IMAGEVIEW)){
+			screenPhotoImageView.setVisibility(View.VISIBLE);
+		}
+		
+		screenPhotoImageView.setOnTouchListener(iconOnTouchListener);
 		// imageViewClose.setOnClickListener(new OnClickListener() {
 		//
 		// @Override

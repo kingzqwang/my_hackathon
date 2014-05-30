@@ -85,4 +85,10 @@ public class SharedPrefrencesAssist {
 	public String read(String key) {
 		return sharedPreferences.getString(key, null);
 	}
+	public Boolean readBoolean(String key) {
+		return sharedPreferences.getBoolean(key, false);
+	}
+	public Boolean writeBoolean(String key,boolean value) {
+		return sharedPreferences.edit().putBoolean(key, value).commit();
+	}
 }

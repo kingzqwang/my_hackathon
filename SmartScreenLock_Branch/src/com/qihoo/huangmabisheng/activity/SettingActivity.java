@@ -13,6 +13,7 @@ import com.qihoo.huangmabisheng.service.SpecialHttpService;
 import com.qihoo.huangmabisheng.special.instagram.InstagramActivity;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
 import com.qihoo.huangmabisheng.view.CloudDialog;
+import com.qihoo.huangmabisheng.view.OptionCheckBox;
 import com.qihoo.huangmabisheng.wifi.WifiAdmin;
 import com.qihoo.huangmabisheng.wifi.WifiBroadcastReciever;
 
@@ -37,20 +38,24 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 
 public class SettingActivity extends BaseActivity {
-	CheckBox startCheckBox;
+	OptionCheckBox startCheckBox;
 	ViewGroup filterApplicationLayout;
 //	CheckBox handCheckBox;
-	CheckBox unbelievableCheckBox;
+	OptionCheckBox unbelievableCheckBox;
+	
+	ViewGroup specialModuleLayout;
 	ViewGroup photoLayout;
+	OptionCheckBox screenPhotoCheckBox;
 	ImageView ipSettingImageView;
 	WifiBroadcastReciever wifiBroadcastReciever;
 	TextView specialServiceTitleTextView;
 	TextView specialServiceDescriptionTextView;
 	IntentFilter filter;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.setting);
+		
 		super.onCreate(savedInstanceState);
 	}
 
@@ -96,22 +101,19 @@ public class SettingActivity extends BaseActivity {
 			} else {
 				// 服务标记关闭
 				startCheckBox.setChecked(false);
-				closeCheckBox(startCheckBox);
 			}
 		}
 		if (isServiceRunning(serviceList,
 				"com.qihoo.huangmabisheng.service.SpecialHttpService")) {
 			unbelievableCheckBox.setChecked(true);
-			openCheckBox(unbelievableCheckBox);
-			photoLayout.setVisibility(View.VISIBLE);
+			specialModuleLayout.setVisibility(View.VISIBLE);
 			ipSettingImageView.setVisibility(View.VISIBLE);
 		} else {
 			if (Application.app.isSpecialServiceRunning) {
 				startSpecialService();
 				unbelievableCheckBox.setChecked(true);
-				photoLayout.setVisibility(View.VISIBLE);
+				specialModuleLayout.setVisibility(View.VISIBLE);
 				ipSettingImageView.setVisibility(View.VISIBLE);
-				openCheckBox(unbelievableCheckBox);
 			}
 		}
 		// startCheckBox默认open
@@ -122,11 +124,9 @@ public class SettingActivity extends BaseActivity {
 					boolean isChecked) {
 				if (isChecked) {
 					Log.d(TAG, true + "");
-					openCheckBox(buttonView);
 					startAllServices();
 				} else {
 					Log.d(TAG, false + "");
-					closeCheckBox(buttonView);
 					stopAllServices();
 				}
 			}
@@ -171,11 +171,9 @@ public class SettingActivity extends BaseActivity {
 							boolean isChecked) {
 						if (isChecked) {
 							startSpecialService();
-							openCheckBox(buttonView);
 							registerWifiBroadcastReciever();
 						} else {
 							stopSpecialService();
-							closeCheckBox(buttonView);
 							specialServiceTitleTextView.setText("你绝对想不到");
 							specialServiceDescriptionTextView.setText("特殊服务");
 							unregisterWifiBroadcastReciever();
@@ -206,7 +204,24 @@ public class SettingActivity extends BaseActivity {
 						}, null).show();
 			}
 		});
+		if(SharedPrefrencesAssist.instance(this).readBoolean(Constant.SCREEN_PHOTO_IMAGEVIEW)){
+			screenPhotoCheckBox.setChecked(true);
+		}
+		screenPhotoCheckBox
+		.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				SharedPrefrencesAssist.instance(SettingActivity.this).writeBoolean(Constant.SCREEN_PHOTO_IMAGEVIEW, isChecked);
+				if (isChecked) {
+					MyWindowManager.getView().openScreenPhoto();
+				} else {
+					MyWindowManager.getView().closeScreenPhoto();
+				}
+			}
+		});
+		
 		filter = new IntentFilter();
 		filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 		filter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
@@ -246,14 +261,16 @@ public class SettingActivity extends BaseActivity {
 
 	@Override
 	protected void findAllViews() {
-		startCheckBox = (CheckBox) findViewById(R.id.start_checkbox);
+		startCheckBox = (OptionCheckBox) findViewById(R.id.start_checkbox);
 		filterApplicationLayout = (ViewGroup) findViewById(R.id.filter_application_select);
 //		handCheckBox = (CheckBox) findViewById(R.id.hand_checkbox);
-		unbelievableCheckBox = (CheckBox) findViewById(R.id.service_control_checkbox);
-		photoLayout = (ViewGroup) findViewById(R.id.photo_layout);
+		unbelievableCheckBox = (OptionCheckBox) findViewById(R.id.service_control_checkbox);
 		ipSettingImageView = (ImageView) findViewById(R.id.setting_ip_imageview);
 		specialServiceTitleTextView = (TextView) findViewById(R.id.specialservice_title_textview);
 		specialServiceDescriptionTextView = (TextView) findViewById(R.id.specialservice_description_textview);
+		specialModuleLayout = (ViewGroup)findViewById(R.id.special_module_layout);
+		screenPhotoCheckBox = (OptionCheckBox)findViewById(R.id.screen_photo_checkbox);
+		photoLayout = (ViewGroup) findViewById(R.id.photo_layout);
 	}
 
 	private boolean isServiceRunning(
@@ -299,7 +316,7 @@ public class SettingActivity extends BaseActivity {
 		Intent httpIntent = new Intent(SettingActivity.this,
 				SpecialHttpService.class);
 		SettingActivity.this.startService(httpIntent);
-		photoLayout.setVisibility(View.VISIBLE);
+		specialModuleLayout.setVisibility(View.VISIBLE);
 		ipSettingImageView.setVisibility(View.VISIBLE);
 	}
 
@@ -307,15 +324,8 @@ public class SettingActivity extends BaseActivity {
 		Intent httpIntent = new Intent(SettingActivity.this,
 				SpecialHttpService.class);
 		SettingActivity.this.stopService(httpIntent);
-		photoLayout.setVisibility(View.GONE);
+		specialModuleLayout.setVisibility(View.GONE);
 		ipSettingImageView.setVisibility(View.GONE);
 	}
 
-	private void openCheckBox(CompoundButton buttonView) {
-		buttonView.setButtonDrawable(R.drawable.rect_bth_checkbox_normal);
-	}
-
-	private void closeCheckBox(CompoundButton cb) {
-		cb.setButtonDrawable(R.drawable.rect_btn_checkbox_normal);
-	}
 }

@@ -71,4 +71,5 @@ public class Constant {
 	public static final long OPENSCREEN_TIME = 200;
 	public static final long CLOSESCREEN_TIME = 300;
 	public static final long VIBRATE_TIME = 5;
+	public static final String SCREEN_PHOTO_IMAGEVIEW = "SCREEN_PHOTO_IMAGEVIEW";
 }
