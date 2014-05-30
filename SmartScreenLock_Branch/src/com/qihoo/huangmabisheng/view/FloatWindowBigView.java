@@ -2,6 +2,7 @@ package com.qihoo.huangmabisheng.view;
 
 import java.util.Date;
 
+import android.R.integer;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -57,6 +58,7 @@ import com.qihoo.huangmabisheng.service.FloatWindowService;
 import com.qihoo.huangmabisheng.service.SmartLockService;
 import com.qihoo.huangmabisheng.utils.Log;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
+import com.qihoo.huangmabisheng.utils.TipHelper;
 import com.qihoo.huangmabisheng.view.IconImageView.Orientation;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -80,27 +82,27 @@ public class FloatWindowBigView extends LinearLayout implements
 	public static int viewHeight;
 	public ViewGroup rootView;
 	// ImageView testImageView;
-//	ImageSwitcher image0View;
-//	ImageSwitcher image1View;
-//	ImageSwitcher image2View;
-//	ImageSwitcher image3View;
-//	ImageSwitcher image4View;
-//	ImageSwitcher image5View;
-	
+	// ImageSwitcher image0View;
+	// ImageSwitcher image1View;
+	// ImageSwitcher image2View;
+	// ImageSwitcher image3View;
+	// ImageSwitcher image4View;
+	// ImageSwitcher image5View;
+
 	IconImageView image0View;
 	IconImageView image1View;
 	IconImageView image2View;
 	IconImageView image3View;
 	IconImageView image4View;
 	IconImageView image5View;
-	
-	Orientation orientation = Orientation.DOWN;
-//	ImageView specialImageView;
 
-//	ImageView imageViewCanvas;
-//	ImageView imageViewClose;
-//	ImageView imageViewHand;
-//	ImageView imageViewAdd;
+	Orientation orientation = Orientation.DOWN;
+	// ImageView specialImageView;
+
+	// ImageView imageViewCanvas;
+	// ImageView imageViewClose;
+	// ImageView imageViewHand;
+	// ImageView imageViewAdd;
 	// ViewGroup layoutGuess;
 	TextView hourTextView;
 	TextView minuteTextView;
@@ -119,11 +121,31 @@ public class FloatWindowBigView extends LinearLayout implements
 	ViewConfiguration configuration;
 	public TouchType flag = TouchType.NONE;// 1,2
 
+	private void setAllIconAlpha(int left) {
+		float alpha = 0f;
+		// left += left;
+		// if(left < viewWidth)
+		alpha = 1 - (float) left / viewWidth;
+		image0View.setAlpha(alpha);
+		image1View.setAlpha(alpha);
+		image2View.setAlpha(alpha);
+		image3View.setAlpha(alpha);
+		image4View.setAlpha(alpha);
+		image5View.setAlpha(alpha);
+	}
+
+	private void layoutRootView(int l, int t, int r, int b) {
+		// setAllIconAlpha(l);
+		// this.scrollTo(-l, 0);
+		rootView.layout(l, t, r, b);
+	}
+
 	private void findAllViews(Context context) {
 		packageManager = context.getPackageManager();
 		configuration = ViewConfiguration.get(context);
-		mMinimumFlingVelocity = configuration.getScaledMinimumFlingVelocity();
-        mMaximumFlingVelocity = configuration.getScaledMaximumFlingVelocity();
+		mMinimumFlingVelocity = 20 * configuration
+				.getScaledMinimumFlingVelocity();
+		mMaximumFlingVelocity = configuration.getScaledMaximumFlingVelocity();
 		LayoutInflater.from(context).inflate(R.layout.floating_view, this);
 		rootView = (ViewGroup) findViewById(R.id.floating_layout);
 
@@ -132,13 +154,13 @@ public class FloatWindowBigView extends LinearLayout implements
 		viewHeight = MyWindowManager.getWindowManager(context)
 				.getDefaultDisplay().getHeight();
 		Log.d(TAG, viewHeight + "");
-//		image0View = (ImageSwitcher) rootView.findViewById(R.id.imageview_0);
-//		image1View = (ImageSwitcher) rootView.findViewById(R.id.imageview_1);
-//		image2View = (ImageSwitcher) rootView.findViewById(R.id.imageview_2);
-//		image3View = (ImageSwitcher) rootView.findViewById(R.id.imageview_3);
-//		image4View = (ImageSwitcher) rootView.findViewById(R.id.imageview_4);
-//		image5View = (ImageSwitcher) rootView.findViewById(R.id.imageview_5);
-		
+		// image0View = (ImageSwitcher) rootView.findViewById(R.id.imageview_0);
+		// image1View = (ImageSwitcher) rootView.findViewById(R.id.imageview_1);
+		// image2View = (ImageSwitcher) rootView.findViewById(R.id.imageview_2);
+		// image3View = (ImageSwitcher) rootView.findViewById(R.id.imageview_3);
+		// image4View = (ImageSwitcher) rootView.findViewById(R.id.imageview_4);
+		// image5View = (ImageSwitcher) rootView.findViewById(R.id.imageview_5);
+
 		final int iconWH = com.qihoo.huangmabisheng.utils.DensityUtil.dip2px(
 				getContext(), 56f);
 		final int marginTop = viewHeight / 7;
@@ -154,10 +176,9 @@ public class FloatWindowBigView extends LinearLayout implements
 		rootView.addView(image3View);
 		rootView.addView(image4View);
 		rootView.addView(image5View);
-		
-		
-//		specialImageView = (ImageView) rootView
-//				.findViewById(R.id.imageview_photo);
+
+		// specialImageView = (ImageView) rootView
+		// .findViewById(R.id.imageview_photo);
 		hourTextView = (TextView) rootView.findViewById(R.id.hour_textview);
 		minuteTextView = (TextView) rootView.findViewById(R.id.minute_textview);
 		monthDateTextView = (TextView) rootView
@@ -165,16 +186,17 @@ public class FloatWindowBigView extends LinearLayout implements
 		dayTextView = (TextView) rootView.findViewById(R.id.day_textview);
 
 		// layoutGuess = (ViewGroup) rootView.findViewById(R.id.layout_guess);
-//		imageViewCanvas = (ImageView) rootView
-//				.findViewById(R.id.imageview_canvas);
-//		imageViewCanvas.setOnTouchListener(touchListener);
+		// imageViewCanvas = (ImageView) rootView
+		// .findViewById(R.id.imageview_canvas);
+		// imageViewCanvas.setOnTouchListener(touchListener);
 		paint = new Paint();
 		paint.setStrokeWidth(25);
 		paint.setColor(Color.GREEN);
-//		imageViewClose = (ImageView) rootView.findViewById(R.id.close_canvas);
-//		imageViewAdd = (ImageView) rootView.findViewById(R.id.add_canvas);
-//		canvasLayout = (ViewGroup) rootView.findViewById(R.id.canvas_layout);
-//		imageViewHand = (ImageView) rootView.findViewById(R.id.image_hand);
+		// imageViewClose = (ImageView)
+		// rootView.findViewById(R.id.close_canvas);
+		// imageViewAdd = (ImageView) rootView.findViewById(R.id.add_canvas);
+		// canvasLayout = (ViewGroup) rootView.findViewById(R.id.canvas_layout);
+		// imageViewHand = (ImageView) rootView.findViewById(R.id.image_hand);
 
 		switcher = (ImageSwitcher) findViewById(R.id.switcher);
 		descriptionTextView = (TextView) findViewById(R.id.description_textview);
@@ -234,18 +256,26 @@ public class FloatWindowBigView extends LinearLayout implements
 		super.onDraw(canvas);
 	}
 
-	
+	@Override
+	protected void onAttachedToWindow() {
+		// TODO Auto-generated method stub
+		super.onAttachedToWindow();
+	}
+
 	private OnTouchListener iconOnTouchListener = new OnTouchListener() {
 		// int[] temp = new int[] { 0, 0 };
+		/**
+		 * 初次按下的坐标
+		 */
 		int tempX = 0;
 		int startTouchX = 0;
 		int startTouchY = 0;
 		long now;
-//		final View view = rootView;
+
+		// final View view = rootView;
 		// View lastTouch = null;
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
-			
 			if (animating) {
 				return true;
 			}
@@ -291,8 +321,9 @@ public class FloatWindowBigView extends LinearLayout implements
 				// temp[1] = y - rootView.getTop();
 				return true;
 			case MotionEvent.ACTION_MOVE:
-//				mVelocityTracker.computeCurrentVelocity(100,mMaximumFlingVelocity);
-//				Log.e(TAG, "ACTION_MOVE:X为 "+mVelocityTracker.getXVelocity()+",Y为 "+mVelocityTracker.getYVelocity());
+				// mVelocityTracker.computeCurrentVelocity(100,mMaximumFlingVelocity);
+				// Log.e(TAG,
+				// "ACTION_MOVE:X为 "+mVelocityTracker.getXVelocity()+",Y为 "+mVelocityTracker.getYVelocity());
 				// if (lastTouch == null && view instanceof ImageView &&
 				// startTouch[0] == x && startTouch[1] == y &&
 				// SystemClock.elapsedRealtime()-now>200) {
@@ -319,11 +350,11 @@ public class FloatWindowBigView extends LinearLayout implements
 				int r = l + viewWidth;
 				// int b = y + v.getHeight() - temp[1];
 				int b = viewHeight;
-//				Log.e(TAG, flag.toString());
+				// Log.e(TAG, flag.toString());
 				switch (flag) {
 				case OPEN_SCREEN:
 					if (l >= 0)
-						rootView.layout(l, t, r, b);
+						layoutRootView(l, t, r, b);
 					break;
 				case UP_DOWN:
 					break;
@@ -343,7 +374,7 @@ public class FloatWindowBigView extends LinearLayout implements
 					} else {
 						flag = TouchType.OPEN_SCREEN;
 						if (l >= 0)
-							rootView.layout(l, t, r, b);
+							layoutRootView(l, t, r, b);
 					}
 				}
 				return true;
@@ -352,10 +383,12 @@ public class FloatWindowBigView extends LinearLayout implements
 				if (gl <= 0) {
 					service.startActivity(service.mainActivityIntent);
 				}
-				mVelocityTracker.computeCurrentVelocity(1000,mMaximumFlingVelocity);
+				mVelocityTracker.computeCurrentVelocity(1000,
+						mMaximumFlingVelocity);
 				final float velocityY = mVelocityTracker.getYVelocity();
 				final float velocityX = mVelocityTracker.getXVelocity();
-				if ((Math.abs(velocityY) > mMinimumFlingVelocity) || (Math.abs(velocityX) > mMinimumFlingVelocity)) {
+				if ((Math.abs(velocityY) > mMinimumFlingVelocity)
+						|| (Math.abs(velocityX) > mMinimumFlingVelocity)) {
 					switch (flag) {
 					case UP_DOWN:
 						if (0 > velocityY)
@@ -370,17 +403,22 @@ public class FloatWindowBigView extends LinearLayout implements
 						return true;
 					case OPEN_SCREEN:
 						if (0 < velocityX) {
-							long duration = (long) ((viewWidth - gl) / velocityX*1000);
-							duration = duration > 500 ? 500 : duration;
-							duration = duration < 50 ? 50 : duration;
-							openScreenLockAnim(gl, duration, rootView);
-						}else {
+							if (gl < viewWidth * 1 / 4)
+								break;
+							// long duration = (long) ((viewWidth - gl)*1000 /
+							// velocityX);
+							// duration = duration > 400 ? 400 : duration;
+							// duration = duration < 200 ? 200 : duration;
+							openScreenLockAnim(gl, Constant.OPENSCREEN_TIME,
+									rootView);
+						} else {
 							Log.e(TAG, "closeScreenLockAnim");
-							long duration = (long) (gl / -velocityX * 1000);
-							duration = duration > 500 ? 500 : duration;
-							duration = duration < 50 ? 50 : duration;
-							if(old == 0)oldcloseScreenLockAnim(gl, duration, rootView);
-							else closeScreenLockAnim(gl, duration, rootView);
+							// long duration = (long) (gl * 1000 / -velocityX);
+							// duration = duration > 400 ? 400 : duration;
+							// duration = duration < 150 ? 150 : duration;
+							closeScreenLockAnim(gl, 2 * gl
+									* Constant.CLOSESCREEN_TIME / viewWidth,
+									rootView);
 						}
 						flag = TouchType.NONE;
 						mVelocityTracker.recycle();
@@ -394,28 +432,19 @@ public class FloatWindowBigView extends LinearLayout implements
 					}
 				}
 				long len = SystemClock.elapsedRealtime() - now;
-				// if (TouchType.UP_DOWN == flag) {// ////这块逻辑一定要改
-				// if (len < 200 && 100 < Math.abs(startTouchY - y)) {
-				// if (y < startTouchY)
-				// orientation = Orientation.UP;
-				// else
-				// orientation = Orientation.DOWN;
-				// service.sendBroadcast(new Intent(
-				// "com.qihoo.huangmabisheng.UPDATE_ICON"));
-				// }
-				// }
 				Log.d(TAG + " Action_Up", gl + "");
 				if (gl > viewWidth * 1 / 2) {// 开屏
-					long duration = len * (viewWidth - gl) / gl;
-					duration = duration > 500 ? 500 : duration;
-					duration = duration < 50 ? 50 : duration;
-					openScreenLockAnim(gl, duration, rootView);
+				// long duration = len * (viewWidth - gl) / gl;
+				// duration = duration > 400 ? 400 : duration;
+				// duration = duration < 200 ? 200 : duration;
+					openScreenLockAnim(gl, Constant.OPENSCREEN_TIME, rootView);
 				} else {// 关屏
 					Log.e(TAG, "closeScreenLockAnim");
-					long duration = 800 * gl / viewWidth;
-					duration = duration < 50 ? 50 : duration;
-					if(old == 0)oldcloseScreenLockAnim(gl, duration, rootView);
-					else closeScreenLockAnim(gl, duration, rootView);
+					// long duration = 800 * gl / viewWidth;
+					// duration = duration > 400 ? 400 : duration;
+					// duration = duration < 150 ? 150 : duration;
+					closeScreenLockAnim(gl, 2 * gl * Constant.CLOSESCREEN_TIME
+							/ viewWidth, rootView);
 				}
 				break;
 			}
@@ -427,6 +456,13 @@ public class FloatWindowBigView extends LinearLayout implements
 	};
 
 	public void openScreenLockAnim(final int gl, long duration, final View v) {
+		if (old == 0) {
+			Animation a = new TranslateAnimation(0.0f, 0.0f, 0.0f, 0.0f);
+			a.setDuration(duration);
+			rootView.startAnimation(a);
+			old = 1;
+		}
+		Log.e(TAG, "duration=" + duration);
 		final int left = rootView.getLeft();
 		final int top = rootView.getTop();
 		final int right = rootView.getRight();
@@ -436,18 +472,21 @@ public class FloatWindowBigView extends LinearLayout implements
 			@Override
 			public void onAnimationUpdate(ValueAnimator animation) {
 				final int g = (Integer) animation.getAnimatedValue();
-				rootView.layout(left + g, top, right + g, bottom);
+				// Log.e(TAG,
+				// "g="+g+",left="+rootView.getLeft()+",top="+top+",right="+rootView.getRight()+",bottom+"+bottom);
+				layoutRootView(left + g, top, right + g, bottom);
 			}
 		});
 		a.setDuration(duration);
 		a.setInterpolator(AnimationUtils.loadInterpolator(service,
 				android.R.anim.decelerate_interpolator));
-		finishTransparentActivity();
+
 		a.addListener(new AnimatorListenerAdapter() {
 
 			@Override
 			public void onAnimationStart(Animator animation) {
 				animating = true;
+				TipHelper.Vibrate(service, Constant.VIBRATE_TIME);
 				super.onAnimationStart(animation);
 			}
 
@@ -456,72 +495,24 @@ public class FloatWindowBigView extends LinearLayout implements
 				FloatWindowBigView.this.setVisibility(View.GONE);
 				animating = false;
 				flag = TouchType.NONE;
+				finishTransparentActivity();
 				rootView.clearAnimation();
 				super.onAnimationEnd(animation);
 			}
 		});
 		a.start();
 	}
+
 	int old = 0;
-	private void oldcloseScreenLockAnim(final int lg, long duration, final View v) {
-//		 TODO 动画回弹
-		old=1;
-				Animation a;
-				service.startActivity(service.mainActivityIntent);
-				final int gl = Math.abs(lg);
-				if (lg >= 0)
-					a = new TranslateAnimation(0.0f, 0.0f - gl, 0.0f, 0.0f);
-				else
-					a = new TranslateAnimation(0.0f + gl, 0.0f, 0.0f, 0.0f);
-				a.setDuration(duration);
-				a.setFillEnabled(true);
-				a.setInterpolator(AnimationUtils.loadInterpolator(service,
-						android.R.anim.decelerate_interpolator));
-				rootView.startAnimation(a);
-				a.setAnimationListener(new AnimationListener() {
 
-					@Override
-					public void onAnimationStart(Animation animation) {
-//						Log.e(TAG, "回弹开始");
-						Log.e(TAG, "viewWidth=" + viewWidth + ",gl=" + gl);
-						animating = true;
-						rootView.setVisibility(View.GONE);
-					}
-
-					@Override
-					public void onAnimationRepeat(Animation animation) {
-					}
-
-					@Override
-					public void onAnimationEnd(Animation animation) {
-//						Log.e(TAG, "回弹结束");
-						rootView.setVisibility(View.VISIBLE);
-						int left = rootView.getLeft() - gl;
-						int top = rootView.getTop();
-						int right = rootView.getRight() - gl;
-						int bottom = rootView.getBottom();
-						rootView.clearAnimation();
-						rootView.layout(left, top, right, bottom);
-						animating = false;
-						View view = v == null ? rootView : v;
-						if (view instanceof ImageView) {
-
-							Animation a = new ScaleAnimation(1.2f, 1f, 1.2f, 1f,
-									Animation.RELATIVE_TO_SELF, 0.5f,
-									Animation.RELATIVE_TO_SELF, 0.5f);
-							a.setDuration(300);
-							a.setFillAfter(true);
-							view.startAnimation(a);
-							a.startNow();
-						}
-						flag = TouchType.NONE;
-					}
-				});
-				a.startNow();
-		
-	}
 	private void closeScreenLockAnim(final int lg, long duration, final View v) {
-//		// TODO 动画回弹
+		if (old == 0) {
+			Animation a = new TranslateAnimation(0.0f, 0.0f, 0.0f, 0.0f);
+			a.setDuration(duration);
+			rootView.startAnimation(a);
+			old = 1;
+		}
+		// // TODO 动画回弹
 		final int left = rootView.getLeft();
 		final int top = rootView.getTop();
 		final int right = rootView.getRight();
@@ -532,7 +523,7 @@ public class FloatWindowBigView extends LinearLayout implements
 			@Override
 			public void onAnimationUpdate(ValueAnimator animation) {
 				final int g = (Integer) animation.getAnimatedValue();
-				rootView.layout(left - g, top, right - g, bottom);
+				layoutRootView(left - g, top, right - g, bottom);
 			}
 		});
 		a.addListener(new AnimatorListenerAdapter() {
@@ -558,11 +549,6 @@ public class FloatWindowBigView extends LinearLayout implements
 	}
 
 	private void setAllListeners() {
-//		openL = rootView.getLeft();
-//		openB = rootView.getBottom();
-//		openR = rootView.getRight();
-//		openT = rootView.getTop();
-
 		this.setOnTouchListener(iconOnTouchListener);
 		// imageViewClose.setOnClickListener(new OnClickListener() {
 		//

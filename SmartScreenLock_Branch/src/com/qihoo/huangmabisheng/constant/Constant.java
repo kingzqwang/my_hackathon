@@ -68,4 +68,7 @@ public class Constant {
 	public static final long REFRESH_TIME = 20000;
 	public static final long SCHEDULE_TIME = 1000;
 	public static final long ANIMATION_TIME = 200;
+	public static final long OPENSCREEN_TIME = 200;
+	public static final long CLOSESCREEN_TIME = 300;
+	public static final long VIBRATE_TIME = 5;
 }

@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.qihoo.huangmabisheng.view.RootView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/floating_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -125,6 +125,4 @@
             android:src="@drawable/hand"
             android:visibility="gone" />
     </RelativeLayout>
-
-
-</FrameLayout>
+</com.qihoo.huangmabisheng.view.RootView>

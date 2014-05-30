@@ -20,11 +20,14 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.view.Gravity;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 @SuppressLint("NewApi")
 public class IconImageView extends ImageView {
+	int old = 0;
 	AnimatorSet animationUp;
 	AnimatorSet animationDown;
 	FrameLayout.LayoutParams layoutParams;
@@ -41,6 +44,12 @@ public class IconImageView extends ImageView {
 
 	public void switchApp(String pck, ComponentName cpm, Orientation orientation)
 			throws NameNotFoundException {
+		if(old == 0){
+			Animation a = new TranslateAnimation(0.0f, 0.0f , 0.0f, 0.0f);
+			a.setDuration(Constant.ANIMATION_TIME);
+			this.startAnimation(a);
+			old=1;
+			}
 		this.currentCpm = cpm;
 		this.currentPck = pck;
 		this.currentDrawable = packageManager.getPackageInfo(pck, 0).applicationInfo
@@ -54,6 +63,12 @@ public class IconImageView extends ImageView {
 	}
 
 	public void switchAppToBlank(Orientation orientation) {
+		if(old == 0){
+			Animation a = new TranslateAnimation(0.0f, 0.0f , 0.0f, 0.0f);
+			a.setDuration(Constant.ANIMATION_TIME);
+			this.startAnimation(a);
+			old=1;
+			}
 		setEnabled(false);
 		this.currentCpm = null;
 		this.currentPck = null;
