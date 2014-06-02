@@ -11,7 +11,7 @@ import java.util.concurrent.BlockingDeque;
 
 import com.qihoo.huangmabisheng.R;
 import com.qihoo.huangmabisheng.constant.Constant;
-import com.qihoo.huangmabisheng.special.instagram.InstagramActivity;
+import com.qihoo.huangmabisheng.plugin.seven.InstagramActivity;
 import com.qihoo.huangmabisheng.utils.Log;
 
 import android.content.Context;

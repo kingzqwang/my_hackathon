@@ -58,7 +58,7 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".special.instagram.InstagramActivity"
+            android:name="com.qihoo.huangmabisheng.plugin.seven.InstagramActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" >
         </activity>

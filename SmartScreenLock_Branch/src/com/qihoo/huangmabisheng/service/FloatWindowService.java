@@ -1,9 +1,12 @@
 package com.qihoo.huangmabisheng.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Map.Entry;
@@ -11,11 +14,13 @@ import java.util.Map.Entry;
 import com.qihoo.huangmabisheng.activity.TransparentActivity;
 import com.qihoo.huangmabisheng.constant.Constant.Screen;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
+import com.qihoo.huangmabisheng.utils.ProcessUtil;
 import com.qihoo.huangmabisheng.utils.fb;
 import com.qihoo.huangmabisheng.view.FloatWindowBigView;
 
 import android.R.integer;
 import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -69,7 +74,7 @@ public class FloatWindowService extends Service {
 			MyWindowManager.createBigWindow(FloatWindowService.this);
 			MyWindowManager.setWindowGone();
 		} else if (View.GONE == MyWindowManager.getWindowVisibility()) {
-//			MyWindowManager.setWindowVisible();
+			// MyWindowManager.setWindowVisible();
 		}
 		return super.onStartCommand(intent, flags, startId);
 	}
@@ -82,7 +87,7 @@ public class FloatWindowService extends Service {
 		if (timer != null)
 			timer.cancel();
 		timer = null;
-		
+
 		this.unregisterReceiver(screenOffReceiver);
 		this.unregisterReceiver(screenOnReceiver);
 
@@ -103,28 +108,37 @@ public class FloatWindowService extends Service {
 
 	}
 
-
 	private BroadcastReceiver screenOnReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
+//			String action = intent.getAction();
 			// if (action.equals("android.intent.action.SCREEN_ON")) {
 			synchronized (FloatWindowService.class) {
 				SmartLockService.screen = Screen.ON;
 				FloatWindowService.class.notify();
 			}
-			//startActivity(mainActivityIntent);
+			// startActivity(mainActivityIntent);
 			Log.e(TAG,
 					"-----------ON------ android.intent.action.SCREEN_ON------");
-			// }
 		}
 
 	};
+	private Set<String> getHomes() {
+		Set<String> names = new HashSet<String>();
+		PackageManager packageManager = this.getPackageManager();
+		Intent intent = new Intent(Intent.ACTION_MAIN);
+		intent.addCategory(Intent.CATEGORY_HOME);
+		List<ResolveInfo> resolveInfo = packageManager.queryIntentActivities(
+				intent, PackageManager.MATCH_DEFAULT_ONLY);
+		for (ResolveInfo ri : resolveInfo) {
+			names.add(ri.activityInfo.packageName);
+		}
+		return names;
+	}
 	private BroadcastReceiver screenOffReceiver = new BroadcastReceiver() {
-		@SuppressWarnings("deprecation")
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
+//			String action = intent.getAction();
 			// if (action.equals("android.intent.action.SCREEN_OFF")) {
 			SmartLockService.screen = Screen.OFF;
 			MyWindowManager.setWindowVisible();// 放在前面比较快
@@ -132,6 +146,7 @@ public class FloatWindowService extends Service {
 			// }
 			Log.e(TAG,
 					"-----------OFF------ android.intent.action.SCREEN_OFF------");
+			
 		}
 
 	};

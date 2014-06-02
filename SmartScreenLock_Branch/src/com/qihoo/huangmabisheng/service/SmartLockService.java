@@ -24,6 +24,7 @@ import com.qihoo.huangmabisheng.model.AppIntroMap;
 import com.qihoo.huangmabisheng.utils.FileUtil;
 import com.qihoo.huangmabisheng.utils.Log;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
+import com.qihoo.huangmabisheng.utils.ProcessUtil;
 import com.qihoo.huangmabisheng.utils.TimeUtil;
 import com.qihoo.huangmabisheng.utils.TopApp;
 import com.qihoo.huangmabisheng.utils.fb;
@@ -32,6 +33,7 @@ import com.qihoo.huangmabisheng.view.FloatWindowBigView.TouchType;
 import com.qihoo.huangmabisheng.wifi.WifiAdmin;
 
 import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -50,6 +52,7 @@ import android.content.pm.ResolveInfo;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.view.LayoutInflater.Filter;
 import android.view.View;
 
 public class SmartLockService extends Service {
@@ -87,7 +90,7 @@ public class SmartLockService extends Service {
 			switch (msg.what) {
 			case Constant.UPDATE_IPADDRESS:
 				if (null != MyWindowManager.getView()) {
-					MyWindowManager.getView().updateDescription(msg.obj+"");
+					MyWindowManager.getView().updateDescription(msg.obj + "");
 				}
 				break;
 			case Constant.UPDATE_TIME:
@@ -245,7 +248,8 @@ public class SmartLockService extends Service {
 		}
 		if (scheduleTimer == null) {
 			scheduleTimer = new Timer();
-			scheduleTimer.schedule(new ScheduleTask(), 0, Constant.SCHEDULE_TIME);
+			scheduleTimer.schedule(new ScheduleTask(), 0,
+					Constant.SCHEDULE_TIME);
 		}
 	}
 
@@ -296,8 +300,9 @@ public class SmartLockService extends Service {
 	 * 判断当前界面是否是桌面
 	 */
 	private boolean isHome(String packageName) {
-		ActivityManager mActivityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-		List<RunningTaskInfo> rti = mActivityManager.getRunningTasks(1);
+		// ActivityManager mActivityManager = (ActivityManager)
+		// getSystemService(Context.ACTIVITY_SERVICE);
+		// List<RunningTaskInfo> rti = mActivityManager.getRunningTasks(1);
 		return getHomes().contains(packageName);
 	}
 
@@ -339,72 +344,78 @@ public class SmartLockService extends Service {
 			return false;
 		}
 	}
+
 	class RefreshTimeTask extends TimerTask {
 		@Override
 		public void run() {
-			if (MyWindowManager.isWindowShowing() && MyWindowManager.getView().flag == TouchType.NONE) {
+			if (MyWindowManager.isWindowShowing()
+					&& MyWindowManager.getView().flag == TouchType.NONE) {
 				handler.obtainMessage(Constant.UPDATE_TIME).sendToTarget();// 更新时间
 			}
-			if(MyWindowManager.isWindowShowing() && !MyWindowManager.isWindowLocked())
-			synchronized (FloatWindowBigView.class) {
-				if(MyWindowManager.isWindowShowing() && !MyWindowManager.isWindowLocked())
-					try {
-						Log.e(TAG, "FloatWindowBigView wait");
-						FloatWindowBigView.class.wait();
-						Log.e(TAG, "FloatWindowBigView notify");
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-			}
-			if(SmartLockService.screen == Screen.OFF)
-			synchronized (FloatWindowService.class) {
-				if(SmartLockService.screen == Screen.OFF)
-					try {
-						Log.e(TAG, "FloatWindowService wait");
-						FloatWindowService.class.wait();
-						Log.e(TAG, "FloatWindowService notify");
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-			}
+			if (MyWindowManager.isWindowShowing()
+					&& !MyWindowManager.isWindowLocked())
+				synchronized (FloatWindowBigView.class) {
+					if (MyWindowManager.isWindowShowing()
+							&& !MyWindowManager.isWindowLocked())
+						try {
+							Log.e(TAG, "FloatWindowBigView wait");
+							FloatWindowBigView.class.wait();
+							Log.e(TAG, "FloatWindowBigView notify");
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				}
+			if (SmartLockService.screen == Screen.OFF)
+				synchronized (FloatWindowService.class) {
+					if (SmartLockService.screen == Screen.OFF)
+						try {
+							Log.e(TAG, "FloatWindowService wait");
+							FloatWindowService.class.wait();
+							Log.e(TAG, "FloatWindowService notify");
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				}
 		}
 	}
+
 	int tim = 0;
+
 	/**
 	 * 该类是该服务的循环主体，用于不断读取top activity更新app_fre，同时也更新时间
 	 */
 	class ScheduleTask extends TimerTask {
 		@Override
 		public void run() {
-			Log.e(TAG, "运行次数"+(++tim));
-//			synchronized (SmartLockService.class) {
-//				if (screen == Screen.OFF)
-//					try {
-//						Log.e(TAG, "wait off");
-//						SmartLockService.class.wait();
-//					} catch (InterruptedException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//						return;
-//					}
-//			}
+			Log.d(TAG, "运行次数" + (++tim));
+			// synchronized (SmartLockService.class) {
+			// if (screen == Screen.OFF)
+			// try {
+			// Log.e(TAG, "wait off");
+			// SmartLockService.class.wait();
+			// } catch (InterruptedException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// return;
+			// }
+			// }
 			if (MyWindowManager.isWindowLocked())
-			synchronized (SmartLockService.class) {
-				if (MyWindowManager.isWindowLocked())
-					try {
-						Log.e(TAG, "wait " + MyWindowManager.getWindowVisibility());
-						Log.e(TAG, "wait 运行次数"+tim);
-						
-						SmartLockService.class.wait();
-						Log.e(TAG, "notify");
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						return;
-					}
-			}
+				synchronized (SmartLockService.class) {
+					if (MyWindowManager.isWindowLocked())
+						try {
+							Log.e(TAG,"wait "+ MyWindowManager.getWindowVisibility());
+							Log.e(TAG, "wait 运行次数" + tim);
+							SmartLockService.class.wait();
+							clearProcess();
+							Log.e(TAG, "notify");
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							return;
+						}
+				}
 			updateCurrentPackageInfo();
 			// 先判断是不是可统计的app，即非系统app
 			if (currentPackageName.equals(lastPackageName))
@@ -414,7 +425,7 @@ public class SmartLockService extends Service {
 					return;
 				}
 				pushInAppFre(topActivity, currentPackageName, Constant.SAVE);
-				Log.e(TAG,  "pushInAppFre:" + currentPackageName);
+				Log.e(TAG, "pushInAppFre:" + currentPackageName);
 
 			} catch (NameNotFoundException e1) {
 				// TODO Auto-generated catch block
@@ -422,7 +433,7 @@ public class SmartLockService extends Service {
 			} finally {
 				lastPackageName = currentPackageName;// 更新last top
 			}
-			
+
 		}
 	}
 
@@ -513,7 +524,7 @@ public class SmartLockService extends Service {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
+			// String action = intent.getAction();
 
 			// if (action.equals("android.intent.action.SCREEN_OFF")) {
 			Log.i(TAG,
@@ -583,5 +594,36 @@ public class SmartLockService extends Service {
 		notification.setLatestEventInfo(this, "Don't worry. Be happy.",
 				"Touch here to set your SmartScreenLock", pendingIntent);
 		startForeground(9527, notification);
+	}
+
+	private void clearProcess() {
+		new Thread(new Runnable() {
+			private boolean filter(String processName) {
+//				if (getHomes().contains(processName))
+//					return false;
+//				if (processName.startsWith("com.android"))
+//					return false;
+//				if (processName.startsWith("com.qihoo"))
+//					return false;
+//				if (processName.startsWith("com.google"))
+//					return false;
+//				if (processName.startsWith("com.miui"))
+//					return false;
+				return true;
+			}
+
+			@Override
+			public void run() {
+				ActivityManager activityManager = (ActivityManager) SmartLockService.this
+						.getSystemService(Context.ACTIVITY_SERVICE);
+				List<RunningAppProcessInfo> runningApps = activityManager
+						.getRunningAppProcesses();
+				for (RunningAppProcessInfo info : runningApps) {
+					if(!filter(info.processName))continue;
+					ProcessUtil.clearBackgroundProcess(info.processName,
+							SmartLockService.this);
+				}
+			}
+		}).start();
 	}
 }

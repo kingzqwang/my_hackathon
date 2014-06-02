@@ -1,4 +1,4 @@
-package com.qihoo.huangmabisheng.special.instagram;
+package com.qihoo.huangmabisheng.plugin.seven;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;

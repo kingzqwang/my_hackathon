@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import com.qihoo.huangmabisheng.R;
-import com.qihoo.huangmabisheng.special.instagram.InstagramActivity;
+import com.qihoo.huangmabisheng.plugin.seven.InstagramActivity;
 import com.qihoo.huangmabisheng.utils.Log;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
 import com.qihoo.huangmabisheng.utils.fb;
