@@ -52,10 +52,11 @@ public class FloatWindowService extends Service {
 
 	};
 	public Intent mainActivityIntent = null;
+
 	/**
 	 * 定时器，定时进行检测当前应该创建还是移除悬浮窗。
 	 */
-	private Timer timer;
+	// private Timer timer;
 
 	public void publish(int what) {
 		handler.obtainMessage(what).sendToTarget();
@@ -70,27 +71,22 @@ public class FloatWindowService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.d(TAG, "onStartCommand");
 
-		if (!MyWindowManager.isWindowShowing()) {
-			MyWindowManager.createBigWindow(FloatWindowService.this);
-			MyWindowManager.setWindowGone();
-		} else if (View.GONE == MyWindowManager.getWindowVisibility()) {
-			// MyWindowManager.setWindowVisible();
-		}
+		// if (!MyWindowManager.isWindowShowing()) {
+		MyWindowManager.createBigWindow(FloatWindowService.this);
+		MyWindowManager.setWindowGone();
+		// } else if (View.GONE == MyWindowManager.getWindowVisibility()) {
+		// // MyWindowManager.setWindowVisible();
+		// }
 		return super.onStartCommand(intent, flags, startId);
 	}
 
 	@Override
 	public void onDestroy() {
 		Log.d(TAG, "onDestroy");
-		super.onDestroy();
-		// Service被终止的同时也停止定时器继续运行
-		if (timer != null)
-			timer.cancel();
-		timer = null;
-
 		this.unregisterReceiver(screenOffReceiver);
 		this.unregisterReceiver(screenOnReceiver);
-
+		MyWindowManager.removeBigView(this);
+		super.onDestroy();
 	}
 
 	@Override
@@ -111,7 +107,7 @@ public class FloatWindowService extends Service {
 	private BroadcastReceiver screenOnReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-//			String action = intent.getAction();
+			// String action = intent.getAction();
 			// if (action.equals("android.intent.action.SCREEN_ON")) {
 			synchronized (FloatWindowService.class) {
 				SmartLockService.screen = Screen.ON;
@@ -123,6 +119,7 @@ public class FloatWindowService extends Service {
 		}
 
 	};
+
 	private Set<String> getHomes() {
 		Set<String> names = new HashSet<String>();
 		PackageManager packageManager = this.getPackageManager();
@@ -135,10 +132,11 @@ public class FloatWindowService extends Service {
 		}
 		return names;
 	}
+
 	private BroadcastReceiver screenOffReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-//			String action = intent.getAction();
+			// String action = intent.getAction();
 			// if (action.equals("android.intent.action.SCREEN_OFF")) {
 			SmartLockService.screen = Screen.OFF;
 			MyWindowManager.setWindowVisible();// 放在前面比较快
@@ -146,7 +144,7 @@ public class FloatWindowService extends Service {
 			// }
 			Log.e(TAG,
 					"-----------OFF------ android.intent.action.SCREEN_OFF------");
-			
+
 		}
 
 	};

@@ -21,13 +21,16 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 @SuppressLint("NewApi")
 public class IconImageView extends ImageView {
-	int old = 0;
+	// int old = 0;
 	AnimatorSet animationUp;
 	AnimatorSet animationDown;
 	FrameLayout.LayoutParams layoutParams;
@@ -37,19 +40,54 @@ public class IconImageView extends ImageView {
 	ComponentName currentCpm = null;
 	Drawable currentDrawable = null;
 	PackageManager packageManager;
+	private Context context;
 
 	public enum Orientation {
 		UP, DOWN
 	}
 
+	public void scaleTo(final float scaleSize) {
+		Animation a = new ScaleAnimation(1f, scaleSize, 1f, scaleSize,
+				Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+				0.5f);
+		a.setDuration(100);
+		a.setFillAfter(true);
+		startAnimation(a);
+		a.startNow();
+	}
+	public void scaleFrom(final float scaleSize) {
+		Animation b = new ScaleAnimation(scaleSize,1f, scaleSize,1f,
+				Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+				0.5f);
+		b.setDuration(100);
+		b.setFillAfter(true);
+		startAnimation(b);
+		b.startNow();
+	}
+	public void resetTrans(int trans,int reset) {
+		ValueAnimator resetTran = ValueAnimator.ofInt(trans, reset);
+		resetTran.addUpdateListener(new AnimatorUpdateListener() {
+			@Override
+			public void onAnimationUpdate(ValueAnimator animation) {
+				final int l = (Integer) animation.getAnimatedValue();
+				layout(l, getTop(), l+getWidth(), getBottom());
+			}
+		});
+		resetTran.setInterpolator(AnimationUtils.loadInterpolator(context,
+				android.R.anim.accelerate_interpolator));
+		resetTran.setDuration(200);
+		resetTran.start();
+	}
+	
 	public void switchApp(String pck, ComponentName cpm, Orientation orientation)
 			throws NameNotFoundException {
-		if(old == 0){
-			Animation a = new TranslateAnimation(0.0f, 0.0f , 0.0f, 0.0f);
-			a.setDuration(Constant.ANIMATION_TIME);
-			this.startAnimation(a);
-			old=1;
-			}
+		// if(old == 0){
+		// Animation a = new TranslateAnimation(0.0f, 0.0f , 0.0f, 0.0f);
+		// a.setDuration(Constant.ANIMATION_TIME);
+		// this.startAnimation(a);
+		// old=1;
+		// }
+		setTag(null);
 		this.currentCpm = cpm;
 		this.currentPck = pck;
 		this.currentDrawable = packageManager.getPackageInfo(pck, 0).applicationInfo
@@ -63,12 +101,13 @@ public class IconImageView extends ImageView {
 	}
 
 	public void switchAppToBlank(Orientation orientation) {
-		if(old == 0){
-			Animation a = new TranslateAnimation(0.0f, 0.0f , 0.0f, 0.0f);
-			a.setDuration(Constant.ANIMATION_TIME);
-			this.startAnimation(a);
-			old=1;
-			}
+		// if(old == 0){
+		// Animation a = new TranslateAnimation(0.0f, 0.0f , 0.0f, 0.0f);
+		// a.setDuration(Constant.ANIMATION_TIME);
+		// this.startAnimation(a);
+		// old=1;
+		// }
+		setTag(null);
 		setEnabled(false);
 		this.currentCpm = null;
 		this.currentPck = null;
@@ -80,12 +119,33 @@ public class IconImageView extends ImageView {
 		}
 	}
 
+	public void switchSpecial(Orientation orientation, Object tag, int src) {
+		// if(old == 0){
+		// Animation a = new TranslateAnimation(0.0f, 0.0f , 0.0f, 0.0f);
+		// a.setDuration(Constant.ANIMATION_TIME);
+		// this.startAnimation(a);
+		// old=1;
+		// }
+		setTag(tag);
+		setEnabled(true);
+		this.currentCpm = null;
+		this.currentPck = null;
+		this.currentDrawable = context.getResources().getDrawable(src);
+		if (Orientation.UP == orientation) {
+			flyOutUpForIndex();
+		} else {
+			flyOutDownForIndex();
+		}
+	}
+
 	private void setAnimationDown() {
 		ValueAnimator animationOutAlpha = ValueAnimator.ofFloat(1f, 0f);
-		ValueAnimator animationOutTran = ValueAnimator.ofInt(0, (7-index )* iconWH/2);
+		ValueAnimator animationOutTran = ValueAnimator.ofInt(0, (7 - index)
+				* iconWH / 2);
 		ValueAnimator animationInAlpha = ValueAnimator.ofFloat(0f, 1f);
-		ValueAnimator animationInTran = ValueAnimator.ofInt(index * iconWH/2, 0);
-		
+		ValueAnimator animationInTran = ValueAnimator.ofInt(index * iconWH / 2,
+				0);
+
 		animationOutAlpha.setDuration(Constant.ANIMATION_TIME);
 		animationOutAlpha.addUpdateListener(new AnimatorUpdateListener() {
 			@Override
@@ -117,7 +177,7 @@ public class IconImageView extends ImageView {
 
 			@Override
 			public void onAnimationStart(Animator animation) {
-					IconImageView.this.setImageDrawable(currentDrawable);
+				IconImageView.this.setImageDrawable(currentDrawable);
 			}
 
 			@Override
@@ -127,6 +187,7 @@ public class IconImageView extends ImageView {
 			@Override
 			public void onAnimationEnd(Animator animation) {
 			}
+
 			@Override
 			public void onAnimationCancel(Animator animation) {
 			}
@@ -166,9 +227,11 @@ public class IconImageView extends ImageView {
 
 	private void setAnimationUp() {
 		final ValueAnimator animationOutAlpha = ValueAnimator.ofFloat(1f, 0f);
-		final ValueAnimator animationOutTran = ValueAnimator.ofInt(0, index * iconWH/2);
+		final ValueAnimator animationOutTran = ValueAnimator.ofInt(0, index
+				* iconWH / 2);
 		final ValueAnimator animationInAlpha = ValueAnimator.ofFloat(0f, 1f);
-		final ValueAnimator animationInTran = ValueAnimator.ofInt((7-index )* iconWH/2, 0);
+		final ValueAnimator animationInTran = ValueAnimator.ofInt((7 - index)
+				* iconWH / 2, 0);
 		animationOutAlpha.setDuration(Constant.ANIMATION_TIME);
 		animationOutAlpha.addUpdateListener(new AnimatorUpdateListener() {
 			@Override
@@ -206,7 +269,7 @@ public class IconImageView extends ImageView {
 		animationOutAlpha.addListener(new AnimatorListenerAdapter() {
 			@Override
 			public void onAnimationEnd(Animator animation) {
-				if(null!=currentDrawable)
+				if (null != currentDrawable)
 					IconImageView.this.setImageDrawable(currentDrawable);
 				else {
 					IconImageView.this.setImageResource(R.drawable.transp);
@@ -220,6 +283,7 @@ public class IconImageView extends ImageView {
 				MyWindowManager.getView().animating = true;
 				super.onAnimationStart(animation);
 			}
+
 			@Override
 			public void onAnimationEnd(Animator animation) {
 				MyWindowManager.getView().animating = false;
@@ -231,16 +295,16 @@ public class IconImageView extends ImageView {
 		animationUp.play(animationInAlpha).with(animationInTran);
 	}
 
-	public IconImageView(Context context, final int iconWH, int marginTop,
+	public IconImageView(Context context, final int iconWH, int marginTop,int marginLeft,
 			int index) {
 		super(context);
+		this.context = context;
 		packageManager = getContext().getPackageManager();
-		this.marginTop = index * marginTop;
+		this.marginTop = index * marginTop + marginLeft + marginLeft/2;
 		this.iconWH = iconWH;
 		this.index = index;
 		setImageResource(R.drawable.transp);
-		final int marginLeft = com.qihoo.huangmabisheng.utils.DensityUtil
-				.dip2px(getContext(), 20f);
+		
 		animationUp = new AnimatorSet();
 		animationDown = new AnimatorSet();
 		layoutParams = new FrameLayout.LayoutParams(iconWH, iconWH,
@@ -250,17 +314,17 @@ public class IconImageView extends ImageView {
 		setEnabled(false);
 		setAnimationUp();
 		setAnimationDown();
-//		animationUp.setStartDelay((index - 1) * 50);
-//		animationDown.setStartDelay((6 - index) * 50);
+		// animationUp.setStartDelay((index - 1) * 50);
+		// animationDown.setStartDelay((6 - index) * 50);
 	}
 
 	public void flyOutUpForIndex() {
-		animationUp.setTarget(this);
+//		animationUp.setTarget(this);
 		animationUp.start();
 	}
 
 	public void flyOutDownForIndex() {
-		animationDown.setTarget(this);
+//		animationDown.setTarget(this);
 		animationDown.start();
 	}
 

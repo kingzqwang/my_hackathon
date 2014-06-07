@@ -8,11 +8,16 @@ import android.widget.CheckBox;
 
 public class OptionCheckBox extends CheckBox{
 
+	int srcOn = R.drawable.rect_on_checkbox_normal;
+	int srcOff = R.drawable.rect_off_checkbox_normal;
+	
 	public OptionCheckBox(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
 	}
-
+	public void setSrc(int on,int off) {
+		srcOff = off;
+		srcOn = on;
+	}
 	public OptionCheckBox(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		// TODO Auto-generated constructor stub
@@ -27,9 +32,9 @@ public class OptionCheckBox extends CheckBox{
 	public void setChecked(boolean checked) {
 		setSelected(checked);
 		if (checked) {
-			setButtonDrawable(R.drawable.rect_bth_checkbox_normal);
+			setButtonDrawable(srcOn);
 		}else {
-			setButtonDrawable(R.drawable.rect_btn_checkbox_normal);
+			setButtonDrawable(srcOff);
 		}
 		super.setChecked(checked);
 	}

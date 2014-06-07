@@ -1,11 +1,16 @@
 package com.qihoo.huangmabisheng.activity;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Date;
 
 import com.qihoo.huangmabisheng.R;
 import com.qihoo.huangmabisheng.plugin.seven.InstagramActivity;
+import com.qihoo.huangmabisheng.utils.FileUtil;
 import com.qihoo.huangmabisheng.utils.Log;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
 import com.qihoo.huangmabisheng.utils.fb;
@@ -39,6 +44,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Toast;
 
 public class TransparentActivity extends BaseActivity implements
 		SurfaceHolder.Callback, AutoFocusCallback, PreviewCallback,
@@ -61,8 +67,8 @@ public class TransparentActivity extends BaseActivity implements
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		// getWindow().setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND,
 		// WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
-//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		// getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+		// WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
 		super.onCreate(savedInstanceState);
 		// startService(new Intent(MainActivity.this,
@@ -72,7 +78,7 @@ public class TransparentActivity extends BaseActivity implements
 
 	@Override
 	protected void onDestroy() {
-		Log.d(TAG, "onDestroy");
+		Log.e(TAG, "onDestroy");
 		super.onDestroy();
 		unregisterReceiver(finishReceiver);
 		unregisterReceiver(openCameraReceiver);
@@ -86,6 +92,7 @@ public class TransparentActivity extends BaseActivity implements
 
 	@Override
 	protected void onPause() {
+		Log.e(TAG, "onPause");
 		super.onPause();
 		fb.d(this);
 	}
@@ -101,7 +108,7 @@ public class TransparentActivity extends BaseActivity implements
 
 	@Override
 	protected void onResume() {
-		Log.d(TAG, "onResume");
+		Log.e(TAG, "onResume");
 		fb.d(this);
 		super.onResume();
 	}
@@ -125,8 +132,9 @@ public class TransparentActivity extends BaseActivity implements
 	protected void handleMsg(Message msg) {
 	}
 
-	synchronized private void openCamera() {
-		if(camera != null) return;
+	private void openCamera() {
+		if (camera != null)
+			return;
 		Log.e(TAG, "openCamera");
 		surfaceView = new SurfaceView(TransparentActivity.this);
 		surfaceView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
@@ -137,11 +145,15 @@ public class TransparentActivity extends BaseActivity implements
 		transLayout.addView(surfaceView);
 	}
 
-	synchronized private void closeCamera() {
-		if(camera==null) return;
-		camera.takePicture(null, null, this);
+	private void closeCamera() {
 		Log.e(TAG, "closeCamera");
-
+		if (camera == null)
+			return;
+		try {
+//			camera.stopPreview();
+			camera.takePicture(null, null, this);
+		} catch (Exception e) {
+		}
 	}
 
 	@Override
@@ -157,7 +169,6 @@ public class TransparentActivity extends BaseActivity implements
 	@Override
 	protected void findAllViews() {
 		transLayout = (ViewGroup) findViewById(R.id.trans_layout);
-
 	}
 
 	private BroadcastReceiver finishReceiver = new BroadcastReceiver() {
@@ -165,6 +176,7 @@ public class TransparentActivity extends BaseActivity implements
 			if (intent.getAction().equals("com.qihoo.huangmabisheng.finish")) {
 				Log.d(TAG, "finish recieved");
 				TransparentActivity.this.finish();
+				overridePendingTransition(0, 0);
 				// this.abortBroadcast();
 			}
 		}
@@ -181,23 +193,35 @@ public class TransparentActivity extends BaseActivity implements
 		public void onReceive(Context context, Intent intent) {
 			if (intent.getAction().equals(
 					"com.qihoo.huangmabisheng.closecamera")) {
+				Log.e(TAG,"closeCameraReceiver");
 				closeCamera();
 			}
 		}
 	};
 
 	@Override
-	public void surfaceCreated(SurfaceHolder holder) {
+	public void surfaceCreated(final SurfaceHolder holder) {
 		Log.e(TAG, "surfaceCreated");
-		camera = Camera.open();
-		try {
-			camera.setPreviewDisplay(holder);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		camera.setPreviewCallback(this);
-		camera.startPreview();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					camera = Camera.open();
+					Log.e(TAG, "Camera.opened");
+					camera.setPreviewDisplay(holder);
+					camera.setPreviewCallback(TransparentActivity.this);
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							surfaceView.layout(surfaceView.getLeft(), surfaceView.getTop(), surfaceView.getRight()-1, surfaceView.getBottom());
+						}
+					});
+					camera.startPreview();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
 	}
 
 	@Override
@@ -248,18 +272,19 @@ public class TransparentActivity extends BaseActivity implements
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		Log.e(TAG, "surfaceDestroyed");
-		camera.stopPreview();
-		if (camera != null) {
-			try {
-				camera.setPreviewDisplay(null);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			camera.setPreviewCallback(null);
-			camera.release();
-			camera = null;
+		if (camera == null) {
+			return;
 		}
+		camera.stopPreview();
+		try {
+			camera.setPreviewDisplay(null);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		camera.setPreviewCallback(null);
+		camera.release();
+		camera = null;
 	}
 
 	@Override
@@ -270,43 +295,87 @@ public class TransparentActivity extends BaseActivity implements
 
 	@Override
 	public void onPreviewFrame(byte[] data, Camera camera) {
-		Log.e(TAG, data.length + "");
+		// Log.e(TAG, data.length + "");
 	}
-	@Override
-	public void onPictureTaken(byte[] data, Camera camera) {
-		synchronized (this) {
-			try {
-				Log.e(TAG, "onPictureTaken"+data.length);
-				Uri imageUri = this.getContentResolver().insert(
-						MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-						new ContentValues());// 原来是这么写照出来的图片
-				try {
-					OutputStream os = this.getContentResolver().openOutputStream(
-							imageUri);
-					os.write(data);
-					os.flush();
-					os.close();
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 
-				camera.stopPreview();
-				try {
-					camera.reconnect();
-					camera.setPreviewCallback(this);
-					camera.startPreview();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} finally{
+	@Override
+	public void onPictureTaken(final byte[] data, Camera camera) {
+			try {
+				// Log.e(TAG, "onPictureTaken"+data.length);
+				// ContentValues values = new ContentValues();
+				// Uri imageUri = this.getContentResolver().insert(
+				// MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+				// values);// 原来是这么写照出来的图片
+				// try {
+				// OutputStream os = this.getContentResolver().openOutputStream(
+				// imageUri);
+				// os.write(data);
+				// os.flush();
+				// os.close();
+				// } catch (FileNotFoundException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// } catch (IOException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+				new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						Log.e(TAG, "start");
+						File sd = FileUtil.getSDFileDir();
+						if (sd == null) {
+							return;
+						}
+						File dir = new File(sd, "CC锁屏");
+						if (!dir.isDirectory()) {
+							dir.mkdir();
+						}
+						File file = new File(dir, new Date().getTime() + ".jpg");
+						file.delete();
+						Log.e(TAG, "delete");
+						try {
+							file.createNewFile();
+							OutputStream os = new BufferedOutputStream(
+									new FileOutputStream(file));
+							os.write(data);
+							os.flush();
+							os.close();
+
+							Log.e(TAG, "OutputStream");
+							// Toast.makeText(this,
+							// "照片已保存在"+file.getAbsolutePath(),
+							// Toast.LENGTH_SHORT).show();
+							Intent intent = new Intent(
+									Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+							Uri uri = Uri.fromFile(file);
+							intent.setData(uri);
+							sendBroadcast(intent);
+							Log.e(TAG, "sendBroadcast");
+						} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}).start();
+
+				// camera.stopPreview();
+				// try {
+				// camera.reconnect();
+				// camera.setPreviewCallback(this);
+				// camera.startPreview();
+				// } catch (IOException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+			} finally {
+				Log.e(TAG, "finnaly");
 				transLayout.removeAllViews();
 				surfaceView = null;
-			}
 		}
 	}
 

@@ -1,14 +1,20 @@
 package com.qihoo.huangmabisheng.constant;
 
+import com.qihoo.huangmabisheng.utils.MySQLiteOpenHelper;
+
+import android.database.sqlite.SQLiteOpenHelper;
+
 
 public class Application extends android.app.Application{
 	public boolean isServiceRunning = true;
 	public boolean isSpecialServiceRunning = false;
+	public SQLiteOpenHelper myHelper;
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
 		app = this;
+		myHelper = new MySQLiteOpenHelper(this, "cc_screen_lock.db", null, 5);
 	}
 	public static Application app;
 	public void setServiceOffStatus() {

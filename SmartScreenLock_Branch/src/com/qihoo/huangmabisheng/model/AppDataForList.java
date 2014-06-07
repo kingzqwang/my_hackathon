@@ -11,7 +11,7 @@ import com.qihoo.huangmabisheng.constant.Constant;
 import com.qihoo.huangmabisheng.constant.Constant.TimeQuantum;
 import com.qihoo.huangmabisheng.utils.TimeUtil;
 
-public class AppDataForList implements Serializable {
+public class AppDataForList {
 	public AppDataForList(String packageName, ComponentName currentCompoment) {
 		super();
 		this.packageName = packageName;
@@ -53,7 +53,10 @@ public class AppDataForList implements Serializable {
 		countsForEveryTime.put(timeQuantum, count);
 		size++;
 	}
-
+	synchronized public void pushReplace(TimeQuantum timeQuantum,int count) {
+		countsForEveryTime.put(timeQuantum, count);
+		size+=count;
+	}
 	/**
 	 * 获取总数，此方法为this同步方法
 	 */
@@ -65,4 +68,5 @@ public class AppDataForList implements Serializable {
 	synchronized public int size() {
 		return size;
 	}
+	
 }

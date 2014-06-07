@@ -14,4 +14,7 @@
     <color name="setting_button_pressed">#caebc5</color>
     <color name="setting_text_gray">#959595</color>
     <color name="setting_div">#d5d3d4</color>
+    
+    <color name="setting_up">#ff4d4d4d</color>
+    <color name="setting_down">#ffcccccc</color>
 </resources>

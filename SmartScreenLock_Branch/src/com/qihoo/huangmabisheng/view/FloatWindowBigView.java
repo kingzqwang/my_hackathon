@@ -1,6 +1,9 @@
 package com.qihoo.huangmabisheng.view;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import android.R.integer;
 import android.animation.Animator;
@@ -95,10 +98,10 @@ public class FloatWindowBigView extends LinearLayout implements
 	IconImageView image3View;
 	IconImageView image4View;
 	IconImageView image5View;
-
+	IconImageView[] imageViews = new IconImageView[5];
 	Orientation orientation = Orientation.DOWN;
 	// ImageView specialImageView;
-	ImageView screenPhotoImageView;
+	// ImageView screenPhotoImageView;
 	// ImageView imageViewCanvas;
 	// ImageView imageViewClose;
 	// ImageView imageViewHand;
@@ -120,18 +123,71 @@ public class FloatWindowBigView extends LinearLayout implements
 	private int mMaximumFlingVelocity;
 	ViewConfiguration configuration;
 	public TouchType flag = TouchType.NONE;// 1,2
+	final float scale = 0.1f;
 
-	private void setAllIconAlpha(int left) {
-		float alpha = 0f;
-		// left += left;
-		// if(left < viewWidth)
-		alpha = 1 - (float) left / viewWidth;
-		image0View.setAlpha(alpha);
-		image1View.setAlpha(alpha);
-		image2View.setAlpha(alpha);
-		image3View.setAlpha(alpha);
-		image4View.setAlpha(alpha);
-		image5View.setAlpha(alpha);
+	private void pressIcon(View except) {
+		for (IconImageView v : imageViews) {
+			if (v != except)
+				v.scaleTo(1 - scale);
+			else
+				v.scaleTo(1 + scale);
+		}
+	}
+
+	private void pressUpIcon(View except, int from) {
+		for (IconImageView v : imageViews) {
+			if (v != except)
+				v.scaleFrom(1 - scale);
+			else
+				v.scaleFrom(1 + scale);
+		}
+		IconImageView e = (IconImageView) except;
+		e.resetTrans(from, iconLeft);
+	}
+
+	private void pressOpenIcon(final View except) {
+		Animation b = new ScaleAnimation(1f, 5f, 1f, 5f,
+				Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+				0.5f);
+		b.setDuration(400);
+		b.setFillAfter(false);
+		b.setAnimationListener(new AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				except.clearAnimation();
+				pressUpIcon(except, 0);
+			}
+		});
+		except.startAnimation(b);
+		b.startNow();
+		ValueAnimator animationAlpha = ValueAnimator.ofFloat(1f, 0f);
+		animationAlpha.setDuration(400);
+		animationAlpha.addUpdateListener(new AnimatorUpdateListener() {
+			@Override
+			public void onAnimationUpdate(ValueAnimator animation) {
+				final float alpha = (Float) animation.getAnimatedValue();
+				rootView.setAlpha(alpha);
+			}
+		});
+		animationAlpha.addListener(new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				FloatWindowBigView.this.setVisibility(View.GONE);
+				rootView.setAlpha(1f);
+				
+				super.onAnimationEnd(animation);
+			}
+
+		});
+		animationAlpha.start();
 	}
 
 	private void layoutRootView(int l, int t, int r, int b) {
@@ -139,6 +195,8 @@ public class FloatWindowBigView extends LinearLayout implements
 		// this.scrollTo(-l, 0);
 		rootView.layout(l, t, r, b);
 	}
+
+	int iconWH, iconLeft;
 
 	private void findAllViews(Context context) {
 		packageManager = context.getPackageManager();
@@ -161,21 +219,34 @@ public class FloatWindowBigView extends LinearLayout implements
 		// image4View = (ImageSwitcher) rootView.findViewById(R.id.imageview_4);
 		// image5View = (ImageSwitcher) rootView.findViewById(R.id.imageview_5);
 
-		final int iconWH = com.qihoo.huangmabisheng.utils.DensityUtil.dip2px(
-				getContext(), 56f);
+		iconWH = viewHeight / 12;
+		// com.qihoo.huangmabisheng.utils.DensityUtil.dip2px(getContext(), 56f);
 		final int marginTop = viewHeight / 7;
-		image0View = new IconImageView(service, iconWH, marginTop, 1);
-		image1View = new IconImageView(service, iconWH, marginTop, 2);
-		image2View = new IconImageView(service, iconWH, marginTop, 3);
-		image3View = new IconImageView(service, iconWH, marginTop, 4);
-		image4View = new IconImageView(service, iconWH, marginTop, 5);
-		image5View = new IconImageView(service, iconWH, marginTop, 6);
+		final int marginLeft = com.qihoo.huangmabisheng.utils.DensityUtil
+				.dip2px(getContext(), 25f);
+		image0View = new IconImageView(service, iconWH, marginTop, marginLeft,
+				1);
+		image1View = new IconImageView(service, iconWH, marginTop, marginLeft,
+				2);
+		image2View = new IconImageView(service, iconWH, marginTop, marginLeft,
+				3);
+		image3View = new IconImageView(service, iconWH, marginTop, marginLeft,
+				4);
+		image4View = new IconImageView(service, iconWH, marginTop, marginLeft,
+				5);
+		// image5View = new IconImageView(service, iconWH, marginTop, 6);
 		rootView.addView(image0View);
+		imageViews[0] = image0View;
 		rootView.addView(image1View);
+		imageViews[1] = image1View;
 		rootView.addView(image2View);
+		imageViews[2] = image2View;
 		rootView.addView(image3View);
+		imageViews[3] = image3View;
 		rootView.addView(image4View);
-		rootView.addView(image5View);
+		imageViews[4] = image4View;
+		iconLeft = marginLeft;
+		// rootView.addView(image5View);
 
 		// specialImageView = (ImageView) rootView
 		// .findViewById(R.id.imageview_photo);
@@ -200,8 +271,9 @@ public class FloatWindowBigView extends LinearLayout implements
 
 		switcher = (ImageSwitcher) findViewById(R.id.switcher);
 		descriptionTextView = (TextView) findViewById(R.id.description_textview);
-		screenPhotoImageView = (ImageView)findViewById(R.id.screen_photo_imageview);
-		
+		// screenPhotoImageView =
+		// (ImageView)findViewById(R.id.screen_photo_imageview);
+
 	}
 
 	// private View.OnTouchListener touchListener = new OnTouchListener() {
@@ -254,18 +326,76 @@ public class FloatWindowBigView extends LinearLayout implements
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		// TODO Auto-generated method stub
 		super.onDraw(canvas);
 	}
 
 	@Override
 	protected void onAttachedToWindow() {
-		// TODO Auto-generated method stub
 		super.onAttachedToWindow();
 	}
 
 	private OnTouchListener iconOnTouchListener = new OnTouchListener() {
-		// int[] temp = new int[] { 0, 0 };
+		/**
+		 * 初次按下的坐标
+		 */
+		int tempX = 0;
+		long now;
+
+		@Override
+		public boolean onTouch(final View v, MotionEvent event) {
+			if (animating) {
+				return true;
+			}
+			int x = (int) event.getRawX();
+			int y = (int) event.getRawY();
+			switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				// if(screenPhotoImageView == v)
+				// service.sendBroadcast(new Intent(
+				// "com.qihoo.huangmabisheng.opencamera"));
+				now = SystemClock.elapsedRealtime();
+				flag = TouchType.OPEN_SCREEN;
+				pressIcon(v);
+				tempX = (int) event.getRawX();
+				return true;
+			case MotionEvent.ACTION_MOVE:
+				int l = iconLeft + (x - tempX > 0 ? x - tempX : 0);
+				int t = v.getTop();
+				int r = l + iconWH;
+				int b = v.getBottom();
+				v.layout(l, t, r, b);
+				invalidate();
+				return true;
+			case MotionEvent.ACTION_UP:
+
+				final int gl = v.getLeft();
+				if (gl > viewWidth * 1 / 2) {
+					finishTransparentActivity();
+					// try {
+					// Intent intent = new Intent();
+					// intent.setComponent(((IconImageView) except).currentCpm);
+					// intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					// service.startActivity(intent);
+					// } catch (Exception e) {
+					Intent intent = packageManager
+							.getLaunchIntentForPackage(((IconImageView) v).currentPck);
+					intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+					service.startActivity(intent);
+					// }
+					SharedPrefrencesAssist.instance(service).writeInt(
+							Constant.SCREEN_OPEN_COUNT,
+							SharedPrefrencesAssist.instance(service).readInt(
+									Constant.SCREEN_OPEN_COUNT) + 1);
+					pressOpenIcon(v);
+				} else
+					pressUpIcon(v, v.getLeft());
+				flag = TouchType.NONE;
+			}
+			return true;
+		}
+	};
+
+	private OnTouchListener rootViewOnTouchListener = new OnTouchListener() {
 		/**
 		 * 初次按下的坐标
 		 */
@@ -274,8 +404,6 @@ public class FloatWindowBigView extends LinearLayout implements
 		int startTouchY = 0;
 		long now;
 
-		// final View view = rootView;
-		// View lastTouch = null;
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			if (animating) {
@@ -292,62 +420,18 @@ public class FloatWindowBigView extends LinearLayout implements
 			Log.i(TAG, "OnTouchListener" + " X is " + x + " Y is " + y);
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
-				if(screenPhotoImageView == v)
-					service.sendBroadcast(new Intent(
-							"com.qihoo.huangmabisheng.opencamera"));
 				now = SystemClock.elapsedRealtime();
-				// if (view instanceof ImageView) {
-				//
-				// Animation a = new ScaleAnimation(1f, 1.2f, 1f, 1.2f,
-				// Animation.RELATIVE_TO_SELF, 0.5f,
-				// Animation.RELATIVE_TO_SELF, 0.5f);
-				// a.setDuration(300);
-				// a.setFillAfter(true);
-				// view.startAnimation(a);
-				// a.startNow();
-				// finishTransparentActivity();
-				// // Intent intent = new Intent();
-				// // intent.setComponent((ComponentName)view.getTag());
-				// // intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				// // service.startActivity(intent);
-				// //
-				// //
-				// intent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-				// Intent intent = packageManager
-				// .getLaunchIntentForPackage(((String) view.getTag()));
-				// // Log.e(TAG, (String) view.getTag());
-				// intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-				// service.startActivity(intent);
-				// }
-
 				startTouchX = x;
 				startTouchY = y;
 				tempX = (int) event.getRawX();
-				// temp[1] = y - rootView.getTop();
+
+				if (v.getTag() == Constant.TAG_SCREEN_PHOTO) {
+					flag = TouchType.OPEN_SCREEN;
+					service.sendBroadcast(new Intent(
+							"com.qihoo.huangmabisheng.opencamera"));
+				}
 				return true;
 			case MotionEvent.ACTION_MOVE:
-				// mVelocityTracker.computeCurrentVelocity(100,mMaximumFlingVelocity);
-				// Log.e(TAG,
-				// "ACTION_MOVE:X为 "+mVelocityTracker.getXVelocity()+",Y为 "+mVelocityTracker.getYVelocity());
-				// if (lastTouch == null && view instanceof ImageView &&
-				// startTouch[0] == x && startTouch[1] == y &&
-				// SystemClock.elapsedRealtime()-now>200) {
-				// Animation a = new ScaleAnimation(1f, 1.2f, 1f, 1.2f,
-				// Animation.RELATIVE_TO_SELF, 0.5f,
-				// Animation.RELATIVE_TO_SELF, 0.5f);
-				// a.setDuration(300);
-				// a.setFillAfter(true);
-				// view.startAnimation(a);
-				// a.startNow();
-				// finishTransparentActivity();
-				// Intent intent = packageManager
-				// .getLaunchIntentForPackage(((String) view.getTag()));
-				// Log.e(TAG, (String) view.getTag());
-				// intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-				// service.startActivity(intent);
-				// lastTouch = view;
-				// }
-				// int l = v.getLeft();
 				int l = x - tempX > 0 ? x - tempX : 0;
 				// int t = y - temp[1];
 				int t = 0;
@@ -384,6 +468,7 @@ public class FloatWindowBigView extends LinearLayout implements
 				}
 				return true;
 			case MotionEvent.ACTION_UP:
+				
 				final int gl = rootView.getLeft();
 				if (gl <= 0) {
 					service.startActivity(service.mainActivityIntent);
@@ -395,17 +480,14 @@ public class FloatWindowBigView extends LinearLayout implements
 				if ((Math.abs(velocityY) > mMinimumFlingVelocity)
 						|| (Math.abs(velocityX) > mMinimumFlingVelocity)) {
 					switch (flag) {
-					case UP_DOWN:
-						if (0 > velocityY)
-							orientation = Orientation.UP;
-						else
-							orientation = Orientation.DOWN;
-						service.sendBroadcast(new Intent(
-								"com.qihoo.huangmabisheng.UPDATE_ICON"));
-						flag = TouchType.NONE;
-						mVelocityTracker.recycle();
-						mVelocityTracker = null;
-						return true;
+					/**
+					 * case UP_DOWN: if (0 > velocityY) orientation =
+					 * Orientation.UP; else orientation = Orientation.DOWN;
+					 * service.sendBroadcast(new Intent(
+					 * "com.qihoo.huangmabisheng.UPDATE_ICON")); flag =
+					 * TouchType.NONE; mVelocityTracker.recycle();
+					 * mVelocityTracker = null; return true;
+					 */
 					case OPEN_SCREEN:
 						if (0 < velocityX) {
 							if (gl < viewWidth * 1 / 4)
@@ -414,16 +496,13 @@ public class FloatWindowBigView extends LinearLayout implements
 							// velocityX);
 							// duration = duration > 400 ? 400 : duration;
 							// duration = duration < 200 ? 200 : duration;
-							openScreenLockAnim(gl, Constant.OPENSCREEN_TIME,
-									v);
+							openScreenLockAnim(gl, Constant.OPENSCREEN_TIME, v);
 						} else {
-							Log.e(TAG, "closeScreenLockAnim");
 							// long duration = (long) (gl * 1000 / -velocityX);
 							// duration = duration > 400 ? 400 : duration;
 							// duration = duration < 150 ? 150 : duration;
 							closeScreenLockAnim(gl, 2 * gl
-									* Constant.CLOSESCREEN_TIME / viewWidth,
-									v);
+									* Constant.CLOSESCREEN_TIME / viewWidth, v);
 						}
 						flag = TouchType.NONE;
 						mVelocityTracker.recycle();
@@ -436,15 +515,14 @@ public class FloatWindowBigView extends LinearLayout implements
 						return true;
 					}
 				}
-				long len = SystemClock.elapsedRealtime() - now;
+				// long len = SystemClock.elapsedRealtime() - now;
 				Log.d(TAG + " Action_Up", gl + "");
 				if (gl > viewWidth * 1 / 2) {// 开屏
-				// long duration = len * (viewWidth - gl) / gl;
-				// duration = duration > 400 ? 400 : duration;
-				// duration = duration < 200 ? 200 : duration;
+					// long duration = len * (viewWidth - gl) / gl;
+					// duration = duration > 400 ? 400 : duration;
+					// duration = duration < 200 ? 200 : duration;
 					openScreenLockAnim(gl, Constant.OPENSCREEN_TIME, v);
 				} else {// 关屏
-					Log.e(TAG, "closeScreenLockAnim");
 					// long duration = 800 * gl / viewWidth;
 					// duration = duration > 400 ? 400 : duration;
 					// duration = duration < 150 ? 150 : duration;
@@ -461,13 +539,12 @@ public class FloatWindowBigView extends LinearLayout implements
 	};
 
 	public void openScreenLockAnim(final int gl, long duration, final View v) {
-		if (old == 0) {
-			Animation a = new TranslateAnimation(0.0f, 0.0f, 0.0f, 0.0f);
-			a.setDuration(duration);
-			rootView.startAnimation(a);
-			old = 1;
-		}
-		Log.e(TAG, "duration=" + duration);
+		// if (old == 0) {
+		Animation pre = new TranslateAnimation(0.0f, 0.0f, 0.0f, 0.0f);
+		pre.setDuration(10000);
+		rootView.startAnimation(pre);
+		old = 1;
+		// }
 		final int left = rootView.getLeft();
 		final int top = rootView.getTop();
 		final int right = rootView.getRight();
@@ -502,6 +579,10 @@ public class FloatWindowBigView extends LinearLayout implements
 				flag = TouchType.NONE;
 				finishTransparentActivity();
 				rootView.clearAnimation();
+				SharedPrefrencesAssist.instance(service).writeInt(
+						Constant.SCREEN_OPEN_COUNT,
+						SharedPrefrencesAssist.instance(service).readInt(
+								Constant.SCREEN_OPEN_COUNT) + 1);
 				super.onAnimationEnd(animation);
 			}
 		});
@@ -511,12 +592,12 @@ public class FloatWindowBigView extends LinearLayout implements
 	int old = 0;
 
 	private void closeScreenLockAnim(final int lg, long duration, final View v) {
-		if (old == 0) {
-			Animation a = new TranslateAnimation(0.0f, 0.0f, 0.0f, 0.0f);
-			a.setDuration(duration);
-			rootView.startAnimation(a);
-			old = 1;
-		}
+		// if (old == 0) {
+		Animation pre = new TranslateAnimation(0.0f, 0.0f, 0.0f, 0.0f);
+		pre.setDuration(10000);
+		rootView.startAnimation(pre);
+		old = 1;
+		// }
 		// // TODO 动画回弹
 		final int left = rootView.getLeft();
 		final int top = rootView.getTop();
@@ -543,9 +624,10 @@ public class FloatWindowBigView extends LinearLayout implements
 				animating = false;
 				flag = TouchType.NONE;
 				rootView.clearAnimation();
-				if(screenPhotoImageView == v)
-				service.sendBroadcast(new Intent(
-						"com.qihoo.huangmabisheng.closecamera"));
+				if (v.getTag() == Constant.TAG_SCREEN_PHOTO) {
+					service.sendBroadcast(new Intent(
+							"com.qihoo.huangmabisheng.closecamera"));
+				}
 				super.onAnimationEnd(animation);
 			}
 		});
@@ -555,46 +637,12 @@ public class FloatWindowBigView extends LinearLayout implements
 		a.start();
 
 	}
-	public void closeScreenPhoto() {
-		screenPhotoImageView.setVisibility(View.GONE);
-	}
-	public void openScreenPhoto() {
-		screenPhotoImageView.setVisibility(View.VISIBLE);
-	}
+
 	private void setAllListeners() {
-		this.setOnTouchListener(iconOnTouchListener);
-		if(SharedPrefrencesAssist.instance(service).readBoolean(Constant.SCREEN_PHOTO_IMAGEVIEW)){
-			screenPhotoImageView.setVisibility(View.VISIBLE);
+		this.setOnTouchListener(rootViewOnTouchListener);
+		for (View v : imageViews) {
+			v.setOnTouchListener(iconOnTouchListener);
 		}
-		
-		screenPhotoImageView.setOnTouchListener(iconOnTouchListener);
-		// imageViewClose.setOnClickListener(new OnClickListener() {
-		//
-		// @Override
-		// public void onClick(View v) {
-		// canvasLayout.setVisibility(View.GONE);
-		// imageViewHand.setImageResource(R.drawable.hand);
-		// }
-		// });
-		// imageViewHand.setOnClickListener(new OnClickListener() {
-		//
-		// @Override
-		// public void onClick(View v) {
-		// if (canvasLayout.getVisibility() == View.VISIBLE) {
-		// canvasLayout.setVisibility(View.GONE);
-		// imageViewHand.setImageResource(R.drawable.hand);
-		// } else {
-		// canvasLayout.setVisibility(View.VISIBLE);
-		// imageViewHand.setImageResource(R.drawable.hand_open);
-		// }
-		//
-		// }
-		// });
-		//
-		// String str = SharedPrefrencesAssist.instance(service).read("hand");
-		// if (str == null || !str.equals("true")) {
-		// imageViewHand.setVisibility(View.GONE);
-		// }
 		switcher.setFactory(new ViewFactory() {
 
 			@Override
@@ -627,69 +675,44 @@ public class FloatWindowBigView extends LinearLayout implements
 
 	public FloatWindowBigView(final Context context) {
 		super(context);
-		Log.d(TAG, "oncreate");
 		service = (FloatWindowService) context;
 		findAllViews(context);
 		setAllListeners();
 	}
 
 	@Override
-	public void updatePackageIcon(AppDataForList[] list)
-			throws NameNotFoundException {
-		int start = 0;
-		for (int i = list.length; i > 0; i--) {
-			if (list[i - 1] == null) {
+	public void updatePackageIcon(List<AppDataForList> list) {
+		int i = 0;
+		int count = 5;
+		while (i < count && i < list.size()) {
+			AppDataForList appDataForList = list.get(i);
+			try {
+				if (null == packageManager
+						.getLaunchIntentForPackage(appDataForList.packageName)) {
+					list.remove(i);
+					continue;
+				}
+				imageViews[i].switchApp(appDataForList.packageName,
+						appDataForList.currentCompoment, orientation);
+			} catch (NameNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				list.remove(i);
 				continue;
-			} else {
-				start = i;
-				break;
 			}
+			i++;
 		}
-		for (int i = start - 1; i >= 0; i--) {
-			String pck = list[i].packageName;
-			ComponentName cpm = list[i].currentCompoment;
-			switch (start - i - 1) {
-			case 0:
-				image0View.switchApp(pck, cpm, orientation);
-				break;
-			case 1:
-				image1View.switchApp(pck, cpm, orientation);
-				break;
-			case 2:
-				image2View.switchApp(pck, cpm, orientation);
-				break;
-			case 3:
-				image3View.switchApp(pck, cpm, orientation);
-				break;
-			case 4:
-				image4View.switchApp(pck, cpm, orientation);
-				break;
-			case 5:
-				image5View.switchApp(pck, cpm, orientation);
-				break;
-			}
+		for (; i < count; i++) {
+			imageViews[i].switchAppToBlank(orientation);
 		}
-		for (int i = start; i < list.length; i++) {
-			switch (i) {
-			case 0:
-				image0View.switchAppToBlank(orientation);
-				break;
-			case 1:
-				image1View.switchAppToBlank(orientation);
-				break;
-			case 2:
-				image2View.switchAppToBlank(orientation);
-				break;
-			case 3:
-				image3View.switchAppToBlank(orientation);
-				break;
-			case 4:
-				image4View.switchAppToBlank(orientation);
-				break;
-			case 5:
-				image5View.switchAppToBlank(orientation);
-				break;
-			}
+		if (SharedPrefrencesAssist.instance(service).readBoolean(
+				Constant.SCREEN_PHOTO_IMAGEVIEW)) {
+			Log.e(TAG, "SCREEN_PHOTO_IMAGEVIEW");
+			imageViews[2].switchSpecial(orientation, Constant.TAG_SCREEN_PHOTO,
+					R.drawable.screen_photo);
+			imageViews[2].setOnTouchListener(rootViewOnTouchListener);
+		} else {
+			imageViews[2].setOnTouchListener(iconOnTouchListener);
 		}
 	}
 
@@ -739,11 +762,6 @@ public class FloatWindowBigView extends LinearLayout implements
 		if (!dayTextView.getText().equals(d)) {
 			dayTextView.setText(d);
 		}
-	}
-
-	@Override
-	public void updateSpecialIcon() {
-
 	}
 
 	@Override

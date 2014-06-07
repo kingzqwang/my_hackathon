@@ -4,11 +4,12 @@
     <dimen name="photo_setting_bottom">15sp</dimen>
  <dimen name="switcher_width">68dp</dimen>
  <dimen name="log_width">56dp</dimen>
+  <dimen name="setting_log_width">40dp</dimen>
  <dimen name="open_width">20dp</dimen>
   <dimen name="text_size_card">15dp</dimen>
   <dimen name="open_text_size">20dp</dimen>
   <dimen name="dialog_info">15dp</dimen>
-  <dimen name="title">21dp</dimen>
+  <dimen name="title">25dp</dimen>
   <dimen name="margin_iconside">40dp</dimen>
   <dimen name="setting_button">30dp</dimen>
   <dimen name="setting_down">13dp</dimen>
@@ -21,4 +22,6 @@
     <dimen name="log_layout_padding">20dp</dimen>
     
   <dimen name="dialog_title">20dp</dimen>
+  <dimen name="layout_padding">26dp</dimen>
+  <dimen name="layout_margin">13dp</dimen>
 </resources>

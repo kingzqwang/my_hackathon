@@ -72,4 +72,15 @@ public class Constant {
 	public static final long CLOSESCREEN_TIME = 300;
 	public static final long VIBRATE_TIME = 5;
 	public static final String SCREEN_PHOTO_IMAGEVIEW = "SCREEN_PHOTO_IMAGEVIEW";
+	public static final String SCREEN_CLEAN = "SCREEN_CLEAN";
+	public static final Object TAG_SCREEN_PHOTO = 32966;
+	public static final String SCREEN_OPEN_COUNT = "SCREEN_OPEN_COUNT";
+	
+	
+	public static final String DB_COLUMN_PACKAGENAME= "DB_COLUMN_PACKAGENAME";
+	public static final String DB_COLUMN_COMPONENTNAME= "DB_COLUMN_COMPONENTNAME";
+	public static final String DB_COLUMN_COUNTS= "DB_COLUMN_COUNTS";
+	public static final String DB_COMLUMN_ID = "DB_COMLUMN_ID";
+	public static final String SCREEN_CLEAN_IMAGEVIEW = "SCREEN_CLEAN_IMAGEVIEW";
+	public static final String WORLD_CUP_IMAGEVIEW = "WORLD_CUP_IMAGEVIEW";
 }

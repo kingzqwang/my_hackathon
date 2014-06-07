@@ -1,5 +1,7 @@
 package com.qihoo.huangmabisheng.service;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,6 +28,7 @@ import com.qihoo.huangmabisheng.utils.Log;
 import com.qihoo.huangmabisheng.utils.MyWindowManager;
 import com.qihoo.huangmabisheng.utils.ProcessUtil;
 import com.qihoo.huangmabisheng.utils.TimeUtil;
+import com.qihoo.huangmabisheng.utils.Toast;
 import com.qihoo.huangmabisheng.utils.TopApp;
 import com.qihoo.huangmabisheng.utils.fb;
 import com.qihoo.huangmabisheng.view.FloatWindowBigView;
@@ -95,7 +98,7 @@ public class SmartLockService extends Service {
 				break;
 			case Constant.UPDATE_TIME:
 				Date date = new Date();
-				changeState(date);
+				changeState(date, false);
 				if (null != MyWindowManager.getView()) {
 					MyWindowManager.getView().updateTime(date.getHours(),
 							date.getMinutes(), date.getMonth(), date.getDate(),
@@ -116,103 +119,120 @@ public class SmartLockService extends Service {
 	private void changeState(Scene scene) {
 		FloatWindowBigView view = MyWindowManager.getView();
 		if (view != null) {
-			this.scene = scene;
-			app_fre.updateAppDatasScene(scene);
-			updatePcksIcon(SizeType.SCENE);
+			/**
+			 * 暂时去掉场景icon this.scene = scene;
+			 * app_fre.updateAppDatasScene(scene);
+			 * updatePcksIcon(SizeType.SCENE);
+			 */
 			switch (scene) {
 			case EARPHONE:
 				view.switcher.setImageResource(R.drawable.bg_cr_abs_driving);
 				break;
 			default:
-				timeQuantum = TimeQuantum.DEFAULT;// 以备changeState(Date
-													// date)时判断是否时序变化
+				// timeQuantum = TimeQuantum.DEFAULT;// 以备changeState(Date
+				// // date)时判断是否时序变化
+				changeState(null, true);
 				break;
 			}
 		}
 	}
 
-	private TimeQuantum changeTimeQuantumToNow() {
-		return timeQuantum == TimeQuantum.DEFAULT ? TimeUtil
-				.decideTimeQuantumForNow(new Date()) : timeQuantum;
-	}
+	// private TimeQuantum changeTimeQuantumToNow() {
+	// return timeQuantum == TimeQuantum.DEFAULT ? TimeUtil
+	// .decideTimeQuantumForNow(new Date()) : timeQuantum;
+	// }
 
 	/**
 	 * 先判断耳机，后判断时间段
+	 * 
+	 * @param date
+	 *            传入时间，若为null则为现在系统时间
+	 * @param force
+	 *            强制换壁纸
 	 */
-	private void changeState(Date date) {
+	private void changeState(Date date, boolean force) {
 		FloatWindowBigView view = MyWindowManager.getView();
 		if (view == null || Scene.EARPHONE == this.scene) {
 			return;
 		}
-		TimeQuantum now = TimeUtil.decideTimeQuantumForNow(date);
-		switch (now) {
-		case SLEEPING:
-			if (timeQuantum != now) {
-				Log.d(TAG, "change to SLEEPING");
-				if (view != null) {
-					view.switcher.setImageResource(R.drawable.black_bg);
-				}
-			}
-			break;
-		case WORKING_AFTERNOON:
-			if (timeQuantum != now) {
-				Log.d(TAG, "change to WORKING_AFTERNOON");
-				if (view != null) {
-					view.switcher
-							.setImageResource(R.drawable.bg_outdoors_driving);
-				}
-			}
-			break;
-		case WORKING_MORNING:
-			if (timeQuantum != now) {
-				Log.d(TAG, "change to WORKING_MORNING");
-				if (view != null) {
-					view.switcher.setImageResource(R.drawable.bg_jordi_work);
-				}
-			}
-			break;
-		case WORKING_NIGHT:
-			if (timeQuantum != now) {
-				Log.d(TAG, "change to WORKING_NIGHT");
-				if (view != null) {
-					view.switcher
-							.setImageResource(R.drawable.bg_cr_lit_home_night);
-				}
-			}
-			break;
-		case REST:
-			if (timeQuantum != now) {
-				Log.d(TAG, "change to REST");
-				if (view != null) {
-					view.switcher.setImageResource(R.drawable.bg_cr_abs_out);
-				}
-			}
-			break;
-		case BEFORE_SLEEP:
-			if (timeQuantum != now) {
-				Log.d(TAG, "change to BEFORE_SLEEP");
-				if (view != null) {
-					view.switcher
-							.setImageResource(R.drawable.bg_jordi_home_night);
-				}
-			}
-			break;
-		default:
-			// if (timeQuantum != now) {
-			// Log.d(TAG, "change to DEFAULT");
-			// if (view != null) {
-			// view.switcher
-			// .setImageResource(R.drawable.black_bg);
-			// }
-			// }
-			break;
+		if (null == date) {
+			date = new Date();
 		}
-		timeQuantum = now;
+		TimeUtil nowUtil = TimeUtil.decideTimeUtilForNow(date);
+		if ((!force && timeQuantum != nowUtil.timeQuantum) || force) {
+			Log.e(TAG, "change to " + nowUtil.timeQuantum);
+			view.switcher.setImageResource(nowUtil.drawableResource);
+		}
+
+		// TimeQuantum now = TimeUtil.decideTimeQuantumForNow(date);
+		// switch (now) {
+		// case SLEEPING:
+		// if (timeQuantum != now) {
+		// Log.d(TAG, "change to SLEEPING");
+		// if (view != null) {
+		// view.switcher.setImageResource(R.drawable.black_bg);
+		// }
+		// }
+		// break;
+		// case WORKING_AFTERNOON:
+		// if (timeQuantum != now) {
+		// Log.d(TAG, "change to WORKING_AFTERNOON");
+		// if (view != null) {
+		// view.switcher
+		// .setImageResource(R.drawable.bg_outdoors_driving);
+		// }
+		// }
+		// break;
+		// case WORKING_MORNING:
+		// if (timeQuantum != now) {
+		// Log.d(TAG, "change to WORKING_MORNING");
+		// if (view != null) {
+		// view.switcher.setImageResource(R.drawable.bg_jordi_work);
+		// }
+		// }
+		// break;
+		// case WORKING_NIGHT:
+		// if (timeQuantum != now) {
+		// Log.d(TAG, "change to WORKING_NIGHT");
+		// if (view != null) {
+		// view.switcher
+		// .setImageResource(R.drawable.bg_cr_lit_home_night);
+		// }
+		// }
+		// break;
+		// case REST:
+		// if (timeQuantum != now) {
+		// Log.d(TAG, "change to REST");
+		// if (view != null) {
+		// view.switcher.setImageResource(R.drawable.bg_cr_abs_out);
+		// }
+		// }
+		// break;
+		// case BEFORE_SLEEP:
+		// if (timeQuantum != now) {
+		// Log.d(TAG, "change to BEFORE_SLEEP");
+		// if (view != null) {
+		// view.switcher
+		// .setImageResource(R.drawable.bg_jordi_home_night);
+		// }
+		// }
+		// break;
+		// default:
+		// // if (timeQuantum != now) {
+		// // Log.d(TAG, "change to DEFAULT");
+		// // if (view != null) {
+		// // view.switcher
+		// // .setImageResource(R.drawable.black_bg);
+		// // }
+		// // }
+		// break;
+		// }
+		timeQuantum = nowUtil.timeQuantum;
 	}
 
 	public void onCreate() {
 		setFrontService();
-		Log.d(TAG, "onCreate");
+		Log.e(TAG, "Service onCreate");
 		super.onCreate();
 		manager = MyWindowManager.getActivityManager(this);
 		// app_fre.putAll((AppIntroMap) SharedPrefrencesAssist.instance(this)
@@ -220,6 +240,7 @@ public class SmartLockService extends Service {
 		// app_fre.remove("hand");
 		Log.d(TAG, app_fre.size() + "");
 		fs = new FileUtil(getApplicationContext());
+		fs.read(app_fre);
 		updateCurrentPackageInfo();
 		// TODO 记录当前
 		PackageInfo packageInfo = null;
@@ -243,7 +264,7 @@ public class SmartLockService extends Service {
 		this.registerReceiver(earListenerReceiver, new IntentFilter(
 				"android.intent.action.HEADSET_PLUG"));
 		if (timer == null) {
-			timer = new Timer();
+			timer = new Timer(); 
 			timer.schedule(new RefreshTimeTask(), 0, Constant.REFRESH_TIME);
 		}
 		if (scheduleTimer == null) {
@@ -265,18 +286,19 @@ public class SmartLockService extends Service {
 	 */
 	private void pushInAppFre(ComponentName topActivity,
 			String currentPackageName, boolean save) {
-		TimeQuantum timeQuantum = changeTimeQuantumToNow();
+		// TimeQuantum timeQuantum = changeTimeQuantumToNow();
 		AppDataForList appData;
 		if (app_fre.containsKey(currentPackageName)) {
 			appData = app_fre.get(currentPackageName);
-			appData.push(timeQuantum);
+			appData.push(timeQuantum);// 次数+1
 		} else {
 			appData = new AppDataForList(currentPackageName, topActivity,
 					timeQuantum);
 			app_fre.put(currentPackageName, appData);
 		}
+		Log.e(TAG, currentPackageName + "次数:" + appData.size());
 		app_fre.updateData(currentPackageName, timeQuantum);
-		fs.save(currentPackageName, appData);// 耗时操作
+		fs.save(appData);
 	}
 
 	/**
@@ -405,11 +427,15 @@ public class SmartLockService extends Service {
 				synchronized (SmartLockService.class) {
 					if (MyWindowManager.isWindowLocked())
 						try {
-							Log.e(TAG,"wait "+ MyWindowManager.getWindowVisibility());
-							Log.e(TAG, "wait 运行次数" + tim);
+//							Log.d(TAG,
+//									"wait "
+//											+ MyWindowManager
+//													.getWindowVisibility());
+//							Log.d(TAG, "wait 运行次数" + tim);
 							SmartLockService.class.wait();
-							clearProcess();
-							Log.e(TAG, "notify");
+							if(SharedPrefrencesAssist.instance(SmartLockService.this).readBoolean(Constant.SCREEN_CLEAN_IMAGEVIEW))
+								clearProcess();
+							Log.d(TAG, "notify");
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -417,23 +443,20 @@ public class SmartLockService extends Service {
 						}
 				}
 			updateCurrentPackageInfo();
-			// 先判断是不是可统计的app，即非系统app
 			if (currentPackageName.equals(lastPackageName))
 				return;
 			try {
+				// 过滤应用
 				if (!filterApplications(currentPackageName)) {
 					return;
 				}
 				pushInAppFre(topActivity, currentPackageName, Constant.SAVE);
 				Log.e(TAG, "pushInAppFre:" + currentPackageName);
-
 			} catch (NameNotFoundException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} finally {
 				lastPackageName = currentPackageName;// 更新last top
 			}
-
 		}
 	}
 
@@ -445,11 +468,14 @@ public class SmartLockService extends Service {
 
 	public void onDestroy() {
 		stopForeground(true);
-		Log.d(TAG, "Service destroy");
-		super.onDestroy();
 		this.unregisterReceiver(screenOffReceiver);
 		this.unregisterReceiver(changeIconReceiver);
 		this.unregisterReceiver(earListenerReceiver);
+		timer.cancel();
+		scheduleTimer.cancel();
+		Log.e(TAG, "Service destroy");
+		super.onDestroy();
+		
 		// startService(new Intent(SmartLockService.this,
 		// SmartLockService.class));
 	}
@@ -458,79 +484,59 @@ public class SmartLockService extends Service {
 	 * 此操作在关屏时启动
 	 */
 	private void updatePcksIcon() {
-		TimeQuantum timeQuantum = changeTimeQuantumToNow();
-		try {
-			if (app_fre == null || filterMap == null) {
-				Log.d(TAG, app_fre + "," + filterMap);
-			}
-			// List<Entry<String, Integer>> topApp = new TopApp(app_fre)
-			// .toApp(filterMap);
-			FloatWindowBigView view = MyWindowManager.getView();
-			if (null != view)
-				switch (sizeType) {
-				case SCENE:
-					view.updatePackageIcon(app_fre.appDatasScene);
-					break;
-				case QUANTUM:
-					view.updatePackageIcon(app_fre.appDatasNowMap
-							.get(timeQuantum));
-					break;
-				default:
-					view.updatePackageIcon(app_fre.appDatas);
-					break;
-				}
-			else {
-				Log.d(TAG, "view null");
-			}
-		} catch (NameNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (app_fre == null || filterMap == null) {
+			Log.d(TAG, app_fre + "," + filterMap);
 		}
+		// List<Entry<String, Integer>> topApp = new TopApp(app_fre)
+		// .toApp(filterMap);
+		FloatWindowBigView view = MyWindowManager.getView();
+		if (null != view)
+			view.updatePackageIcon(app_fre.appDatas);
+		/*
+		 * switch (sizeType) { case SCENE:
+		 * view.updatePackageIcon(app_fre.appDatasScene); break; case QUANTUM:
+		 * view.updatePackageIcon(app_fre.appDatasNowMap .get(timeQuantum));
+		 * break; default: view.updatePackageIcon(app_fre.appDatas); break; }
+		 */
+		else
+			Log.d(TAG, "view null");
 	}
 
-	private void updatePcksIcon(SizeType sizeType) {
-		TimeQuantum timeQuantum = changeTimeQuantumToNow();
-		try {
-			if (app_fre == null || filterMap == null) {
-				Log.d(TAG, app_fre + "," + filterMap);
-			}
-			// List<Entry<String, Integer>> topApp = new TopApp(app_fre)
-			// .toApp(filterMap);
-			FloatWindowBigView view = MyWindowManager.getView();
-			if (null != view)
-				switch (sizeType) {
-				case SCENE:
-					view.updatePackageIcon(app_fre.appDatasScene);
-					break;
-				case QUANTUM:
-					view.updatePackageIcon(app_fre.appDatasNowMap
-							.get(timeQuantum));
-					break;
-				default:
-					view.updatePackageIcon(app_fre.appDatas);
-					break;
-				}
-			else {
-				Log.d(TAG, "view null");
-			}
-		} catch (NameNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	// private void updatePcksIcon(SizeType sizeType) {
+	// // TimeQuantum timeQuantum = changeTimeQuantumToNow();
+	// try {
+	// if (app_fre == null || filterMap == null) {
+	// Log.d(TAG, app_fre + "," + filterMap);
+	// }
+	// // List<Entry<String, Integer>> topApp = new TopApp(app_fre)
+	// // .toApp(filterMap);
+	// FloatWindowBigView view = MyWindowManager.getView();
+	// if (null != view)
+	// switch (sizeType) {
+	// case SCENE:
+	// view.updatePackageIcon(app_fre.appDatasScene);
+	// break;
+	// case QUANTUM:
+	// view.updatePackageIcon(app_fre.appDatasNowMap
+	// .get(timeQuantum));
+	// break;
+	// default:
+	// view.updatePackageIcon(app_fre.appDatas);
+	// break;
+	// }
+	// else {
+	// Log.d(TAG, "view null");
+	// }
+	// } catch (NameNotFoundException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
 
 	private BroadcastReceiver screenOffReceiver = new BroadcastReceiver() {
-		final String TAG = "screenOffReceiver";
-
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			// String action = intent.getAction();
-
-			// if (action.equals("android.intent.action.SCREEN_OFF")) {
-			Log.i(TAG,
-					"-----------OFF------ android.intent.action.SCREEN_OFF------");
 			updatePcksIcon();
-			// }
 			fb.d(context);
 		}
 
@@ -591,24 +597,25 @@ public class SmartLockService extends Service {
 		Intent intent = new Intent(this, SettingActivity.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
 				intent, 0);
-		notification.setLatestEventInfo(this, "Don't worry. Be happy.",
-				"Touch here to set your SmartScreenLock", pendingIntent);
+		notification.setLatestEventInfo(this, getResources().getString(R.string.notification_title),
+				getResources().getString(R.string.notification_desc), pendingIntent);
 		startForeground(9527, notification);
 	}
 
 	private void clearProcess() {
+		Log.e(TAG, "clear");
 		new Thread(new Runnable() {
 			private boolean filter(String processName) {
-//				if (getHomes().contains(processName))
-//					return false;
-//				if (processName.startsWith("com.android"))
-//					return false;
-//				if (processName.startsWith("com.qihoo"))
-//					return false;
-//				if (processName.startsWith("com.google"))
-//					return false;
-//				if (processName.startsWith("com.miui"))
-//					return false;
+				if (getHomes().contains(processName))
+					return false;
+				// if (processName.startsWith("com.android"))
+				// return false;
+				// if (processName.startsWith("com.qihoo"))
+				// return false;
+				// if (processName.startsWith("com.google"))
+				// return false;
+				// if (processName.startsWith("com.miui"))
+				// return false;
 				return true;
 			}
 
@@ -618,11 +625,34 @@ public class SmartLockService extends Service {
 						.getSystemService(Context.ACTIVITY_SERVICE);
 				List<RunningAppProcessInfo> runningApps = activityManager
 						.getRunningAppProcesses();
+				final ActivityManager.MemoryInfo memoryBefore= new ActivityManager.MemoryInfo();   
+				activityManager.getMemoryInfo(memoryBefore);    
 				for (RunningAppProcessInfo info : runningApps) {
-					if(!filter(info.processName))continue;
-					ProcessUtil.clearBackgroundProcess(info.processName,
-							SmartLockService.this);
+					if (!filter(info.processName)) {
+						Log.d(TAG, "过滤"+info.processName);
+						continue;
+					}
+					try {
+						ProcessUtil.clearBackgroundProcess(info.processName,
+								SmartLockService.this);
+					} catch (NameNotFoundException e) {
+					}
 				}
+				final ActivityManager.MemoryInfo memoryAfter= new ActivityManager.MemoryInfo();   
+				activityManager.getMemoryInfo(memoryAfter); 
+				handler.post(new Runnable() {
+
+					@Override
+					public void run() {
+						long av = (memoryAfter.availMem-memoryBefore.availMem)*100/memoryBefore.availMem;
+						if (av > 5) {
+							Toast.show(SmartLockService.this, "CC 为您加速 "+av+"%");
+						}else {
+							Toast.show(SmartLockService.this, "手机状态很好哦");
+						}
+						
+					}
+				});
 			}
 		}).start();
 	}

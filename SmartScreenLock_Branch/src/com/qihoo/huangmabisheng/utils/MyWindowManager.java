@@ -19,6 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 
 public class MyWindowManager {
@@ -67,6 +69,12 @@ public class MyWindowManager {
 		}
 	}
 
+	public static void removeBigView(Context context) {
+		WindowManager windowManager = getWindowManager(context);
+		windowManager.removeView(bigWindow);
+		bigWindow = null;
+	}
+	
 	/**
 	 * 创建一个大悬浮窗。位置为屏幕正中间。
 	 * 
@@ -147,10 +155,10 @@ public class MyWindowManager {
 	}
 
 	public static boolean isWindowLocked() {
-//		if (!isWindowShowing()) {
-//			Log.e(TAG, "bigWindow == null but isWindowLocked");
-//			return true;
-//		}
+		if (!isWindowShowing()) {
+			Log.e(TAG, "bigWindow == null but isWindowLocked");
+			return true;
+		}
 		return getWindowVisibility() != View.GONE;
 	}
 

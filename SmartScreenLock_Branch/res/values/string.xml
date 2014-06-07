@@ -1,7 +1,10 @@
 <resources>
     
     
-    <string name="app_name">智屏</string>
+    <string name="app_name">CC锁屏</string>
     <string name="app_version">1.0.0 beta</string>
-    <string name="slide_anywhere">slide anywhere to unlock</string>
+    <string name="slide_anywhere">向右滑动解锁</string>
+    
+    <string name="notification_title">CC 锁屏为您服务</string>
+    <string name="notification_desc">您使用手机次数有点多哦</string>
     </resources>
