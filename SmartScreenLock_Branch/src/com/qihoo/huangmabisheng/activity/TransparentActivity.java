@@ -22,6 +22,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
@@ -150,7 +153,7 @@ public class TransparentActivity extends BaseActivity implements
 		if (camera == null)
 			return;
 		try {
-//			camera.stopPreview();
+			camera.setPreviewCallback(null);
 			camera.takePicture(null, null, this);
 		} catch (Exception e) {
 		}
@@ -193,7 +196,7 @@ public class TransparentActivity extends BaseActivity implements
 		public void onReceive(Context context, Intent intent) {
 			if (intent.getAction().equals(
 					"com.qihoo.huangmabisheng.closecamera")) {
-				Log.e(TAG,"closeCameraReceiver");
+				Log.e(TAG, "closeCameraReceiver");
 				closeCamera();
 			}
 		}
@@ -213,7 +216,10 @@ public class TransparentActivity extends BaseActivity implements
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							surfaceView.layout(surfaceView.getLeft(), surfaceView.getTop(), surfaceView.getRight()-1, surfaceView.getBottom());
+							surfaceView.layout(surfaceView.getLeft(),
+									surfaceView.getTop(),
+									surfaceView.getRight() - 1,
+									surfaceView.getBottom());
 						}
 					});
 					camera.startPreview();
@@ -300,82 +306,91 @@ public class TransparentActivity extends BaseActivity implements
 
 	@Override
 	public void onPictureTaken(final byte[] data, Camera camera) {
-			try {
-				// Log.e(TAG, "onPictureTaken"+data.length);
-				// ContentValues values = new ContentValues();
-				// Uri imageUri = this.getContentResolver().insert(
-				// MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-				// values);// 原来是这么写照出来的图片
-				// try {
-				// OutputStream os = this.getContentResolver().openOutputStream(
-				// imageUri);
-				// os.write(data);
-				// os.flush();
-				// os.close();
-				// } catch (FileNotFoundException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// } catch (IOException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// }
-				new Thread(new Runnable() {
+		try {
+			// Log.e(TAG, "onPictureTaken"+data.length);
+			// ContentValues values = new ContentValues();
+			// Uri imageUri = this.getContentResolver().insert(
+			// MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+			// values);// 原来是这么写照出来的图片
+			// try {
+			// OutputStream os = this.getContentResolver().openOutputStream(
+			// imageUri);
+			// os.write(data);
+			// os.flush();
+			// os.close();
+			// } catch (FileNotFoundException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// } catch (IOException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
 
-					@Override
-					public void run() {
-						Log.e(TAG, "start");
-						File sd = FileUtil.getSDFileDir();
-						if (sd == null) {
-							return;
-						}
-						File dir = new File(sd, "CC锁屏");
-						if (!dir.isDirectory()) {
-							dir.mkdir();
-						}
-						File file = new File(dir, new Date().getTime() + ".jpg");
-						file.delete();
-						Log.e(TAG, "delete");
-						try {
-							file.createNewFile();
-							OutputStream os = new BufferedOutputStream(
-									new FileOutputStream(file));
-							os.write(data);
-							os.flush();
-							os.close();
+			new Thread(new Runnable() {
 
-							Log.e(TAG, "OutputStream");
-							// Toast.makeText(this,
-							// "照片已保存在"+file.getAbsolutePath(),
-							// Toast.LENGTH_SHORT).show();
-							Intent intent = new Intent(
-									Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-							Uri uri = Uri.fromFile(file);
-							intent.setData(uri);
-							sendBroadcast(intent);
-							Log.e(TAG, "sendBroadcast");
-						} catch (FileNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+				@Override
+				public void run() {
+					Log.e(TAG, "start");
+
+					Bitmap bMap = BitmapFactory.decodeByteArray(data, 0,
+							data.length);
+					Matrix matrix = new Matrix();
+					matrix.reset();
+					matrix.postRotate(90);
+					bMap = Bitmap.createBitmap(bMap, 0, 0, bMap.getWidth(),
+							bMap.getHeight(), matrix, true);
+					
+					File sd = FileUtil.getSDFileDir();
+					if (sd == null) {
+						return;
 					}
-				}).start();
+					File dir = new File(sd, "CC锁屏");
+					if (!dir.isDirectory()) {
+						dir.mkdir();
+					}
+					File file = new File(dir, new Date().getTime() + ".jpg");
+					file.delete();
+					Log.e(TAG, "delete");
+					try {
+						file.createNewFile();
+						BufferedOutputStream bos = new BufferedOutputStream(
+								new FileOutputStream(file));
+						bMap.compress(Bitmap.CompressFormat.JPEG, 100, bos);// 将图片压缩到流中
+						bos.flush();// 输出
+						bos.close();// 关闭
+						Log.e(TAG, "OutputStream");
+						// Toast.makeText(this,
+						// "照片已保存在"+file.getAbsolutePath(),
+						// Toast.LENGTH_SHORT).show();
+						Intent intent = new Intent(
+								Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+						Uri uri = Uri.fromFile(file);
+						intent.setData(uri);
+						sendBroadcast(intent);
+						Log.e(TAG, "sendBroadcast");
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}).start();
 
-				// camera.stopPreview();
-				// try {
-				// camera.reconnect();
-				// camera.setPreviewCallback(this);
-				// camera.startPreview();
-				// } catch (IOException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// }
-			} finally {
-				Log.e(TAG, "finnaly");
-				transLayout.removeAllViews();
-				surfaceView = null;
+			// camera.stopPreview();
+			// try {
+			// camera.reconnect();
+			// camera.setPreviewCallback(this);
+			// camera.startPreview();
+			// } catch (IOException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+		} finally {
+			Log.e(TAG, "finnaly");
+			transLayout.removeAllViews();
+			surfaceView = null;
 		}
 	}
 

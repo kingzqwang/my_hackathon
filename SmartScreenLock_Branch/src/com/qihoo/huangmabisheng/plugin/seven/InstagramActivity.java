@@ -180,15 +180,18 @@ public class InstagramActivity extends Activity implements AutoFocusCallback,
 				new Thread(new Runnable() {
 					public void run() {
 						try {
-							URL url = new URL("http://"+SharedPrefrencesAssist.instance(null).read("ip")+":"+Constant.PORT+"/?"+"p=" + Constant.PARAM_AUTO_FOCUS);
+							URL url = new URL("http://"
+									+ SharedPrefrencesAssist.instance(null)
+											.read("ip") + ":" + Constant.PORT
+									+ "/?" + "p=" + Constant.PARAM_AUTO_FOCUS);
 							Log.e(TAG, url.getPath());
 							HttpURLConnection conn = (HttpURLConnection) url
 									.openConnection();
 							conn.setConnectTimeout(15000);
-							Log.e(TAG, conn.getResponseCode()+"");
+							Log.e(TAG, conn.getResponseCode() + "");
 							conn.disconnect();
-//							HttpRequestFactory.instance().post("/",
-//									"p=" + Constant.PARAM_AUTO_FOCUS);
+							// HttpRequestFactory.instance().post("/",
+							// "p=" + Constant.PARAM_AUTO_FOCUS);
 							Log.e(TAG, "focus");
 						} catch (ClientProtocolException e) {
 							e.printStackTrace();
@@ -203,15 +206,18 @@ public class InstagramActivity extends Activity implements AutoFocusCallback,
 					public void run() {
 						try {
 							Log.d(TAG, "HttpRequestFactory start");
-							URL url = new URL("http://"+SharedPrefrencesAssist.instance(null).read("ip")+":"+Constant.PORT+"/?"+"p=" + Constant.PARAM_CATCH_PIC);
+							URL url = new URL("http://"
+									+ SharedPrefrencesAssist.instance(null)
+											.read("ip") + ":" + Constant.PORT
+									+ "/?" + "p=" + Constant.PARAM_CATCH_PIC);
 							HttpURLConnection conn = (HttpURLConnection) url
 									.openConnection();
 							conn.setConnectTimeout(15000);
-//							HttpEntity httpEntity = HttpRequestFactory
-//									.instance().post("/",
-//											"p=" + Constant.PARAM_CATCH_PIC);
-							Log.e(TAG, conn.getResponseCode()+"");
-							InputStream inputStream = conn.getInputStream();//httpEntity.getContent();
+							// HttpEntity httpEntity = HttpRequestFactory
+							// .instance().post("/",
+							// "p=" + Constant.PARAM_CATCH_PIC);
+							Log.e(TAG, conn.getResponseCode() + "");
+							InputStream inputStream = conn.getInputStream();// httpEntity.getContent();
 							ByteArrayOutputStream bos = new ByteArrayOutputStream();
 							int next = inputStream.read();
 							while (next > -1) {
@@ -229,7 +235,7 @@ public class InstagramActivity extends Activity implements AutoFocusCallback,
 							Log.d(TAG, data.length + "");
 							handler.obtainMessage().sendToTarget();
 							Log.d(TAG, "HttpRequestFactory end");
-							
+
 						} catch (ClientProtocolException e) {
 							e.printStackTrace();
 						} catch (IOException e) {
@@ -246,14 +252,18 @@ public class InstagramActivity extends Activity implements AutoFocusCallback,
 							public void run() {
 								try {
 									Log.e(TAG, "startCameraButton take");
-									URL url = new URL("http://"+SharedPrefrencesAssist.instance(null).read("ip")+":"+Constant.PORT+"/?"+"p=" + Constant.PARAM_TAKEPHOTO);
+									URL url = new URL("http://"
+											+ SharedPrefrencesAssist.instance(
+													null).read("ip") + ":"
+											+ Constant.PORT + "/?" + "p="
+											+ Constant.PARAM_TAKEPHOTO);
 									HttpURLConnection conn = (HttpURLConnection) url
 											.openConnection();
 									conn.setConnectTimeout(15000);
-									Log.e(TAG, conn.getResponseCode()+"");
+									Log.e(TAG, conn.getResponseCode() + "");
 									conn.disconnect();
-//									HttpRequestFactory.instance().post("/",
-//											"p=" + Constant.PARAM_TAKEPHOTO);
+									// HttpRequestFactory.instance().post("/",
+									// "p=" + Constant.PARAM_TAKEPHOTO);
 								} catch (ClientProtocolException e) {
 									Log.e(TAG, e.toString());
 								} catch (IOException e) {
@@ -263,7 +273,7 @@ public class InstagramActivity extends Activity implements AutoFocusCallback,
 						}).start();
 						snapImageView.setImageBitmap(null);
 					}
-					
+
 				});
 			}
 		});
@@ -301,8 +311,8 @@ public class InstagramActivity extends Activity implements AutoFocusCallback,
 								if (camera == null)
 									return;
 								// m_caCamera.ta
-								camera.takePicture(null, null,
-										InstagramActivity.this);
+								camera.setPreviewCallback(null);
+								camera.takePicture(null,null,InstagramActivity.this);
 							}
 						});
 
@@ -369,14 +379,15 @@ public class InstagramActivity extends Activity implements AutoFocusCallback,
 		// TODO Auto-generated method stub
 		if (camera == null)
 			return;
-		parameters = camera.getParameters(); 
+		parameters = camera.getParameters();
 		WindowManager windowManager = this.getWindowManager();
 		Display display = windowManager.getDefaultDisplay();
 
 		switch (display.getRotation()) {
 		case Surface.ROTATION_0:
 			Log.e(TAG, "竖屏");
-//			parameters.setPictureSize(display.getHeight(), display.getWidth());
+			// parameters.setPictureSize(display.getHeight(),
+			// display.getWidth());
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
 				camera.setDisplayOrientation(90);
 			} else {
@@ -385,7 +396,8 @@ public class InstagramActivity extends Activity implements AutoFocusCallback,
 			break;
 		case Surface.ROTATION_90:
 			Log.e(TAG, "横屏-右侧在上");
-//			parameters.setPictureSize(display.getWidth(), display.getHeight());
+			// parameters.setPictureSize(display.getWidth(),
+			// display.getHeight());
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
 				camera.setDisplayOrientation(0);
 			} else {
@@ -394,7 +406,8 @@ public class InstagramActivity extends Activity implements AutoFocusCallback,
 			break;
 		case Surface.ROTATION_270:
 			Log.e(TAG, "横屏-左侧在上");
-//			parameters.setPictureSize(display.getHeight(), display.getWidth());
+			// parameters.setPictureSize(display.getHeight(),
+			// display.getWidth());
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
 				camera.setDisplayOrientation(180);
 			} else {
@@ -410,7 +423,7 @@ public class InstagramActivity extends Activity implements AutoFocusCallback,
 			parameters.setPictureSize(size.width, size.height);
 			camera.setParameters(parameters);
 		}
-		
+
 		camera.autoFocus(this);
 		camera.startPreview();
 	}
@@ -450,6 +463,7 @@ public class InstagramActivity extends Activity implements AutoFocusCallback,
 		// if(bitmap == null) return;
 		// anothercameraButton.setBackgroundDrawable(new
 		// BitmapDrawable(bitmap));
+		Log.e(TAG, "onPictureTaken");
 		Uri imageUri = this.getContentResolver().insert(
 				MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
 				new ContentValues());// 原来是这么写照出来的图片
