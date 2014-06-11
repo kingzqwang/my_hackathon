@@ -26,9 +26,9 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/title" />
 
-            <com.qihoo.huangmabisheng.view.OptionCheckBox
+            <com.cc.huangmabisheng.view.OptionCheckBox
                 android:id="@+id/start_checkbox"
-                android:layout_width="wrap_content"
+                android:layout_width="65dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
@@ -157,9 +157,9 @@
                             android:textSize="@dimen/setting_down" />
                     </LinearLayout>
 
-                    <com.qihoo.huangmabisheng.view.OptionCheckBox
+                    <com.cc.huangmabisheng.view.OptionCheckBox
                         android:id="@+id/screen_photo_checkbox"
-                        android:layout_width="wrap_content"
+                        android:layout_width="65dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
@@ -215,9 +215,9 @@
                             android:textSize="@dimen/setting_down" />
                     </LinearLayout>
 
-                    <com.qihoo.huangmabisheng.view.OptionCheckBox
+                    <com.cc.huangmabisheng.view.OptionCheckBox
                         android:id="@+id/screen_clean_checkbox"
-                        android:layout_width="wrap_content"
+                        android:layout_width="65dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
@@ -273,9 +273,9 @@
                             android:textSize="@dimen/setting_down" />
                     </LinearLayout>
 
-                    <com.qihoo.huangmabisheng.view.OptionCheckBox
+                    <com.cc.huangmabisheng.view.OptionCheckBox
                         android:id="@+id/world_cup_checkbox"
-                        android:layout_width="wrap_content"
+                        android:layout_width="65dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"

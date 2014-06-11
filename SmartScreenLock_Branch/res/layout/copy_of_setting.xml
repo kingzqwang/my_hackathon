@@ -62,7 +62,7 @@
                     android:text="启动智屏"
                     android:textSize="@dimen/setting_up" />
 
-                <com.qihoo.huangmabisheng.view.OptionCheckBox
+                <com.cc.huangmabisheng.view.OptionCheckBox
                     android:id="@+id/start_checkbox"
                     android:layout_width="71dp"
                     android:layout_height="wrap_content"
@@ -147,7 +147,7 @@
                     android:text="开启锁屏手势"
                     android:textSize="@dimen/setting_up" />
 
-                <com.qihoo.huangmabisheng.view.OptionCheckBox
+                <com.cc.huangmabisheng.view.OptionCheckBox
                     android:id="@+id/hand_checkbox"
                     android:layout_width="71dp"
                     android:layout_height="wrap_content"
@@ -187,7 +187,7 @@
                     android:text="你绝对想不到"
                     android:textSize="@dimen/setting_up" />
 
-                <com.qihoo.huangmabisheng.view.OptionCheckBox
+                <com.cc.huangmabisheng.view.OptionCheckBox
                     android:id="@+id/service_control_checkbox"
                     android:layout_width="71dp"
                     android:layout_height="wrap_content"
@@ -276,7 +276,7 @@
                         android:text="六娃"
                         android:textSize="@dimen/setting_up" />
 
-                    <com.qihoo.huangmabisheng.view.OptionCheckBox
+                    <com.cc.huangmabisheng.view.OptionCheckBox
                         android:id="@+id/screen_photo_checkbox"
                         android:layout_width="71dp"
                         android:layout_height="wrap_content"

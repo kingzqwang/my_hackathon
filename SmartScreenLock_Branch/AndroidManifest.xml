@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.qihoo.huangmabisheng"
+    package="com.cc.huangmabisheng"
     android:versionCode="1"
     android:versionName="1.1.0" >
 
     <uses-sdk
         android:minSdkVersion="11"
-        android:targetSdkVersion="14" />
+        android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -23,11 +23,14 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" >
+    </uses-permission>
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
-<uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+
     <application
         android:name=".constant.Application"
         android:icon="@drawable/ic_launcher"
@@ -57,17 +60,22 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.qihoo.huangmabisheng.plugin.seven.InstagramActivity"
+            android:name="com.cc.huangmabisheng.plugin.seven.InstagramActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" >
         </activity>
-		
-        <service android:name=".service.SmartLockService" >
+
+        <service
+            android:name=".service.SmartLockService"
+            android:priority="1000" >
         </service>
-        <service android:name=".service.FloatWindowService" >
+        <service
+            android:name=".service.FloatWindowService"
+            android:priority="1000" >
         </service>
         <service android:name=".service.SpecialHttpService" >
         </service>
+        <!-- <receiver android:name=".reciever.AlarmReceiver" /> -->
     </application>
 
 </manifest>
